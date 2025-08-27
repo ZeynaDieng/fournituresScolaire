@@ -1,7 +1,9 @@
+
 {
-  "name": "nuxt-app",
-  "type": "module",
+  "name": "fournitures-scolaires",
   "private": true,
+  "version": "1.0.0",
+  "description": "Site e-commerce de fournitures scolaires pour le Sénégal",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -9,9 +11,28 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "nuxt": "^3.8.0"
+  },
   "dependencies": {
-    "nuxt": "^4.0.3",
-    "vue": "^3.5.20",
-    "vue-router": "^4.5.1"
-  }
+    "@nuxtjs/tailwindcss": "^6.8.4",
+    "@pinia/nuxt": "^0.5.1",
+    "@nuxt/image": "^1.0.0",
+    "@vueuse/nuxt": "^10.5.0",
+    "pinia": "^2.1.7",
+    "swiper": "^11.0.5",
+    "vue-toastification": "^2.0.0-rc.5",
+    "@headlessui/vue": "^1.7.16",
+    "@heroicons/vue": "^2.0.18",
+    "date-fns": "^2.30.0"
+  },
+  "keywords": [
+    "nuxt",
+    "vue",
+    "ecommerce",
+    "fournitures-scolaires",
+    "senegal",
+    "tailwindcss"
+  ]
 }
