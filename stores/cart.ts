@@ -1,6 +1,7 @@
 // stores/cart.ts
 import { defineStore } from 'pinia'
 import { watch, onMounted } from 'vue'
+import type { Ref } from 'vue'
 
 export interface CartItem {
   id: string
@@ -39,84 +40,88 @@ export const useCartStore = defineStore('cart', {
 
   getters: {
     // Nombre total d'articles dans le panier
-    itemCount: (state): number => {
-      return state.items.reduce((total, item) => total + item.quantity, 0)
+    itemCount(state): number {
+      return state.items.reduce((total: number, item: CartItem) => total + item.quantity, 0)
     },
 
     // Sous-total du panier
-    subtotal: (state): number => {
-      return state.items.reduce((total, item) => total + (item.price * item.quantity), 0)
+    subtotal(state): number {
+      return state.items.reduce((total: number, item: CartItem) => total + (item.price * item.quantity), 0)
     },
 
     // Frais de livraison
-    deliveryFee: (state): number => {
-      if (!state.shippingInfo) return 0
-      return state.shippingInfo.deliveryType === 'home' ? state.shippingInfo.deliveryFee : 0
+    deliveryFee(state): number {
+      // Logique de calcul des frais de livraison
+      return this.subtotal > 0 ? 2000 : 0 // 2000 FCFA de frais de livraison par défaut
     },
 
     // Total avec livraison et réductions
-    total: (state): number => {
-      const subtotal = state.subtotal
-      const delivery = state.deliveryFee
-      const discount = (subtotal * state.promoDiscount) / 100
-      return subtotal + delivery - discount
+    total(state): number {
+      const subtotal = this.subtotal
+      const delivery = this.deliveryFee
+      const discount = (subtotal * this.promoDiscount) / 100
+      return Math.max(0, subtotal + delivery - discount)
     },
 
     // Résumé de la commande
-    orderSummary: (state): OrderSummary => {
+    orderSummary(state): OrderSummary {
       return {
-        subtotal: state.subtotal,
-        deliveryFee: state.deliveryFee,
-        total: state.total,
-        itemCount: state.itemCount
+        subtotal: this.subtotal,
+        deliveryFee: this.deliveryFee,
+        total: this.total,
+        itemCount: this.itemCount
       }
     },
 
     // Vérifier si un article est dans le panier
-    isInCart: (state) => (id: string): boolean => {
-      return state.items.some(item => item.id === id)
+    isInCart(state): (id: string) => boolean {
+      return (id: string) => state.items.some((item: CartItem) => item.id === id)
     },
 
     // Obtenir la quantité d'un article
-    getItemQuantity: (state) => (id: string): number => {
-      const item = state.items.find(item => item.id === id)
-      return item ? item.quantity : 0
+    getItemQuantity(state): (id: string) => number {
+      return (id: string): number => {
+        const item = state.items.find((item: CartItem) => item.id === id)
+        return item ? item.quantity : 0
+      }
     }
   },
 
   actions: {
     // Ajouter un article au panier
     addItem(item: Omit<CartItem, 'quantity'>, quantity: number = 1) {
-      const existingItem = this.items.find(cartItem => cartItem.id === item.id)
+      const existingItem = this.items.find((cartItem: CartItem) => cartItem.id === item.id)
       
       if (existingItem) {
         existingItem.quantity += quantity
       } else {
-        this.items.push({ ...item, quantity })
+        this.items.push({ ...item, quantity } as CartItem)
       }
-
-      // Toast notification
+      
       this.showToast(`${item.name} ajouté au panier`, 'success')
+      this.saveToStorage()
     },
-
+    
     // Retirer un article du panier
     removeItem(id: string) {
-      const index = this.items.findIndex(item => item.id === id)
+      const index = this.items.findIndex((item: CartItem) => item.id === id)
       if (index > -1) {
         const item = this.items[index]
         this.items.splice(index, 1)
         this.showToast(`${item.name} retiré du panier`, 'info')
+        this.saveToStorage()
       }
     },
-
+    
     // Mettre à jour la quantité d'un article
     updateQuantity(id: string, quantity: number) {
-      const item = this.items.find(item => item.id === id)
+      const item = this.items.find((item: CartItem) => item.id === id)
       if (item) {
         if (quantity <= 0) {
           this.removeItem(id)
         } else {
           item.quantity = quantity
+          this.saveToStorage()
         }
       }
     },
@@ -240,14 +245,16 @@ export const useCartAutoSave = () => {
   const cartStore = useCartStore()
   
   // Watcher pour sauvegarder automatiquement
-  watch(
-    () => cartStore.items,
-    () => cartStore.saveToStorage(),
-    { deep: true }
-  )
-  
-  // Charger au démarrage
-  onMounted(() => {
-    cartStore.loadFromStorage()
-  })
+  if (process.client) {
+    watch(
+      () => cartStore.items,
+      () => cartStore.saveToStorage(),
+      { deep: true }
+    )
+    
+    // Charger au démarrage
+    onMounted(() => {
+      cartStore.loadFromStorage()
+    })
+  }
 }

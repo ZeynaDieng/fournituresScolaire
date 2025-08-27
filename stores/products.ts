@@ -61,59 +61,67 @@ export const useProductsStore = defineStore('products', {
 
   getters: {
     // Produits par catégorie
-    getProductsByCategory: (state) => (category: string): Product[] => {
-      return state.products.filter(product => product.category === category)
+    getProductsByCategory(state) {
+      return (category: string): Product[] => 
+        state.products.filter((product: Product) => product.category === category)
     },
-
+    
     // Packs par niveau
-    getPacksByLevel: (state) => (level: string): Pack[] => {
-      return state.packs.filter(pack => pack.level === level)
+    getPacksByLevel(state) {
+      return (level: string): Pack[] => 
+        state.packs.filter((pack: Pack) => pack.level === level)
     },
-
+    
     // Packs populaires
-    popularPacks: (state): Pack[] => {
-      return state.packs.filter(pack => pack.isPopular).slice(0, 4)
+    popularPacks(state): Pack[] {
+      return state.packs.filter((pack: Pack) => pack.isPopular).slice(0, 4)
     },
-
+    
     // Produits en promotion
-    promotionalProducts: (state): Product[] => {
-      return state.products.filter(product => product.isPromotion)
+    promotionalProducts(state): Product[] {
+      return state.products.filter((product: Product) => product.isPromotion)
     },
-
+    
     // Packs en promotion
-    promotionalPacks: (state): Pack[] => {
-      return state.packs.filter(pack => pack.isPromotion)
+    promotionalPacks(state): Pack[] {
+      return state.packs.filter((pack: Pack) => pack.isPromotion)
     },
-
+    
     // Promotions actives
-    activePromotions: (state): Promotion[] => {
+    activePromotions(state): Promotion[] {
       const now = new Date()
-      return state.promotions.filter(promo => new Date(promo.endDate) > now)
+      return state.promotions.filter((promo: Promotion) => new Date(promo.endDate) > now)
     },
-
+    
     // Recherche de produits
-    searchProducts: (state) => (query: string): (Product | Pack)[] => {
-      const searchTerm = query.toLowerCase()
-      const matchingProducts = state.products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm)
-      )
-      const matchingPacks = state.packs.filter(pack =>
-        pack.name.toLowerCase().includes(searchTerm) ||
-        pack.level.toLowerCase().includes(searchTerm)
-      )
-      return [...matchingProducts, ...matchingPacks]
+    searchProducts(state) {
+      return (query: string): (Product | Pack)[] => {
+        const searchTerm = query.toLowerCase()
+        const matchingProducts = state.products.filter((product: Product) =>
+          product.name.toLowerCase().includes(searchTerm) ||
+          product.category.toLowerCase().includes(searchTerm)
+        )
+        const matchingPacks = state.packs.filter((pack: Pack) =>
+          pack.name.toLowerCase().includes(searchTerm) ||
+          pack.level.toLowerCase().includes(searchTerm)
+        )
+        return [...matchingProducts, ...matchingPacks]
+      }
     },
-
+    
     // Obtenir un produit par ID
-    getProductById: (state) => (id: string): Product | undefined => {
-      return state.products.find(product => product.id === id)
+    getProductById(state) {
+      return (id: string): Product | undefined => {
+        return state.products.find((product: Product) => product.id === id)
+      }
     },
-
+    
     // Obtenir un pack par ID
-    getPackById: (state) => (id: string): Pack | undefined => {
-      return state.packs.find(pack => pack.id === id)
-    }
+    getPackById(state) {
+      return (id: string): Pack | undefined => {
+        return state.packs.find((pack: Pack) => pack.id === id)
+      }
+    },
   },
 
   actions: {
@@ -281,104 +289,97 @@ export const useProductsStore = defineStore('products', {
         }
       ]
     },
-
+    
     // Charger les produits (simulation API)
-    async fetchProducts() {
+    async fetchProducts(): Promise<void> {
       this.loading = true
       try {
         // Simulation d'appel API
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise<void>((resolve) => setTimeout(resolve, 1000))
         this.initializeDemoData()
-      } catch (error) {
-        console.error('Error fetching products:', error)
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('Error fetching products:', error.message)
+        } else {
+          console.error('An unknown error occurred while fetching products')
+        }
       } finally {
         this.loading = false
       }
     },
-
+    
     // Ajouter un produit
-    addProduct(product: Product) {
+    addProduct(product: Product): void {
       this.products.push(product)
     },
-
+    
     // Ajouter un pack
-    addPack(pack: Pack) {
+    addPack(pack: Pack): void {
       this.packs.push(pack)
     },
-
+    
     // Mettre à jour le stock d'un produit
-    updateProductStock(id: string, inStock: boolean) {
-      const product = this.products.find(p => p.id === id)
+    updateProductStock(id: string, inStock: boolean): void {
+      const product = this.products.find((p: Product) => p.id === id)
       if (product) {
         product.inStock = inStock
-      }
-      
-      const pack = this.packs.find(p => p.id === id)
-      if (pack) {
-        pack.inStock = inStock
+      } else {
+        const pack = this.packs.find((p: Pack) => p.id === id)
+        if (pack) {
+          pack.inStock = inStock
+        }
       }
     },
-
+    
     // Appliquer une promotion à un produit
-    applyPromotionToProduct(productId: string, discount: number, endDate: Date) {
-      const product = this.products.find(p => p.id === productId)
+    applyPromotionToProduct(productId: string, discount: number, endDate: Date): void {
+      const product = this.products.find((p: Product) => p.id === productId)
       if (product) {
         product.originalPrice = product.price
-        product.price = Math.round(product.price * (1 - discount / 100))
+        product.price = product.price * (1 - discount / 100)
         product.isPromotion = true
         product.promotionEndDate = endDate
       }
     },
-
+    
     // Retirer une promotion d'un produit
-    removePromotionFromProduct(productId: string) {
-      const product = this.products.find(p => p.id === productId)
-      if (product && product.originalPrice) {
+    removePromotionFromProduct(productId: string): void {
+      const product = this.products.find((p: Product) => p.id === productId)
+      if (product && product.originalPrice !== undefined) {
         product.price = product.originalPrice
         product.originalPrice = undefined
         product.isPromotion = false
         product.promotionEndDate = undefined
       }
     },
-
+    
     // Obtenir des recommandations basées sur l'âge/niveau
     getRecommendations(level: string): (Product | Pack)[] {
-      const levelPacks = this.getPacksByLevel(level)
-      const recommendedProducts = []
+      // Logique de recommandation basée sur le niveau
+      const recommendedPacks = this.packs.filter((pack: Pack) => {
+        if (['CP', 'CE1', 'CE2'].includes(level)) {
+          return pack.level === 'Primaire' || pack.level === level
+        } else if (['6ème', '5ème', '4ème', '3ème'].includes(level)) {
+          return pack.level === 'Collège' || pack.level === level
+        } else if (['Seconde', 'Première', 'Terminale'].includes(level)) {
+          return pack.level === 'Lycée' || pack.level === level
+        }
+        return false
+      })
       
-      // Logique de recommandation simple
-      switch (level.toLowerCase()) {
-        case 'cp':
-          recommendedProducts.push(
-            ...this.products.filter(p => 
-              ['Cahiers', 'Stylos', 'Ardoises'].includes(p.category)
-            ).slice(0, 3)
-          )
-          break
-        case 'ce1-ce2':
-          recommendedProducts.push(
-            ...this.products.filter(p => 
-              ['Cahiers', 'Stylos', 'Règles'].includes(p.category)
-            ).slice(0, 3)
-          )
-          break
-        case 'collège':
-          recommendedProducts.push(
-            ...this.products.filter(p => 
-              ['Calculatrices', 'Classeurs', 'Sacs'].includes(p.category)
-            ).slice(0, 3)
-          )
-          break
-        case 'lycée':
-          recommendedProducts.push(
-            ...this.products.filter(p => 
-              ['Calculatrices', 'Classeurs', 'Sacs'].includes(p.category)
-            ).slice(0, 3)
-          )
-          break
-      }
+      // Ajouter des produits complémentaires
+      const recommendedProducts = this.products.filter((product: Product) => {
+        if (['CP', 'CE1', 'CE2'].includes(level)) {
+          return ['Cahiers', 'Stylos', 'Crayons'].includes(product.category)
+        } else if (level === 'Collège') {
+          return ['Classeurs', 'Feuilles', 'Calculatrices'].includes(product.category)
+        } else if (level === 'Lycée') {
+          return ['Classeurs', 'Calculatrices', 'Règles'].includes(product.category)
+        }
+        return false
+      })
       
-      return [...levelPacks, ...recommendedProducts]
+      return [...recommendedPacks, ...recommendedProducts].slice(0, 6)
     }
   }
 })

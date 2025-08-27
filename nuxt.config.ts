@@ -1,4 +1,6 @@
 // nuxt.config.ts
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
@@ -83,6 +85,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: ['/sitemap.xml']
-    }
+    },
+    compatibilityDate: '2025-08-27'
   }
 })

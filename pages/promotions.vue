@@ -8,7 +8,7 @@
         <h2 class="font-bold">{{ promo.title }}</h2>
         <p class="mt-1">{{ promo.description }}</p>
         <p class="mt-2 text-red-500 font-bold">Prix : {{ promo.price }} CFA</p>
-        <Countdown :endTime="promo.endTime" class="mt-2" />
+        <AppCountdown :endTime="promo.endTime" class="mt-2" />
         <button @click="addToCart(promo.product)" class="mt-3 w-full bg-yellow-400 hover:bg-yellow-500 text-white py-2 rounded-lg transition">
           Acheter
         </button>
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import Countdown from '~/components/Countdown.vue'
+import AppCountdown from '~/components/AppCountdown.vue'
 import { useCartStore } from '~/stores/cart'
 import { ref } from 'vue'
 
