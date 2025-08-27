@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Pack {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Int
+  items     String   // JSON string ["5 cahiers","2 stylos",...]
+  image     String
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Int
+  category  String
+  image     String
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  items      String   // JSON string [{productId:1, quantity:2},...]
+  total      Int
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
+
+model Promotion {
+  id        Int      @id @default(autoincrement())
+  title     String
+  description String
+  price     Int
+  endTime   DateTime
+  productId Int
+}
