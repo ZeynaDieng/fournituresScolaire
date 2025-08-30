@@ -71,7 +71,14 @@ export default defineNuxtConfig({
 
   // Runtime config
   runtimeConfig: {
+    paytech: {
+      apiKey: process.env.PAYTECH_API_KEY,
+      secretKey: process.env.PAYTECH_SECRET_KEY,
+      sandbox: process.env.NODE_ENV !== 'production'
+    },
     public: {
+      paytechSandbox: process.env.NODE_ENV !== 'production',
+      baseUrl: process.env.BASE_URL || 'http://localhost:3000',
       payTechApiKey: process.env.PAYTECH_API_KEY,
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID,
       facebookPixelId: process.env.FACEBOOK_PIXEL_ID

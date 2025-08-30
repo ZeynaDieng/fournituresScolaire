@@ -173,37 +173,83 @@ export const useCartStore = defineStore('cart', {
     },
 
     // Finaliser la commande
-    async processOrder(paymentMethod: string = 'paytech') {
+    async processOrder(paymentMethod: string = 'paytech', customerInfo?: any) {
       try {
-        // Simulation d'appel API pour traitement de commande
-        const orderData = {
-          items: this.items,
-          shipping: this.shippingInfo,
-          orderSummary: this.orderSummary,
-          promoCode: this.promoCode,
-          paymentMethod
-        }
+        this.showToast('Initialisation du paiement...', 'info')
+        
+        if (paymentMethod === 'paytech') {
+          // Générer une référence unique pour la commande
+          const orderRef = 'EDU' + Date.now().toString()
+          
+          // Préparer les données pour PayTech
+          const paymentData = {
+            ref: orderRef,
+            amount: this.total,
+            currency: 'XOF',
+            customer: {
+              phone: this.shippingInfo?.phone || customerInfo?.phone,
+              email: customerInfo?.email || 'customer@example.com',
+              name: customerInfo?.name || 'Client EduShop'
+            },
+            items: this.items.map(item => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              type: item.type
+            })),
+            shipping: this.shippingInfo,
+            promoCode: this.promoCode,
+            promoDiscount: this.promoDiscount
+          }
 
-        // Ici on intégrerait PayTech ou autre solution de paiement
-        console.log('Processing order:', orderData)
-        
-        // Simulation du succès
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        
-        // Vider le panier après succès
-        this.clearCart()
-        this.shippingInfo = null
-        
-        return {
-          success: true,
-          orderId: 'EDU' + Date.now().toString(),
-          message: 'Commande traitée avec succès'
+          console.log('Initiating PayTech payment:', paymentData)
+          
+          // Type for the payment initiation response
+          interface PaymentInitiationResponse {
+            success: boolean;
+            data: any;
+            payment_url: string;
+          }
+
+          // Appel à votre API pour initier le paiement PayTech
+          const response = await $fetch<PaymentInitiationResponse>('/api/paytech/initiate', {
+            method: 'POST',
+            body: paymentData
+          })
+          
+          if (response.success && response.payment_url) {
+            // Sauvegarder temporairement la commande
+            this.saveOrderForPayment(orderRef, paymentData)
+            
+            // Redirection vers PayTech
+            this.showToast('Redirection vers PayTech...', 'success')
+            
+            // Petit délai pour que l'utilisateur voie le message
+            setTimeout(() => {
+              window.location.href = response.payment_url
+            }, 1500)
+            
+            return {
+              success: true,
+              orderId: orderRef,
+              message: 'Redirection vers PayTech...',
+              paymentUrl: response.payment_url
+            }
+          } else {
+            throw new Error('Impossible d\'initialiser le paiement PayTech')
+          }
+        } else {
+          // Autres méthodes de paiement
+          throw new Error('Méthode de paiement non supportée')
         }
-      } catch (error) {
+        
+      } catch (error: any) {
         console.error('Order processing error:', error)
+        this.showToast(error.message || 'Erreur lors du paiement', 'error')
         return {
           success: false,
-          message: 'Erreur lors du traitement de la commande'
+          message: error.message || 'Erreur lors du traitement de la commande'
         }
       }
     },
@@ -218,7 +264,39 @@ export const useCartStore = defineStore('cart', {
         }))
       }
     },
+    saveOrderForPayment(orderId: string, orderData: any) {
+      if (process.client) {
+        localStorage.setItem(`order_${orderId}`, JSON.stringify({
+          ...orderData,
+          timestamp: Date.now(),
+          status: 'pending'
+        }))
+      }
+    },
 
+    // Récupérer une commande sauvegardée
+    getOrderFromStorage(orderId: string) {
+      if (process.client) {
+        const saved = localStorage.getItem(`order_${orderId}`)
+        return saved ? JSON.parse(saved) : null
+      }
+      return null
+    },
+
+    // Marquer une commande comme payée
+    markOrderAsPaid(orderId: string) {
+      if (process.client) {
+        const orderData = this.getOrderFromStorage(orderId)
+        if (orderData) {
+          orderData.status = 'paid'
+          orderData.paidAt = Date.now()
+          localStorage.setItem(`order_${orderId}`, JSON.stringify(orderData))
+          
+          // Vider le panier après paiement réussi
+          this.clearCart()
+        }
+      }
+    },
     // Charger le panier depuis localStorage
     loadFromStorage() {
       if (process.client) {

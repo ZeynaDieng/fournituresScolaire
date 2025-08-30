@@ -13,8 +13,6 @@
         <li>Gain de temps</li>
       </ul>
 
-      <h2 class="font-bold text-lg mt-4 mb-2">Notre équipe</h2>
-      <img src="/images/equipe.jpg" alt="Equipe" class="w-full h-64 object-cover rounded-lg shadow-md">
     </div>
   </div>
 </template>
