@@ -17,6 +17,11 @@ export default defineNuxtConfig({
     '~/assets/styles/main.css'
   ],
 
+  // Route rules
+  routeRules: {
+    '/about': { prerender: false }
+  },
+
   // App config
   app: {
     head: {
@@ -86,7 +91,7 @@ export default defineNuxtConfig({
   },
 
   // SSR
-  ssr: true,
+  ssr: false,
 
   // Nitro config for deployment
   nitro: {
