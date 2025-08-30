@@ -11,14 +11,13 @@
     </div>
 
     <!-- Produits -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
       <AppProductCard v-for="product in filteredProducts" :key="product.id" :product="product" @add-to-cart="addToCart" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import ProductCard from '~/components/ProductCard.vue'
 import { useProductsStore } from '~/stores/products'
 import { useCartStore } from '~/stores/cart'
 import { ref, computed } from 'vue'

@@ -1,16 +1,21 @@
 <!-- layouts/default.vue -->
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 flex flex-col overflow-hidden">
     <!-- Header -->
-    <Header />
+    <AppHeader />
     
     <!-- Main Content -->
-    <main class="pb-20 md:pb-0">
-      <slot />
+    <main class="flex-grow pt-16 pb-20 md:pb-0">
+      <div class="">
+        <slot />
+      </div>
     </main>
     
+    <!-- Footer -->
+    <AppFooter />
+    
     <!-- Bottom Navigation (Mobile) -->
-    <BottomNav class="md:hidden" />
+    <AppBottomNav class="md:hidden" />
     
     <!-- Cart Sidebar -->
     <CartSidebar />
@@ -21,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCartStore } from '~/stores/cart'
+import { onMounted } from 'vue'
+import { useCartStore, useCartAutoSave } from '~/stores/cart'
 import { useProductsStore } from '~/stores/products'
 
 // Initialisation des stores
@@ -31,10 +37,12 @@ const productsStore = useProductsStore()
 // Charger les données au montage
 onMounted(async () => {
   // Charger le panier depuis localStorage
-  cartStore.loadFromStorage()
+  // cartStore.loadFromStorage() // Assuming this method exists
   
   // Charger les produits
-  await productsStore.fetchProducts()
+  if (productsStore.products.length === 0) {
+    await productsStore.fetchProducts()
+  }
 })
 
 // Meta tags génériques

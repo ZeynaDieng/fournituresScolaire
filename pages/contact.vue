@@ -12,7 +12,7 @@
 
       <div class="mt-6">
         <h2 class="font-bold mb-2">Commande rapide via WhatsApp</h2>
-        <a href="https://wa.me/221000000000" target="_blank" class="text-green-600 font-bold hover:underline">Commander sur WhatsApp</a>
+        <a href="https://wa.me/22177770456" target="_blank" class="text-green-600 font-bold hover:underline">Commander sur WhatsApp</a>
       </div>
 
       <div class="mt-6">

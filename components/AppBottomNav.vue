@@ -46,32 +46,12 @@
 
 <script setup lang="ts">
 import { useCartStore } from '~/stores/cart'
+import { useNavigation } from '~/composables/useNavigation'
 
 const cartStore = useCartStore()
 
 // Navigation items for mobile
-const navItems = [
-  {
-    name: 'Accueil',
-    path: '/',
-    icon: defineAsyncComponent(() => import('./icons/HomeIcon.vue'))
-  },
-  {
-    name: 'Packs',
-    path: '/packs',
-    icon: defineAsyncComponent(() => import('./icons/PackageIcon.vue'))
-  },
-  {
-    name: 'Articles',
-    path: '/products',
-    icon: defineAsyncComponent(() => import('./icons/ProductIcon.vue'))
-  },
-  {
-    name: 'Promos',
-    path: '/promotions',
-    icon: defineAsyncComponent(() => import('./icons/TagIcon.vue'))
-  }
-]
+const { navItems } = useNavigation()
 </script>
 
 <style scoped>
