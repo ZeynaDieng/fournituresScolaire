@@ -66,3 +66,9 @@ useHead({
 // Auto-save du panier
 useCartAutoSave()
 </script>
+
+<script>
+export default {
+  middleware: ['admin'],
+}
+</script>
