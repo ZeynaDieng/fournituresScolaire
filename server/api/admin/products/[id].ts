@@ -7,5 +7,8 @@ export default defineEventHandler(async (event) => {
   if (event.method === 'DELETE') {
     await prisma.product.delete({ where: { id } })
     return { success: true }
+  } else if (event.method === 'PUT') {
+    const body = await readBody(event)
+    return await prisma.product.update({ where: { id }, data: body })
   }
 })

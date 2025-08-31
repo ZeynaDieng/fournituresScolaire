@@ -15,6 +15,18 @@
         <button type="submit" class="btn btn-primary">Enregistrer</button>
       </form>
     </div>
+    <div v-if="showEdit" class="mb-6 p-4 bg-yellow-50 rounded-lg">
+      <h2 class="font-semibold mb-2">Modifier le pack</h2>
+      <form @submit.prevent="updatePack">
+        <input v-model="editPack.name" placeholder="Nom" class="form-input mb-2" required />
+        <input v-model="editPack.level" placeholder="Niveau (CP, CE1, etc.)" class="form-input mb-2" required />
+        <input v-model.number="editPack.price" placeholder="Prix" type="number" class="form-input mb-2" required />
+        <input v-model="editPack.image" placeholder="Image (URL)" class="form-input mb-2" />
+        <textarea v-model="editPack.description" placeholder="Description" class="form-input mb-2" />
+        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+        <button type="button" @click="cancelEdit" class="btn btn-secondary ml-2">Annuler</button>
+      </form>
+    </div>
     <table class="min-w-full bg-white rounded-lg shadow overflow-hidden">
       <thead>
         <tr>
@@ -30,6 +42,7 @@
           <td class="px-4 py-2">{{ pack.level }}</td>
           <td class="px-4 py-2">{{ pack.price }} CFA</td>
           <td class="px-4 py-2">
+            <button @click="edit(pack)" class="text-blue-600 hover:underline mr-2">Modifier</button>
             <button @click="deletePack(pack.id)" class="text-red-600 hover:underline">Supprimer</button>
           </td>
         </tr>
@@ -43,7 +56,9 @@ import { ref, onMounted } from 'vue'
 
 const packs = ref<any[]>([])
 const showAdd = ref(false)
+const showEdit = ref(false)
 const newPack = ref({ name: '', level: '', price: 0, image: '', description: '' })
+const editPack = ref({ id: null, name: '', level: '', price: 0, image: '', description: '' })
 
 async function fetchPacks() {
   packs.value = await $fetch('/api/admin/packs')
@@ -58,6 +73,26 @@ async function addPack() {
   showAdd.value = false
   newPack.value = { name: '', level: '', price: 0, image: '', description: '' }
   fetchPacks()
+}
+
+function edit(pack: any) {
+  editPack.value = { ...pack }
+  showEdit.value = true
+}
+
+async function updatePack() {
+  await $fetch(`/api/admin/packs/${editPack.value.id}`, {
+    method: 'PUT',
+    body: editPack.value
+  })
+  showEdit.value = false
+  editPack.value = { id: null, name: '', level: '', price: 0, image: '', description: '' }
+  fetchPacks()
+}
+
+function cancelEdit() {
+  showEdit.value = false
+  editPack.value = { id: null, name: '', level: '', price: 0, image: '', description: '' }
 }
 
 async function deletePack(id: number) {
