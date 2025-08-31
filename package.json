@@ -12,18 +12,25 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/formidable": "^3.4.5",
+    "@types/node": "^24.3.0",
     "nuxt": "^3.8.0",
-    "prisma": "^6.15.0"
+    "prisma": "^6.15.0",
+    "vue-tsc": "^3.0.6"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.6",
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "^2.0.18",
-    "@nuxt/image": "^1.0.0",
     "@nuxtjs/tailwindcss": "^6.8.4",
     "@pinia/nuxt": "^0.5.1",
     "@prisma/client": "^6.15.0",
     "@vueuse/nuxt": "^10.5.0",
     "date-fns": "^2.30.0",
+    "formidable": "^3.5.4",
     "pinia": "^2.1.7",
     "swiper": "^11.2.10",
     "vue-toastification": "^2.0.0-rc.5"

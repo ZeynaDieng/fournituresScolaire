@@ -3,12 +3,26 @@
   <div class="min-h-screen flex items-center justify-center bg-green-50 p-4">
     <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
       <div class="mb-6">
-        <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        <div
+          class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <svg
+            class="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            ></path>
           </svg>
         </div>
-        <h1 class="text-2xl font-bold text-green-600 mb-2">Paiement Réussi !</h1>
+        <h1 class="text-2xl font-bold text-green-600 mb-2">
+          Paiement Réussi !
+        </h1>
         <p class="text-gray-600">Votre commande a été traitée avec succès</p>
       </div>
 
@@ -21,13 +35,17 @@
       </div>
 
       <div class="space-y-3">
-        <button @click="goToHome" 
-                class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition">
+        <button
+          @click="goToHome"
+          class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition"
+        >
           Continuer mes achats
         </button>
-        
-        <button @click="downloadReceipt" 
-                class="w-full border border-green-500 text-green-500 hover:bg-green-50 py-2 px-4 rounded-lg transition">
+
+        <button
+          @click="downloadReceipt"
+          class="w-full border border-green-500 text-green-500 hover:bg-green-50 py-2 px-4 rounded-lg transition"
+        >
           Télécharger le reçu
         </button>
       </div>
@@ -41,34 +59,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useCartStore } from '~/stores/cart'
+import { ref, onMounted } from "vue";
+import { useCartStore } from "~/stores/cart";
 
-const route = useRoute()
-const router = useRouter()
-const cartStore = useCartStore()
+const route = useRoute();
+const router = useRouter();
+const cartStore = useCartStore();
 
-const orderInfo = ref(null)
+interface OrderInfo {
+  ref: string;
+  amount: number;
+  timestamp: number;
+  customer?: {
+    phone?: string;
+    email?: string;
+  };
+  items?: Array<{ name: string; quantity: number; price: number }>;
+}
+
+const orderInfo = ref<OrderInfo | null>(null);
 
 onMounted(() => {
   // Récupérer les informations de la commande depuis l'URL ou le localStorage
-  const orderId = route.query.ref || route.query.order_id
-  
+  const orderId = route.query.ref || route.query.order_id;
+
   if (orderId) {
     // Marquer la commande comme payée
-    cartStore.markOrderAsPaid(orderId as string)
-    
+    cartStore.markOrderAsPaid(orderId as string);
+
     // Récupérer les détails de la commande
-    orderInfo.value = cartStore.getOrderFromStorage(orderId as string)
+    orderInfo.value = cartStore.getOrderFromStorage(orderId as string);
   }
-})
+});
 
 function formatDate(timestamp: number) {
-  return new Date(timestamp).toLocaleString('fr-FR')
+  return new Date(timestamp).toLocaleString("fr-FR");
 }
 
 function goToHome() {
-  router.push('/')
+  router.push("/");
 }
 
 function downloadReceipt() {
@@ -84,28 +113,29 @@ Téléphone: ${orderInfo.value.customer?.phone}
 Email: ${orderInfo.value.customer?.email}
 
 Articles commandés:
-${orderInfo.value.items?.map(item => 
-  `- ${item.name} x${item.quantity} = ${item.price * item.quantity} CFA`
-).join('\n')}
+${orderInfo.value.items
+  ?.map(
+    (item) =>
+      `- ${item.name} x${item.quantity} = ${item.price * item.quantity} CFA`
+  )
+  .join("\n")}
 
 Merci pour votre achat !
-    `
-    
-    const blob = new Blob([receiptContent], { type: 'text/plain' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `recu-${orderInfo.value.ref}.txt`
-    a.click()
-    window.URL.revokeObjectURL(url)
+    `;
+
+    const blob = new Blob([receiptContent], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `recu-${orderInfo.value.ref}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }
 
 // Métadonnées
 useHead({
-  title: 'Paiement Réussi - EduShop',
-  meta: [
-    { name: 'robots', content: 'noindex' }
-  ]
-})
+  title: "Paiement Réussi - EduShop",
+  meta: [{ name: "robots", content: "noindex" }],
+});
 </script>
