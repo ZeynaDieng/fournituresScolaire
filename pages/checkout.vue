@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <!-- Boutons de paiement -->
+      <!-- Boutons de paiement et rappel sécurité -->
       <div class="space-y-3">
         <button @click="pay" 
                 :disabled="isProcessing || !isFormValid"
@@ -94,10 +94,17 @@
           <span v-if="isProcessing">Traitement en cours...</span>
           <span v-else>💳 Payer avec PayTech ({{ cartStore.total }} CFA)</span>
         </button>
-        
-        <p class="text-sm text-gray-600 text-center">
-          Paiement sécurisé via PayTech. Accepte Orange Money, Free Money, Wave, etc.
-        </p>
+
+        <div class="flex flex-col items-center gap-2 mt-2">
+          <div class="flex items-center gap-2 text-green-700 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+            Paiement 100% sécurisé via PayTech
+          </div>
+          <div class="text-xs text-gray-500 text-center">
+            Accepte Orange Money, Free Money, Wave, cartes bancaires, etc.<br>
+            Vos informations sont chiffrées et ne sont jamais partagées.
+          </div>
+        </div>
       </div>
 
       <!-- Messages d'erreur -->

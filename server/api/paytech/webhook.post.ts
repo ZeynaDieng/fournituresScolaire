@@ -56,16 +56,33 @@ export default defineEventHandler(async (event) => {
   })
   
   // Fonction pour traiter les paiements réussis
+  import { PrismaClient } from '@prisma/client'
+  const prisma = new PrismaClient()
+
   async function processSuccessfulPayment(paymentData: any) {
-    // Ici vous pouvez implémenter votre logique métier :
-    // - Sauvegarder la commande en base
-    // - Envoyer des notifications
-    // - Mettre à jour les stocks
-    // etc.
-    
-    console.log('Processing successful payment:', paymentData)
-    
-    // Exemple basique de logging
-    // Dans un vrai projet, utilisez une base de données
-    return true
+    // Mettre à jour la commande et le paiement en base
+    try {
+      // Mettre à jour le statut de la commande
+      await prisma.order.update({
+        where: { ref: paymentData.orderId },
+        data: { status: 'paid' }
+      })
+
+      // Mettre à jour le paiement
+      await prisma.payment.updateMany({
+        where: { amount: Number(paymentData.amount) },
+        data: {
+          status: 'paid',
+          paytechId: paymentData.orderId
+        }
+      })
+
+      // (Optionnel) Envoyer une notification ou email ici
+
+      console.log('Commande et paiement mis à jour en base pour', paymentData.orderId)
+      return true
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour de la commande/paiement:', err)
+      return false
+    }
   }
