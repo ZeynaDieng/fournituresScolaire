@@ -2,27 +2,35 @@
 <template>
   <div>
     <!-- Hero Section with Optimized Background -->
-  <AppHeroSection />
+    <AppHeroSection />
     <!-- Popular Packs Section with Optimized Loading -->
     <section class="section bg-gray-50" id="packs-populaires">
       <div class="container px-4">
         <div class="text-center mb-12">
-          <h2 class="section-title transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up" style="--delay: 0.1s">
-            Packs Scolaires Populaires 
+          <h2
+            class="section-title transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up"
+            style="--delay: 0.1s"
+          >
+            Packs Scolaires Populaires
           </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up" style="--delay: 0.2s">
+          <p
+            class="text-xl text-gray-600 max-w-2xl mx-auto transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up"
+            style="--delay: 0.2s"
+          >
             Nos packs les plus demandés pour chaque niveau scolaire
           </p>
         </div>
 
         <!-- Loading State with Better Skeleton -->
         <div v-if="productsStore.loading" class="pack-grid">
-          <div 
-            v-for="n in 4" 
+          <div
+            v-for="n in 4"
             :key="n"
-            class="bg-white rounded-2xl shadow-md overflow-hidden  transition-shadow duration-300 h-full flex flex-col"
+            class="bg-white rounded-2xl shadow-md overflow-hidden transition-shadow duration-300 h-full flex flex-col"
           >
-            <div class="relative w-full aspect-[4/3] bg-gray-200 animate-pulse"></div>
+            <div
+              class="relative w-full aspect-[4/3] bg-gray-200 animate-pulse"
+            ></div>
             <div class="p-6 flex-1 flex flex-col">
               <div class="h-4 w-24 bg-gray-200 rounded-full mb-4"></div>
               <div class="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
@@ -40,34 +48,50 @@
 
         <!-- Popular Packs Grid with Staggered Animation -->
         <div v-else class="pack-grid">
-          <AppPackCard 
-            v-for="(pack, index) in productsStore.popularPacks" 
+          <AppPackCard
+            v-for="(pack, index) in productsStore.popularPacks"
             :key="pack.id"
             :pack="pack"
-            class="transform transition-all duration-300 ease-out "
+            class="transform transition-all duration-300 ease-out"
             :style="{
               '--delay': `${index * 0.1}s`,
-              'animation': `fadeInUp 0.6s ease-out forwards ${index * 0.1}s`
+              animation: `fadeInUp 0.6s ease-out forwards ${index * 0.1}s`,
             }"
-            @mouseenter="$event.currentTarget.style.transform = 'translateY(-8px)'"
+            @mouseenter="
+              $event.currentTarget.style.transform = 'translateY(-8px)'
+            "
             @mouseleave="$event.currentTarget.style.transform = 'translateY(0)'"
           />
         </div>
 
         <!-- View All Button with Animation -->
-        <div class="text-center mt-12 transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up" style="--delay: 0.5s">
-          <NuxtLink 
+        <div
+          class="text-center mt-12 transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up"
+          style="--delay: 0.5s"
+        >
+          <NuxtLink
             to="/packs"
             class="btn-primary inline-flex items-center space-x-2 mx-auto group relative overflow-hidden px-8 py-3 rounded-full font-medium bg-gradient-to-r from-primary-green to-primary-dark-green text-white hover:shadow-lg hover:shadow-primary-green/20 transition-all duration-300 transform hover:-translate-y-0.5"
           >
             <span>Découvrir tous nos packs</span>
-            <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            <svg
+              class="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
             </svg>
-            <span class="absolute inset-0 bg-white/10 group-hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span
+              class="absolute inset-0 bg-white/10 group-hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></span>
           </NuxtLink>
         </div>
-      
       </div>
     </section>
 
@@ -75,10 +99,8 @@
     <section class="section bg-white">
       <div class="container">
         <div class="text-center mb-12">
-          <h2 class="section-title">
-            Derniers Articles 
-          </h2>
-          
+          <h2 class="section-title">Derniers Articles</h2>
+
           <p class="text-xl text-gray-600 max-w-2xl mx-auto">
             Découvrez nos nouveaux produits et articles populaires
           </p>
@@ -93,7 +115,8 @@
             class="px-4 py-2 rounded-full font-medium transition-all"
             :class="{
               'bg-primary-green text-white': selectedCategory === category,
-              'bg-gray-100 text-gray-700 hover:bg-primary-light-green': selectedCategory !== category
+              'bg-gray-100 text-gray-700 hover:bg-primary-light-green':
+                selectedCategory !== category,
             }"
           >
             {{ category }}
@@ -103,7 +126,7 @@
         <!-- Products Grid -->
         <div class="product-grid">
           <AppProductCard
-            v-for="product in filteredProducts" 
+            v-for="product in filteredProducts"
             :key="product.id"
             :product="product"
             class="fade-in"
@@ -112,13 +135,23 @@
 
         <!-- View All Button -->
         <div class="text-center mt-12">
-          <NuxtLink 
+          <NuxtLink
             to="/products"
             class="btn-primary inline-flex items-center space-x-2"
           >
             <span>Voir tous les articles</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
             </svg>
           </NuxtLink>
         </div>
@@ -127,15 +160,13 @@
 
     <!-- Promotions Section -->
 
- <AppPromotionCard />
+    <AppPromotionCard />
 
     <!-- Testimonials Section -->
     <section class="section bg-white">
       <div class="container">
         <div class="text-center mb-12">
-          <h2 class="section-title">
-            Ce que disent nos clients 
-          </h2>
+          <h2 class="section-title">Ce que disent nos clients</h2>
           <p class="text-xl text-gray-600 max-w-2xl mx-auto">
             Des milliers de parents satisfaits nous font confiance
           </p>
@@ -144,15 +175,17 @@
         <!-- Testimonials Carousel -->
         <div class="relative">
           <div class="overflow-hidden rounded-2xl">
-            <div 
+            <div
               class="flex transition-transform duration-500 ease-in-out"
-              :style="{ transform: `translateX(-${currentTestimonial * 100}%)` }"
+              :style="{
+                transform: `translateX(-${currentTestimonial * 100}%)`,
+              }"
             >
-      <TestimonialCard 
-      v-for="(testimonial, index) in testimonials" 
-      :key="index"
-      :testimonial="testimonial"
-    />
+              <TestimonialCard
+                v-for="(testimonial, index) in testimonials"
+                :key="index"
+                :testimonial="testimonial"
+              />
             </div>
           </div>
 
@@ -165,7 +198,7 @@
               class="w-3 h-3 rounded-full transition-colors"
               :class="{
                 'bg-primary-green': currentTestimonial === index,
-                'bg-gray-300': currentTestimonial !== index
+                'bg-gray-300': currentTestimonial !== index,
               }"
             />
           </div>
@@ -173,71 +206,71 @@
       </div>
     </section>
 
-   
-
+    <!-- Panel de test du panier (mode développement) -->
   </div>
-  </template>
+</template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useProductsStore } from '~/stores/products'
-import type { Product } from '~/stores/products'
+import { ref, computed, onMounted } from "vue";
+import { useProductsStore } from "~/stores/products";
+import type { Product } from "~/stores/products";
 
 // Since AppPackCard, AppProductCard etc. are in components/, Nuxt 3 auto-imports them.
 // We just need to define the props they might expect if not done inside the components themselves.
 
-const productsStore = useProductsStore()
+const productsStore = useProductsStore();
 
 // Fetch data on component mount
 onMounted(() => {
   if (productsStore.products.length === 0) {
-    productsStore.fetchProducts()
+    productsStore.fetchProducts();
   }
-})
+});
 
 // Latest Products Section
-const selectedCategory = ref('Tous')
+const selectedCategory = ref("Tous");
 const filteredProducts = computed(() => {
-  const products = productsStore.products as Product[]
-  if (selectedCategory.value === 'Tous') {
-    return products.slice(0, 9) // Limit to 8 latest products
+  const products = productsStore.products as Product[];
+  if (selectedCategory.value === "Tous") {
+    return products.slice(0, 9); // Limit to 8 latest products
   }
-  return products.filter(p => p.category === selectedCategory.value).slice(0, 8)
-})
+  return products
+    .filter((p) => p.category === selectedCategory.value)
+    .slice(0, 8);
+});
 
 // Testimonials Section
 const testimonials = ref([
   {
     id: 1,
-    name: 'Awa Diop',
-    role: 'Maman d\'élève en CM2',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    text: 'Un service incroyable ! J\'ai commandé le pack scolaire complet pour mon fils et tout était parfait. La livraison a été rapide et les fournitures sont de très bonne qualité. Fini le stress de la rentrée !'
+    name: "Awa Diop",
+    role: "Maman d'élève en CM2",
+    avatar: "https://i.pravatar.cc/150?img=1",
+    text: "Un service incroyable ! J'ai commandé le pack scolaire complet pour mon fils et tout était parfait. La livraison a été rapide et les fournitures sont de très bonne qualité. Fini le stress de la rentrée !",
   },
   {
     id: 2,
-    name: 'Moussa Fall',
-    role: 'Papa de deux collégiens',
-    avatar: 'https://i.pravatar.cc/150?img=2',
-    text: 'Je recommande vivement. Le site est facile à utiliser et les packs sont très bien pensés. Un gain de temps énorme pour les parents.'
+    name: "Moussa Fall",
+    role: "Papa de deux collégiens",
+    avatar: "https://i.pravatar.cc/150?img=2",
+    text: "Je recommande vivement. Le site est facile à utiliser et les packs sont très bien pensés. Un gain de temps énorme pour les parents.",
   },
   {
     id: 3,
-    name: 'Fatima Ndiaye',
-    role: 'Enseignante en primaire',
-    avatar: 'https://i.pravatar.cc/150?img=3',
-    text: 'Enfin une solution simple et efficace pour les fournitures scolaires au Sénégal. La qualité est au rendez-vous. Je le conseille à tous les parents de mes élèves.'
-  }
-])
-const currentTestimonial = ref(0)
+    name: "Fatima Ndiaye",
+    role: "Enseignante en primaire",
+    avatar: "https://i.pravatar.cc/150?img=3",
+    text: "Enfin une solution simple et efficace pour les fournitures scolaires au Sénégal. La qualité est au rendez-vous. Je le conseille à tous les parents de mes élèves.",
+  },
+]);
+const currentTestimonial = ref(0);
 
 // Quick Order
 const quickOrder = (level: string) => {
   // Implement quick order logic, e.g., redirect to a pre-filled cart or a specific pack page
-  alert(`Commande rapide pour le niveau : ${level}`)
+  alert(`Commande rapide pour le niveau : ${level}`);
   // Example: router.push(`/packs?level=${level}`)
-}
-
+};
 </script>
 
 <style scoped>
@@ -266,7 +299,8 @@ const quickOrder = (level: string) => {
 }
 
 @keyframes float-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
   50% {
@@ -275,7 +309,8 @@ const quickOrder = (level: string) => {
 }
 
 @keyframes float-medium {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
   50% {
@@ -336,16 +371,20 @@ const quickOrder = (level: string) => {
   @apply text-3xl md:text-4xl font-bold text-primary-dark-green mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-green to-primary-dark-green;
   position: relative;
   display: inline-block;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
     width: 80px;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary-green), var(--primary-dark-green));
+    background: linear-gradient(
+      90deg,
+      var(--primary-green),
+      var(--primary-dark-green)
+    );
     border-radius: 3px;
   }
 }
@@ -374,8 +413,14 @@ const quickOrder = (level: string) => {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
@@ -383,15 +428,26 @@ const quickOrder = (level: string) => {
 }
 
 @keyframes pulse-cta {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .pulse-cta {
   animation: pulse-cta 2s infinite ease-in-out;
 }
 
-.animation-delay-200 { animation-delay: 200ms; }
-.animation-delay-400 { animation-delay: 400ms; }
-.animation-delay-600 { animation-delay: 600ms; }
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
 </style>

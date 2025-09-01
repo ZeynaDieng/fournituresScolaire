@@ -327,6 +327,47 @@ export const useCartStore = defineStore("cart", {
       // Cette fonction sera implémentée avec vue-toastification
       console.log(`[${type.toUpperCase()}] ${message}`);
     },
+
+    // Méthode de test pour ajouter des articles de démonstration
+    addTestItems() {
+      const testItems = [
+        {
+          id: "test-pack-1",
+          name: "Pack CP Complet",
+          price: 15000,
+          image: "/images/products/pack-cp.jpg",
+          type: "pack" as const,
+          category: "CP",
+          description: "Pack complet pour le CP",
+        },
+        {
+          id: "test-product-1",
+          name: "Stylo Plume",
+          price: 2500,
+          image: "/images/products/stylo-plume.jpg",
+          type: "product" as const,
+          category: "Écriture",
+          description: "Stylo plume de qualité",
+        },
+        {
+          id: "test-product-2",
+          name: "Cahier Spiral",
+          price: 1500,
+          image: "/images/products/cahier-spiral.jpg",
+          type: "product" as const,
+          category: "Cahiers",
+          description: "Cahier spiral 100 pages",
+        },
+      ];
+
+      // Ajouter chaque article de test
+      testItems.forEach((item) => {
+        this.addItem(item, 1);
+      });
+
+      this.showToast("Articles de test ajoutés au panier", "success");
+      console.log("🧪 Articles de test ajoutés:", testItems.length);
+    },
   },
 });
 

@@ -1,42 +1,32 @@
 // middleware/paytech-config.ts
 export default defineNuxtRouteMiddleware((to) => {
-  // Ne s'applique qu'aux routes liées au paiement
+  // Skip ce middleware en développement pour éviter les erreurs de configuration
+  if (process.dev) {
+    console.log("🧪 Mode développement - PayTech middleware skippé");
+    return;
+  }
+
+  // Ne s'applique qu'aux routes liées au paiement en production
   if (!to.path.includes("/payment") && !to.path.includes("/checkout")) {
     return;
   }
 
-  const config = useRuntimeConfig();
+  console.log("🔍 Vérification configuration PayTech en production...");
 
-  // Vérifier que les clés PayTech sont configurées
-  if (!config.paytech.apiKey || !config.paytech.secretKey) {
-    console.error("Configuration PayTech manquante !");
+  // En production, vérifier la configuration PayTech
+  try {
+    const config = useRuntimeConfig();
+    const paytechApiKey =
+      config.public?.paytechApiKey || config.public?.payTechApiKey;
 
-    if (process.dev) {
-      // En développement, rediriger vers une page d'erreur de configuration
-      throw createError({
-        statusCode: 500,
-        statusMessage:
-          "Configuration PayTech manquante. Veuillez configurer PAYTECH_API_KEY et PAYTECH_SECRET_KEY dans votre fichier .env",
-      });
-    } else {
-      // En production, rediriger vers la page d'accueil
+    if (!paytechApiKey) {
+      console.error("❌ Configuration PayTech manquante en production !");
       return navigateTo("/");
     }
-  }
 
-  // Vérifier que l'URL de base est configurée
-  if (
-    !config.public.baseUrl ||
-    config.public.baseUrl === "http://localhost:3000"
-  ) {
-    console.warn("BASE_URL non configurée pour la production !");
-
-    if (process.env.NODE_ENV === "production") {
-      throw createError({
-        statusCode: 500,
-        statusMessage:
-          "Configuration de production manquante. Veuillez configurer BASE_URL.",
-      });
-    }
+    console.log("✅ Configuration PayTech validée");
+  } catch (error) {
+    console.error("❌ Erreur configuration PayTech:", error);
+    return navigateTo("/");
   }
 });

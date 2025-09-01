@@ -1,55 +1,85 @@
 <template>
-  <section class="relative flex items-center justify-center min-h-[600px] bg-gradient-to-br from-primary-green/10 to-primary-yellow/10 overflow-hidden">
-  <!-- Background with overlay -->
-  <div class="absolute inset-0">
-    <div class="absolute inset-0 bg-[url('@/assets/images/fournitureBanniere.png')] bg-cover bg-center"></div>
-    <div class="absolute inset-0 bg-black opacity-50"></div>
-  </div>
-
-  <!-- Floating circles -->
-  <div class="absolute top-10 left-10 w-40 h-40 bg-primary-green/10 rounded-full animate-float-slow"></div>
-  <div class="absolute top-32 right-20 w-32 h-32 bg-primary-yellow/10 rounded-full animate-float-medium"></div>
-  <div class="absolute bottom-20 left-1/4 w-24 h-24 bg-primary-green/10 rounded-full animate-float-slow"></div>
-  <div class="absolute bottom-32 right-1/3 w-48 h-48 bg-primary-yellow/10 rounded-full animate-float-medium"></div>
-  
-  <!-- Content -->
-  <div class="container relative z-10 text-center px-6">
-    <h1 class="text-4xl md:text-6xl font-bold text-white drop-shadow-lg mb-6 opacity-0 animate-fade-in-up" style="--delay: 0.1s">
-      Préparez la rentrée sans stress 
-    </h1>
-
-    <p class="text-lg md:text-2xl text-white mb-10 opacity-0 animate-fade-in-up max-w-3xl mx-auto" style="--delay: 0.3s">
-      Tous vos packs scolaires et fournitures livrés à domicile partout à Dakar
-    </p>
-
-    <!-- CTA Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 animate-fade-in-up" style="--delay: 0.5s">
-      <NuxtLink 
-        to="/packs"
-        class="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center gap-2 hover:scale-105 transform transition-all duration-300"
-      >
-        <span>🎯</span>
-        <span>Acheter un pack</span>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-        </svg>
-      </NuxtLink>
-
-      <NuxtLink 
-        to="/products"
-        class="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors duration-300"
-      >
-        <span>📝</span>
-        <span>Articles à l'unité</span>
-      </NuxtLink>
+  <section
+    class="relative flex items-center justify-center min-h-[600px] bg-gradient-to-br from-primary-green/10 to-primary-yellow/10 overflow-hidden"
+  >
+    <!-- Background with overlay -->
+    <div class="absolute inset-0">
+      <div
+        class="absolute inset-0 bg-[url('@/assets/images/fournitureBanniere.png')] bg-cover bg-center"
+      ></div>
+      <div class="absolute inset-0 bg-black opacity-50"></div>
     </div>
-  </div>
-</section>
 
+    <!-- Floating circles -->
+    <div
+      class="absolute top-10 left-10 w-40 h-40 bg-primary-green/10 rounded-full animate-float-slow"
+    ></div>
+    <div
+      class="absolute top-32 right-20 w-32 h-32 bg-primary-yellow/10 rounded-full animate-float-medium"
+    ></div>
+    <div
+      class="absolute bottom-20 left-1/4 w-24 h-24 bg-primary-green/10 rounded-full animate-float-slow"
+    ></div>
+    <div
+      class="absolute bottom-32 right-1/3 w-48 h-48 bg-primary-yellow/10 rounded-full animate-float-medium"
+    ></div>
+
+    <!-- Content -->
+    <div class="container relative z-10 text-center px-6">
+      <h1
+        class="text-4xl md:text-6xl font-bold text-white drop-shadow-lg mb-6 opacity-0 animate-fade-in-up"
+        style="--delay: 0.1s"
+      >
+        Préparez la rentrée sans stress
+      </h1>
+
+      <p
+        class="text-lg md:text-2xl text-white mb-10 opacity-0 animate-fade-in-up max-w-3xl mx-auto"
+        style="--delay: 0.3s"
+      >
+        Tous vos packs scolaires et fournitures livrés à domicile partout à
+        Dakar
+      </p>
+
+      <!-- CTA Buttons -->
+      <div
+        class="flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0 animate-fade-in-up"
+        style="--delay: 0.5s"
+      >
+        <NuxtLink
+          to="/packs"
+          class="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center gap-2 hover:scale-105 transform transition-all duration-300"
+        >
+          <span>🎯</span>
+          <span>Acheter un pack</span>
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/products"
+          class="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors duration-300"
+        >
+          <span>📝</span>
+          <span>Articles à l'unité</span>
+        </NuxtLink>
+      </div>
+    </div>
+  </section>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 /* Keyframes for animations */
@@ -77,7 +107,8 @@
 }
 
 @keyframes float-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
   50% {
@@ -86,7 +117,8 @@
 }
 
 @keyframes float-medium {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) translateX(0);
   }
   50% {
@@ -147,16 +179,20 @@
   @apply text-3xl md:text-4xl font-bold text-primary-dark-green mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-green to-primary-dark-green;
   position: relative;
   display: inline-block;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
     width: 80px;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary-green), var(--primary-dark-green));
+    background: linear-gradient(
+      90deg,
+      var(--primary-green),
+      var(--primary-dark-green)
+    );
     border-radius: 3px;
   }
 }
@@ -185,8 +221,14 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
@@ -194,15 +236,26 @@
 }
 
 @keyframes pulse-cta {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .pulse-cta {
   animation: pulse-cta 2s infinite ease-in-out;
 }
 
-.animation-delay-200 { animation-delay: 200ms; }
-.animation-delay-400 { animation-delay: 400ms; }
-.animation-delay-600 { animation-delay: 600ms; }
+.animation-delay-200 {
+  animation-delay: 200ms;
+}
+.animation-delay-400 {
+  animation-delay: 400ms;
+}
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
 </style>
