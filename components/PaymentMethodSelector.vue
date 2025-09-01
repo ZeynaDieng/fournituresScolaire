@@ -216,11 +216,20 @@ const updatePaymentMethods = () => {
     selectedMethod.value = "";
     isMultipleSelected.value = false;
   }
+
+  // Auto-sélectionner la première méthode si aucune n'est sélectionnée
+  if (!selectedMethod.value && availableMethods.value.length > 0) {
+    const firstMethod = availableMethods.value[0];
+    selectSingleMethod(firstMethod);
+  }
 };
 
 const selectSingleMethod = (method: string) => {
   selectedMethod.value = method;
   isMultipleSelected.value = false;
+  console.log("PaymentMethodSelector: Méthode sélectionnée:", method);
+  emit("update:modelValue", method);
+  emit("change", method);
 };
 
 const selectMultipleMethods = () => {

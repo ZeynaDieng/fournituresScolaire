@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Formulaire Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .info {
+            background-color: #cce7ff;
+            border-color: #b3d9ff;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 5px 0;
+        }
+
+        .checklist li:before {
+            content: '❌ ';
+        }
+
+        .checklist li.checked:before {
+            content: '✅ ';
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 Test du Formulaire de Checkout</h1>
+
+    <div class="test-section info">
+        <h2>🎯 Objectif</h2>
+        <p>Vérifier que tous les champs du formulaire s'affichent correctement et fonctionnent.</p>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Checklist de Test</h2>
+        <ul class="checklist">
+            <li id="check-cart">Panier contient des articles</li>
+            <li id="check-page">Page checkout accessible</li>
+            <li id="check-form">Formulaire visible</li>
+            <li id="check-fields">Champs de saisie visibles</li>
+            <li id="check-styles">Styles appliqués correctement</li>
+            <li id="check-buttons">Boutons fonctionnels</li>
+            <li id="check-validation">Validation des champs</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🛠️ Actions de Test</h2>
+
+        <button class="btn-primary" onclick="addTestItems()">
+            ➕ Ajouter des articles au panier
+        </button>
+
+        <button class="btn-primary" onclick="openCheckout()">
+            🛒 Ouvrir la page checkout
+        </button>
+
+        <button class="btn-success" onclick="runFullTest()">
+            ✅ Lancer le test complet
+        </button>
+
+        <div id="test-results" style="margin-top: 15px;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Diagnostic des Problèmes</h2>
+        <div id="diagnostic-results"></div>
+        <button class="btn-primary" onclick="runDiagnostic()">
+            🔍 Lancer le diagnostic
+        </button>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Instructions pour Tester</h2>
+        <ol>
+            <li><strong>Ajouter des articles</strong> : Cliquez sur "➕ Ajouter des articles au panier"</li>
+            <li><strong>Aller au checkout</strong> : Cliquez sur "🛒 Ouvrir la page checkout"</li>
+            <li><strong>Vérifier le formulaire</strong> :
+                <ul>
+                    <li>Les champs "Nom", "Email", "Téléphone" sont-ils visibles ?</li>
+                    <li>Ont-ils des bordures et un style correct ?</li>
+                    <li>Peut-on taper dedans ?</li>
+                    <li>Les boutons sont-ils stylés ?</li>
+                </ul>
+            </li>
+            <li><strong>Tester la navigation</strong> : Remplir le premier step et cliquer "Continuer"</li>
+            <li><strong>Vérifier les autres steps</strong> : Livraison et Paiement</li>
+        </ol>
+    </div>
+
+    <script>
+        let testWindow = null;
+
+        function addTestItems() {
+            // Simuler l'ajout d'articles de test via localStorage
+            const testCart = {
+                items: [
+                    {
+                        id: "test-1",
+                        name: "Pack CP Complet",
+                        price: 15000,
+                        quantity: 1,
+                        image: "/images/products/pack-cp.jpg",
+                        type: "pack"
+                    },
+                    {
+                        id: "test-2",
+                        name: "Stylo Plume",
+                        price: 2500,
+                        quantity: 2,
+                        image: "/images/products/stylo-plume.jpg",
+                        type: "product"
+                    }
+                ]
+            };
+
+            // Stocker dans localStorage pour que Nuxt le récupère
+            localStorage.setItem('cart', JSON.stringify(testCart));
+
+            document.getElementById('check-cart').classList.add('checked');
+
+            updateResults('✅ Articles de test ajoutés au panier local');
+        }
+
+        function openCheckout() {
+            if (testWindow) {
+                testWindow.focus();
+            } else {
+                testWindow = window.open('http://localhost:3000/checkout', 'checkout-test');
+            }
+
+            document.getElementById('check-page').classList.add('checked');
+            updateResults('🛒 Page checkout ouverte dans un nouvel onglet');
+        }
+
+        function runFullTest() {
+            updateResults('🔄 Lancement du test complet...');
+
+            // Étape 1: Ajouter des articles
+            addTestItems();
+
+            // Étape 2: Ouvrir checkout
+            setTimeout(() => {
+                openCheckout();
+
+                setTimeout(() => {
+                    updateResults('✅ Test préparé ! Vérifiez maintenant la page checkout.');
+                }, 1000);
+            }, 500);
+        }
+
+        function runDiagnostic() {
+            const diagnosticDiv = document.getElementById('diagnostic-results');
+            let diagnostic = '<h4>📊 Résultats du Diagnostic</h4>';
+
+            // Vérifier localStorage
+            const cartData = localStorage.getItem('cart');
+            if (cartData) {
+                diagnostic += '<p>✅ Données de panier trouvées dans localStorage</p>';
+                try {
+                    const cart = JSON.parse(cartData);
+                    diagnostic += `<p>📦 Nombre d'articles: ${cart.items ? cart.items.length : 0}</p>`;
+                } catch (e) {
+                    diagnostic += '<p>❌ Erreur de parsing des données de panier</p>';
+                }
+            } else {
+                diagnostic += '<p>❌ Aucune donnée de panier trouvée</p>';
+            }
+
+            // Vérifier la connexion au serveur
+            fetch('http://localhost:3000/checkout')
+                .then(response => {
+                    if (response.ok) {
+                        diagnostic += '<p>✅ Serveur accessible</p>';
+                    } else {
+                        diagnostic += '<p>❌ Serveur répond avec erreur: ' + response.status + '</p>';
+                    }
+                    diagnosticDiv.innerHTML = diagnostic;
+                })
+                .catch(error => {
+                    diagnostic += '<p>❌ Erreur de connexion au serveur</p>';
+                    diagnosticDiv.innerHTML = diagnostic;
+                });
+        }
+
+        function updateResults(message) {
+            const resultsDiv = document.getElementById('test-results');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML += `<p>[${timestamp}] ${message}</p>`;
+        }
+
+        // Auto-test au chargement
+        window.onload = function () {
+            updateResults('🚀 Page de test chargée');
+            runDiagnostic();
+        };
+    </script>
+</body>
+
+</html>

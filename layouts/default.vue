@@ -5,7 +5,7 @@
     <AppHeader />
 
     <!-- Main Content -->
-    <main class="flex-grow pt-16 pb-20 md:pb-0">
+    <main class="flex-grow pb-20 md:pb-0">
       <div class="">
         <slot />
       </div>
