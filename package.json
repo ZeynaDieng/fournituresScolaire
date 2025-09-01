@@ -8,7 +8,16 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "setup:prod": "node scripts/setup-production-db.js",
+    "setup:supabase": "node scripts/setup-supabase.js",
+    "status:prod": "node scripts/production-status.js",
+    "check:prod": "node scripts/check-production.js",
+    "test:db": "node scripts/check-db-status.js",
+    "test:prod-db": "node scripts/test-prod-db.js --prod",
+    "test:supabase": "node scripts/test-supabase.js",
+    "db:push": "npx prisma db push",
+    "db:reset": "npx prisma db push --force-reset"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
