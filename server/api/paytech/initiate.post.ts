@@ -1,82 +1,107 @@
 // server/api/paytech/initiate.post.ts
+import crypto from "crypto";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const body = await readBody(event);
-  console.log("Body reçu pour PayTech:", body);
+
+  console.log("PayTech Request Body:", body);
+
   try {
     // Vérification des clés API
     if (!config.paytech.apiKey || !config.paytech.secretKey) {
-      throw new Error(
-        "Configuration Paytech manquante. Veuillez vérifier vos variables d'environnement."
-      );
+      throw createError({
+        statusCode: 500,
+        statusMessage:
+          "Configuration Paytech manquante. Veuillez vérifier vos variables d'environnement.",
+      });
     }
 
-    // URL de l'API PayTech (sandbox ou production)
-    const apiUrl = config.paytech.sandbox
-      ? "https://paytech.sn/api/payment/request-payment"
-      : "https://paytech.sn/api/payment/request-payment";
+    // Validation des données requises
+    if (!body.amount || body.amount <= 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Le montant est requis et doit être supérieur à 0",
+      });
+    }
 
-    // Construction stricte des champs attendus par PayTech
-    const ref = body.ref || body.ref_command || "";
-    const customer = body.customer || {};
-    const itemName =
-      body.item_name || body.items?.[0]?.name || `Commande EduShop #${ref}`;
-    const commandName =
-      body.command_name ||
-      (customer.name ? `Commande ${customer.name}` : "Commande EduShop");
-    const itemPrice = String(
-      body.amount ?? body.item_price ?? body.items?.[0]?.price ?? ""
-    );
+    if (
+      !body.customer?.name ||
+      !body.customer?.email ||
+      !body.customer?.phone
+    ) {
+      throw createError({
+        statusCode: 400,
+        statusMessage:
+          "Les informations du client (nom, email, téléphone) sont requises",
+      });
+    }
 
-    const paytechDataRaw = {
+    // Génération d'une référence unique si non fournie
+    const ref =
+      body.ref_command ||
+      `CMD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const customer = body.customer;
+
+    // Construction des données selon la documentation Paytech
+    const itemName = body.item_name || `Commande EduShop #${ref}`;
+    const commandName = `Commande ${customer.name} - EduShop`;
+    const itemPrice = parseInt(body.amount.toString());
+
+    // Préparation des données Paytech
+    const paytechData = {
       item_name: itemName,
       item_price: itemPrice,
       currency: body.currency || "XOF",
       ref_command: ref,
       command_name: commandName,
-      target_payment: body.target_payment || "Orange Money, Wave, Free Money",
+      target_payment: body.target_payment || "",
       env: config.paytech.sandbox ? "test" : "prod",
       custom_field: JSON.stringify({
+        order_id: ref,
+        customer_id: customer.id || null,
         items: body.items || [],
         customer: customer,
-        promoCode: body.promoCode,
-        promoDiscount: body.promoDiscount,
-        shipping: body.shipping,
+        shipping: body.shipping || {},
+        promo_code: body.promoCode || null,
+        promo_discount: body.promoDiscount || 0,
       }),
       ipn_url: `${config.public.baseUrl}/api/paytech/webhook`,
       success_url: `${config.public.baseUrl}/payment/success?ref=${ref}`,
       cancel_url: `${config.public.baseUrl}/payment/cancel?ref=${ref}`,
+      refund_notif_url: `${config.public.baseUrl}/api/paytech/refund-webhook`,
     };
 
-    // Nettoyage des champs vides (TypeScript safe)
-    const paytechData: Record<string, string> = {};
-    (Object.keys(paytechDataRaw) as Array<keyof typeof paytechDataRaw>).forEach(
-      (key) => {
-        const value = paytechDataRaw[key];
-        if (value !== "" && value !== undefined) {
-          paytechData[key] = value as string;
-        }
-      }
-    );
+    // Sauvegarde de la commande en base de données avant l'envoi à Paytech
+    try {
+      await prisma.order.create({
+        data: {
+          ref: ref,
+          status: "pending",
+          total: itemPrice,
+          items: paytechData.custom_field,
+          userId: customer.id || null,
+          createdAt: new Date(),
+        },
+      });
+    } catch (dbError: any) {
+      console.warn("Erreur base de données (non-bloquante):", dbError.message);
+    }
 
-    // DEBUG : Affichage du JSON envoyé à PayTech
-    console.log(
-      "PayTech Request (envoyée):",
-      JSON.stringify(paytechData, null, 2)
-    );
+    // URL de l'API PayTech
+    const apiUrl = "https://paytech.sn/api/payment/request-payment";
 
-    // DEBUG : Affichage du JSON envoyé à PayTech (copie/colle ce log si erreur)
-    console.log(
-      "PayTech Request (envoyée):",
-      JSON.stringify(paytechData, null, 2)
-    );
+    console.log("PayTech Request Data:", JSON.stringify(paytechData, null, 2));
 
-    // Appel à l'API PayTech
+    // Appel à l'API PayTech avec les bons headers
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
-        "API-KEY": config.paytech.apiKey,
-        "API-SECRET": config.paytech.secretKey,
+        API_KEY: config.paytech.apiKey,
+        API_SECRET: config.paytech.secretKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(paytechData),
@@ -85,29 +110,68 @@ export default defineEventHandler(async (event) => {
     let result;
     try {
       result = await response.json();
-    } catch (e) {
-      throw new Error(
-        "Réponse PayTech invalide. Veuillez réessayer plus tard."
-      );
+    } catch (parseError) {
+      throw createError({
+        statusCode: 502,
+        statusMessage:
+          "Réponse PayTech invalide. Veuillez réessayer plus tard.",
+      });
     }
 
     console.log("PayTech Response:", result);
 
-    if (!response.ok || !result.redirect_url) {
-      throw new Error(
-        `Erreur PayTech: ${
+    if (!response.ok || result.success !== 1) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Erreur PayTech: ${
           result.message || "Impossible de générer le lien de paiement."
-        }`
-      );
+        }`,
+      });
+    }
+
+    // Ajouter les paramètres d'auto-remplissage si méthode unique
+    let finalRedirectUrl = result.redirect_url || result.redirectUrl;
+
+    if (
+      body.target_payment &&
+      !body.target_payment.includes(",") &&
+      body.target_payment.trim() !== ""
+    ) {
+      // Formatage du numéro de téléphone
+      const phoneNumber = customer.phone.startsWith("+")
+        ? customer.phone
+        : `+221${customer.phone}`;
+      const nationalNumber = phoneNumber.replace("+221", "");
+
+      const autoFillParams = new URLSearchParams({
+        pn: phoneNumber,
+        nn: nationalNumber,
+        fn: customer.name,
+        tp: body.target_payment,
+        nac: body.target_payment === "Carte Bancaire" ? "0" : "1",
+      });
+
+      finalRedirectUrl += "?" + autoFillParams.toString();
     }
 
     return {
       success: true,
+      token: result.token,
+      redirect_url: finalRedirectUrl,
+      ref_command: ref,
+      amount: itemPrice,
+      payment_method: body.target_payment || "Multiple",
       data: result,
-      payment_url: result.redirect_url,
     };
   } catch (error: any) {
-    console.error("PayTech Error:", error);
+    console.error("PayTech Integration Error:", error);
+
+    // Erreur déjà formatée par createError
+    if (error.statusCode) {
+      throw error;
+    }
+
+    // Erreur générique
     throw createError({
       statusCode: 500,
       statusMessage:

@@ -20,8 +20,8 @@
     <!-- Cart Sidebar -->
     <CartSidebar />
 
-    <!-- Notifications Toast Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+    <!-- Notifications Container -->
+    <NotificationContainer />
   </div>
 </template>
 

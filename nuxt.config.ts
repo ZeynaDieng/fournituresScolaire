@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt", "@vueuse/nuxt"],
   pinia: {},
+  ssr: true,
   // ...
   css: ["@fontsource/inter/index.css", "@/assets/css/main.css"],
   typescript: {
@@ -85,8 +86,9 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     minify: true,
     prerender: {
-      crawlLinks: true,
-      routes: ["/", "/sitemap.xml"],
+      ignore: ["/"],
+      crawlLinks: false,
+      routes: [],
     },
   },
   devServer: {
@@ -128,20 +130,25 @@ export default defineNuxtConfig({
     paytech: {
       apiKey: process.env.PAYTECH_API_KEY,
       secretKey: process.env.PAYTECH_SECRET_KEY,
-      sandbox: process.env.NODE_ENV !== "production",
+      sandbox:
+        process.env.PAYTECH_SANDBOX === "true" ||
+        process.env.NODE_ENV !== "production",
     },
     public: {
       siteUrl:
         process.env.NUXT_PUBLIC_SITE_URL ||
         process.env.BASE_URL ||
-        "http://localhost:3000",
+        "https://fournitures-scolaire.vercel.app",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "/api",
       paytechApiKey:
         process.env.NUXT_PUBLIC_PAYTECH_API_KEY || process.env.PAYTECH_API_KEY,
       paytechApiSecret: process.env.NUXT_PUBLIC_PAYTECH_API_SECRET,
       paytechMerchantId: process.env.NUXT_PUBLIC_PAYTECH_MERCHANT_ID,
       paytechSandbox: process.env.NODE_ENV !== "production",
-      baseUrl: process.env.BASE_URL || "http://localhost:3000",
+      baseUrl:
+        process.env.BASE_URL ||
+        process.env.NUXT_PUBLIC_SITE_URL ||
+        "https://fournitures-scolaire.vercel.app",
       payTechApiKey: process.env.PAYTECH_API_KEY,
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID,
       facebookPixelId: process.env.FACEBOOK_PIXEL_ID,
