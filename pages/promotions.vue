@@ -1,190 +1,214 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50"
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
   >
     <!-- Hero Section -->
-    <div
-      class="relative overflow-hidden bg-gradient-to-r from-primary-green to-green-500 text-white"
-    >
-      <div class="absolute inset-0 bg-black opacity-10"></div>
-      <div class="relative max-w-7xl mx-auto px-4 py-16">
-        <div class="text-center">
-          <h1
-            class="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent"
-          >
-            Promotions de Rentrée
-          </h1>
-          <p class="text-xl md:text-2xl text-purple-100 mb-8">
-            Des offres exceptionnelles pour bien démarrer l'année scolaire
-          </p>
+    <div class="relative overflow-hidden">
+      <!-- Background Image -->
+      <div
+        class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style="
+          background-image: url('https://i.pinimg.com/1200x/1d/c1/de/1dc1de98d4ae9813ed13b1c17dc3043e.jpg');
+        "
+      ></div>
+
+      <!-- Overlay for text readability -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/75 to-teal-900/80"
+      ></div>
+
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-5">
+        <div
+          class="absolute inset-0"
+          style="
+            background-image: radial-gradient(
+              circle at 2px 2px,
+              white 1px,
+              transparent 0
+            );
+            background-size: 40px 40px;
+          "
+        ></div>
+      </div>
+
+      <!-- Floating Elements -->
+      <div
+        class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-float"
+      ></div>
+      <div
+        class="absolute top-32 right-20 w-16 h-16 bg-white/5 rounded-full blur-xl animate-float-delayed"
+      ></div>
+      <div
+        class="absolute bottom-20 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-xl animate-float-slow"
+      ></div>
+
+      <div class="relative px-4 py-16 sm:py-24 lg:py-32 max-w-7xl mx-auto">
+        <div class="text-center space-y-8">
+          <!-- Title -->
+          <div class="space-y-6">
+            <h1
+              class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight animate-fade-in-up"
+              style="animation-delay: 0.2s"
+            >
+              <span class="block">Promotions de</span>
+              <span
+                class="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent"
+                >Rentrée</span
+              >
+            </h1>
+
+            <p
+              class="text-xl sm:text-2xl text-red-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up"
+              style="animation-delay: 0.3s"
+            >
+              Des offres exceptionnelles pour bien démarrer l'année scolaire.
+              <br class="hidden sm:block" />
+              <span class="font-semibold text-white"
+                >Jusqu'à 50% de réduction</span
+              >
+              sur tous vos produits essentiels.
+            </p>
+          </div>
+
+          <!-- Stats -->
           <div
-            class="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-sm"
+            class="flex flex-wrap justify-center gap-8 mt-12 animate-fade-in-up"
+            style="animation-delay: 0.4s"
           >
-            <i class="fas fa-clock mr-2"></i>
-            Offres limitées dans le temps !
+            <div class="text-center">
+              <div class="text-3xl sm:text-4xl font-bold text-white">50%</div>
+              <div class="text-red-200 text-sm font-medium">Réduction Max</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl sm:text-4xl font-bold text-white">15+</div>
+              <div class="text-red-200 text-sm font-medium">Offres Actives</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl sm:text-4xl font-bold text-white">7j</div>
+              <div class="text-red-200 text-sm font-medium">Temps Restant</div>
+            </div>
           </div>
         </div>
       </div>
-      <!-- Floating elements -->
-      <div
-        class="absolute top-20 left-10 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl animate-pulse"
-      ></div>
-      <div
-        class="absolute bottom-20 right-10 w-32 h-32 bg-pink-400/20 rounded-full blur-xl animate-pulse delay-1000"
-      ></div>
+
+      <!-- Wave Bottom -->
+      <div class="absolute bottom-0 left-0 right-0">
+        <svg
+          class="w-full h-12 sm:h-20 text-slate-50"
+          fill="currentColor"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+        >
+          <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z"></path>
+        </svg>
+      </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-12">
-      <!-- Stats Section -->
-
+    <div class="relative -mt-1 px-4 py-12 sm:py-16 lg:py-20 max-w-7xl mx-auto">
       <!-- Promotions Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+      <div class="space-y-16">
         <div
-          v-for="promo in promotions"
-          :key="promo.id"
-          class="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden"
-          :class="
-            promo.featured ? 'ring-4 ring-yellow-400 ring-opacity-50' : ''
-          "
+          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
         >
-          <!-- Badge Featured -->
-          <div v-if="promo.featured" class="absolute top-4 left-4 z-10">
-            <div
-              class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse"
-            >
-              <i class="fas fa-crown mr-1"></i>POPULAIRE
-            </div>
-          </div>
-
-          <!-- Discount Badge -->
-          <div class="absolute top-4 right-4 z-10">
-            <div
-              class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold transform rotate-3"
-            >
-              -{{ promo.discount }}%
-            </div>
-          </div>
-
-          <!-- Card Content -->
-          <div class="p-8">
-            <!-- Icon -->
-            <div
-              class="text-6xl mb-4 text-center transform group-hover:scale-110 transition-transform duration-300"
-            >
-              {{ promo.icon }}
-            </div>
-
-            <!-- Title -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-3 text-center">
-              {{ promo.title }}
-            </h2>
-
-            <!-- Description -->
-            <p class="text-gray-600 text-center mb-6 leading-relaxed">
-              {{ promo.description }}
-            </p>
-
-            <!-- Price Section -->
-            <div class="text-center mb-6">
-              <div class="flex items-center justify-center space-x-2 mb-2">
-                <span class="text-lg text-gray-400 line-through"
-                  >{{ promo.originalPrice }} CFA</span
-                >
-                <span
-                  class="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent"
-                >
-                  {{ promo.price }} CFA
-                </span>
-              </div>
-              <div class="text-sm text-green-600 font-medium">
-                <i class="fas fa-tag mr-1"></i>Vous économisez
-                {{ promo.originalPrice - promo.price }} CFA
-              </div>
-            </div>
-
-            <!-- Countdown -->
-            <AppCountdown :endDate="promo.endTime" class="mb-6" />
-
-            <!-- Features List -->
-            <div class="space-y-2 mb-6">
-              <div
-                v-for="feature in promo.features"
-                :key="feature"
-                class="flex items-center text-sm text-gray-600"
-              >
-                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                {{ feature }}
-              </div>
-            </div>
-
-            <!-- Action Button -->
-            <button
-              @click="addToCart(promo.product)"
-              class="w-full bg-primary-green hover:from-green-700 hover:to-green-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl group"
-            >
-              <span class="flex items-center justify-center">
-                <i
-                  class="fas fa-shopping-cart mr-2 group-hover:animate-bounce"
-                ></i>
-                Ajouter au panier
-              </span>
-            </button>
-          </div>
-
-          <!-- Decorative Elements -->
           <div
-            class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-600 to-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
-          ></div>
-        </div>
-      </div>
-
-      <!-- Trust Section -->
-      <div
-        class="mt-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-3xl p-8"
-      >
-        <div class="text-center mb-8">
-          <h3 class="text-3xl font-bold text-gray-800 mb-4">
-            Pourquoi nous choisir ?
-          </h3>
-          <p class="text-gray-600 text-lg">
-            Des milliers d'étudiants nous font confiance
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i class="fas fa-shipping-fast text-white text-2xl"></i>
+            v-for="(promo, index) in promotions"
+            :key="promo.id"
+            class="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fade-in-up"
+            :style="{ animationDelay: `${0.5 + index * 0.1}s` }"
+            :class="
+              promo.featured ? 'ring-4 ring-yellow-400 ring-opacity-50' : ''
+            "
+          >
+            <!-- Badge Featured -->
+            <div v-if="promo.featured" class="absolute top-4 left-4 z-10">
+              <div
+                class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse"
+              >
+                <i class="fas fa-crown mr-1"></i>POPULAIRE
+              </div>
             </div>
-            <h4 class="font-bold text-lg text-gray-800 mb-2">
-              Livraison Rapide
-            </h4>
-            <p class="text-gray-600">Livraison en 24h partout à Dakar</p>
-          </div>
 
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i class="fas fa-shield-alt text-white text-2xl"></i>
+            <!-- Discount Badge -->
+            <div class="absolute top-4 right-4 z-10">
+              <div
+                class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold transform rotate-3"
+              >
+                -{{ promo.discount }}%
+              </div>
             </div>
-            <h4 class="font-bold text-lg text-gray-800 mb-2">
-              Qualité Garantie
-            </h4>
-            <p class="text-gray-600">Produits authentiques et de qualité</p>
-          </div>
 
-          <div class="text-center">
-            <div
-              class="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4"
-            >
-              <i class="fas fa-headset text-white text-2xl"></i>
+            <!-- Card Content -->
+            <div class="p-8">
+              <!-- Icon -->
+              <div
+                class="text-6xl mb-4 text-center transform group-hover:scale-110 transition-transform duration-300"
+              >
+                {{ promo.icon }}
+              </div>
+
+              <!-- Title -->
+              <h2 class="text-2xl font-bold text-gray-800 mb-3 text-center">
+                {{ promo.title }}
+              </h2>
+
+              <!-- Description -->
+              <p class="text-gray-600 text-center mb-6 leading-relaxed">
+                {{ promo.description }}
+              </p>
+
+              <!-- Price Section -->
+              <div class="text-center mb-6">
+                <div class="flex items-center justify-center space-x-2 mb-2">
+                  <span class="text-lg text-gray-400 line-through"
+                    >{{ promo.originalPrice }} CFA</span
+                  >
+                  <span
+                    class="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent"
+                  >
+                    {{ promo.price }} CFA
+                  </span>
+                </div>
+                <div class="text-sm text-green-600 font-medium">
+                  <i class="fas fa-tag mr-1"></i>Vous économisez
+                  {{ promo.originalPrice - promo.price }} CFA
+                </div>
+              </div>
+
+              <!-- Countdown -->
+              <AppCountdown :endDate="promo.endTime" class="mb-6" />
+
+              <!-- Features List -->
+              <div class="space-y-2 mb-6">
+                <div
+                  v-for="feature in promo.features"
+                  :key="feature"
+                  class="flex items-center text-sm text-gray-600"
+                >
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  {{ feature }}
+                </div>
+              </div>
+
+              <!-- Action Button -->
+              <button
+                @click="addToCart(promo.product)"
+                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl group"
+              >
+                <span class="flex items-center justify-center">
+                  <i
+                    class="fas fa-shopping-cart mr-2 group-hover:animate-bounce"
+                  ></i>
+                  Ajouter au panier
+                </span>
+              </button>
             </div>
-            <h4 class="font-bold text-lg text-gray-800 mb-2">Support 24/7</h4>
-            <p class="text-gray-600">Une équipe dédiée à votre service</p>
+
+            <!-- Decorative Elements -->
+            <div
+              class="absolute bottom-0 left-0 w-full h-1 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
+            ></div>
           </div>
         </div>
       </div>
@@ -351,10 +375,10 @@ function addToCart(product: any) {
 
 <style scoped>
 /* Animations personnalisées */
-@keyframes fadeIn {
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -362,13 +386,71 @@ function addToCart(product: any) {
   }
 }
 
-.fade-in {
-  animation: fadeIn 0.6s ease-out;
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 10s ease-in-out infinite;
 }
 
 /* Hover effects avancés */
 .group:hover .animate-bounce {
   animation: bounce 1s infinite;
+}
+
+/* Transitions fluides */
+* {
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+    backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Focus states accessibles */
+button:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
 }
 
 /* Responsive design amélioré */
@@ -379,6 +461,20 @@ function addToCart(product: any) {
 
   .text-6xl {
     font-size: 3rem;
+  }
+}
+
+/* Animation au scroll */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
