@@ -63,7 +63,7 @@
         <img
           :src="pack.image"
           :alt="pack.name"
-          class="w-full h-full object-cover p-4 transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+          class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
           loading="lazy"
         />
 
@@ -195,25 +195,18 @@
           <!-- Quick Add Button -->
           <button
             @click.prevent="addToCart"
-            class="group/btn relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 active:scale-95"
+            class="group/btn relative overflow-hidden bg-green-700 text-white font-semibold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 active:scale-95"
           >
             <div
               class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
             ></div>
             <div class="relative flex items-center gap-2">
-              <svg
-                class="w-4 h-4 transition-transform group-hover/btn:scale-110"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"
-                />
-              </svg>
+              <ShoppingCartIcon
+                :width="16"
+                :height="16"
+                class="transition-transform group-hover/btn:scale-110"
+                fill="currentColor"
+              />
               <span class="text-sm">Ajouter</span>
             </div>
           </button>
@@ -229,7 +222,7 @@
           </div>
           <div class="w-full bg-slate-200 rounded-full h-1.5">
             <div
-              class="bg-gradient-to-r from-emerald-500 to-emerald-600 h-1.5 rounded-full transition-all duration-1000 group-hover:w-[85%]"
+              class="bg-green-600 h-1.5 rounded-full transition-all duration-1000 group-hover:w-[85%]"
               style="width: 75%"
             ></div>
           </div>
@@ -247,6 +240,7 @@
 <script setup lang="ts">
 import { useFormatter } from "~/composables/useFormatter";
 import type { Pack } from "~/stores/products";
+import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon.vue";
 
 const props = defineProps<{
   pack: Pack;

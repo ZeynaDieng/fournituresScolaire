@@ -60,22 +60,27 @@
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16 md:h-20">
         <!-- Logo -->
-        <NuxtLink
-          to="/"
-          class="flex items-center space-x-2 text-white hover:text-primary-yellow transition-colors"
-        >
+        <NuxtLink to="/" class="flex items-center space-x-2">
           <div
-            class="w-8 h-8 bg-primary-yellow rounded-lg flex items-center justify-center"
+            class="w-10 h-10 bg-primary-yellow rounded-lg flex items-center justify-center"
           >
             <svg
-              class="w-5 h-5 text-primary-dark-green"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+              class="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 20.477 5.754 20 7.5 20s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 20.477 18.247 20 16.5 20c-1.746 0-3.332.477-4.5 1.253"
+              />
             </svg>
           </div>
-          <span class="text-xl md:text-2xl font-bold">EduShop</span>
+          <span class="text-2xl font-bold text-white"
+            >Edu<span class="text-primary-yellow">Shop</span></span
+          >
         </NuxtLink>
 
         <!-- Barre de recherche (Desktop) -->
@@ -126,7 +131,7 @@
         </div>
 
         <!-- Navigation principale (Desktop) -->
-        <nav class="hidden md:flex items-center space-x-6">
+        <nav class="hidden md:flex items-center space-x-6 mr-6">
           <NuxtLink
             v-for="item in navigation"
             :key="item.name"
@@ -146,19 +151,7 @@
             class="relative p-2 bg-primary-yellow text-primary-dark-green rounded-full hover:bg-yellow-300 transition-all transform hover:scale-105"
             aria-label="Panier"
           >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8"
-              />
-            </svg>
+            <ShoppingCartIcon :width="20" :height="20" fill="currentColor" />
 
             <!-- Cart Counter -->
             <span
@@ -363,6 +356,7 @@ import { useProductsStore } from "~/stores/products";
 import { useSearchStore } from "~/stores/search";
 import { useNavigation } from "~/composables/useNavigation";
 import { useDebounceFn } from "@vueuse/core";
+import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon.vue";
 
 const cartStore = useCartStore();
 const productsStore = useProductsStore();
