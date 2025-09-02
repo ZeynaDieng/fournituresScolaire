@@ -263,69 +263,6 @@
       </div>
 
       <!-- Copyright et mentions légales -->
-      <div class="border-t border-gray-800 pt-8 mt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <p class="text-gray-400 text-xs">
-            &copy; {{ new Date().getFullYear() }} EduShop. Tous droits réservés.
-          </p>
-
-          <div class="flex items-center space-x-1 mt-4 md:mt-0">
-            <span class="text-xs text-gray-500">Paiements sécurisés par</span>
-            <span
-              class="ml-2 inline-flex items-center bg-gray-800 px-2 py-1 rounded"
-            >
-              <span class="text-xs font-medium text-white">PayTech</span>
-              <svg
-                class="ml-1 h-4 w-4 text-green-400"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"
-                />
-              </svg>
-            </span>
-          </div>
-
-          <div
-            class="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0"
-          >
-            <NuxtLink
-              to="/mentions-legales"
-              class="text-xs text-gray-400 hover:text-white transition-colors"
-            >
-              Mentions légales
-            </NuxtLink>
-            <span class="text-gray-600">•</span>
-            <NuxtLink
-              to="/confidentialite"
-              class="text-xs text-gray-400 hover:text-white transition-colors"
-            >
-              Politique de confidentialité
-            </NuxtLink>
-            <span class="text-gray-600">•</span>
-            <NuxtLink
-              to="/cgv"
-              class="text-xs text-gray-400 hover:text-white transition-colors"
-            >
-              Conditions générales
-            </NuxtLink>
-            <span class="text-gray-600">•</span>
-            <NuxtLink
-              to="/cookies"
-              class="text-xs text-gray-400 hover:text-white transition-colors"
-            >
-              Cookies
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div class="mt-4 text-center">
-          <p class="text-xs text-gray-500">
-            Site réalisé avec <span class="text-red-400">❤</span> à Dakar
-          </p>
-        </div>
-      </div>
     </div>
   </footer>
 </template>

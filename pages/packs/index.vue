@@ -3,11 +3,22 @@
     class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
   >
     <!-- Hero Section -->
-    <div
-      class="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800"
-    >
+    <div class="relative overflow-hidden">
+      <!-- Background Image -->
+      <div
+        class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style="
+          background-image: url('https://i.pinimg.com/1200x/1d/c1/de/1dc1de98d4ae9813ed13b1c17dc3043e.jpg');
+        "
+      ></div>
+
+      <!-- Overlay for text readability -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/75 to-teal-900/80"
+      ></div>
+
       <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-10">
+      <div class="absolute inset-0 opacity-5">
         <div
           class="absolute inset-0"
           style="
@@ -34,15 +45,6 @@
 
       <div class="relative px-4 py-16 sm:py-24 lg:py-32 max-w-7xl mx-auto">
         <div class="text-center space-y-8">
-          <!-- Badge -->
-          <div
-            class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-4 py-2 text-white/90 font-medium text-sm animate-fade-in-up"
-            style="animation-delay: 0.1s"
-          >
-            <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-            <span>Nouveaux packs disponibles</span>
-          </div>
-
           <!-- Title -->
           <div class="space-y-6">
             <h1

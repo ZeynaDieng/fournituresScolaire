@@ -7,7 +7,7 @@ import type { PaymentDiagnosticsResult, PaymentDiagnostics } from "~/types/api";
 const prisma = new PrismaClient();
 
 export default defineEventHandler(
-  async (event): Promise<PaymentDiagnosticsResult> => {
+  async (event: any): Promise<PaymentDiagnosticsResult> => {
     const config = useRuntimeConfig();
 
     try {
