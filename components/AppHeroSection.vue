@@ -50,7 +50,6 @@
           to="/packs"
           class="btn-primary text-lg px-8 py-4 inline-flex items-center justify-center gap-2 hover:scale-105 transform transition-all duration-300"
         >
-          <span>🎯</span>
           <span>Acheter un pack</span>
           <svg
             class="w-5 h-5"
@@ -71,7 +70,6 @@
           to="/products"
           class="btn-secondary text-lg px-8 py-4 inline-flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors duration-300"
         >
-          <span>📝</span>
           <span>Articles à l'unité</span>
         </NuxtLink>
       </div>

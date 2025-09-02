@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import CartIcon from "~/components/icons/CartIcon.vue";
 import { formatAmountForDisplay } from "~/utils/paytech";
 
 // Meta

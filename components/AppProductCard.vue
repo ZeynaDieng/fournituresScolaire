@@ -61,32 +61,6 @@
       </button>
     </div>
 
-    <!-- Stock Badge -->
-    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-      <div
-        class="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg border border-white/20"
-      >
-        <div class="flex items-center gap-1.5">
-          <div
-            :class="{
-              'w-2 h-2 bg-green-500 rounded-full animate-pulse':
-                product.inStock,
-              'w-2 h-2 bg-red-500 rounded-full': !product.inStock,
-            }"
-          ></div>
-          <span
-            class="text-xs font-semibold"
-            :class="{
-              'text-green-700': product.inStock,
-              'text-red-700': !product.inStock,
-            }"
-          >
-            {{ product.inStock ? "En stock" : "Rupture" }}
-          </span>
-        </div>
-      </div>
-    </div>
-
     <!-- Image Container -->
     <div
       class="relative h-56 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 rounded-t-3xl"
@@ -94,7 +68,7 @@
       <img
         :src="product.image"
         :alt="product.name"
-        class="w-full h-full object-cover p-4 transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+        class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
         loading="lazy"
       />
 
@@ -298,26 +272,19 @@
         <button
           @click="onAddToCartClick"
           :disabled="!product.inStock || isLoading"
-          class="w-full group/btn relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full group/btn relative overflow-hidden bg-green-700 hover:bg-green-800 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div
             class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
           ></div>
           <div class="relative flex items-center justify-center gap-3">
             <div v-if="!isLoading" class="flex items-center gap-3">
-              <svg
-                class="w-5 h-5 transition-transform group-hover/btn:scale-110"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"
-                />
-              </svg>
+              <ShoppingCartIcon
+                :width="20"
+                :height="20"
+                class="transition-transform group-hover/btn:scale-110"
+                fill="currentColor"
+              />
               <span class="text-lg">Ajouter au panier</span>
             </div>
             <div v-else class="flex items-center gap-3">
@@ -396,6 +363,7 @@
 <script setup lang="ts">
 import { useCartStore } from "~/stores/cart";
 import type { Product } from "~/stores/products";
+import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon.vue";
 
 interface Props {
   product: Product;

@@ -1,4 +1,4 @@
-<!-- pages/checkout.vue -->
+<!-- pages/checkout-fixed.vue -->
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -178,6 +178,7 @@
 </template>
 
 <script setup lang="ts">
+import CartIcon from "~/components/icons/CartIcon.vue";
 import { formatAmountForDisplay } from "~/utils/paytech";
 
 // Meta

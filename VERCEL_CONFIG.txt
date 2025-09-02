@@ -1,0 +1,41 @@
+🚨 ACTION REQUISE - Configuration Vercel PayTech
+================================================
+
+Le middleware PayTech fonctionne mais ne trouve pas les variables publiques sur Vercel.
+
+📋 COPIEZ-COLLEZ ces 10 variables sur Vercel :
+https://vercel.com/dashboard → Votre projet → Settings → Environment Variables
+
+DATABASE_URL
+postgresql://postgres.sigjxcnrthaxoceclmdi:Fekam5460@aws-1-eu-north-1.pooler.supabase.com:6543/postgres
+
+NUXT_PAYTECH_API_KEY
+0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b
+
+NUXT_PAYTECH_SECRET_KEY
+566126b0d75afe81e81bf9b78231c79843a6c4034d14cdb21835b38c91e479ee
+
+NUXT_PAYTECH_SANDBOX
+false
+
+NUXT_PUBLIC_PAYTECH_API_KEY
+0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b
+
+NUXT_PUBLIC_PAYTECH_SANDBOX
+false
+
+NUXT_PUBLIC_BASE_URL
+https://fournitures-scolaire.vercel.app
+
+NUXT_PUBLIC_SITE_URL
+https://fournitures-scolaire.vercel.app
+
+NUXT_PUBLIC_API_BASE
+/api
+
+NUXT_PUBLIC_PAYTECH_MERCHANT_ID
+VotreMerchantId
+
+⚠️  IMPORTANT: Remplacez "VotreMerchantId" par votre vrai Merchant ID PayTech !
+
+Après ajout → Cliquez "Redeploy" → Plus d'erreur PayTech ! ✅

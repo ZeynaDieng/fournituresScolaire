@@ -11,13 +11,9 @@
     stroke-linejoin="round"
     :class="className"
   >
-    <circle cx="9" cy="9" r="2" />
-    <path d="M13 19c0-2.4-2-4.4-4.4-4.4S4.2 16.6 4.2 19" />
-    <path
-      d="M20 12c0-.6-.4-1-1-1h-2c-.6 0-1 .4-1 1v7c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-7z"
-    />
-    <path d="M20 8v4" />
-    <path d="M16 8v4" />
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
   </svg>
 </template>
 

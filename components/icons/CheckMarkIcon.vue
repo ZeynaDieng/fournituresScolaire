@@ -11,13 +11,7 @@
     stroke-linejoin="round"
     :class="className"
   >
-    <circle cx="9" cy="9" r="2" />
-    <path d="M13 19c0-2.4-2-4.4-4.4-4.4S4.2 16.6 4.2 19" />
-    <path
-      d="M20 12c0-.6-.4-1-1-1h-2c-.6 0-1 .4-1 1v7c0 .6.4 1 1 1h2c.6 0 1-.4 1-1v-7z"
-    />
-    <path d="M20 8v4" />
-    <path d="M16 8v4" />
+    <path d="M20 6L9 17l-5-5" />
   </svg>
 </template>
 

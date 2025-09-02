@@ -95,11 +95,6 @@
           <div class="relative z-10">
             <!-- Icon/Image -->
             <div class="flex items-center mb-6">
-              <div
-                class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-100 rounded-2xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300"
-              >
-                <span class="text-3xl">{{ promo.icon || "🎯" }}</span>
-              </div>
               <div class="flex-1">
                 <h3
                   class="text-2xl font-bold text-gray-800 mb-1 group-hover:text-primary-green transition-colors"
@@ -179,17 +174,23 @@
                   <span
                     class="text-3xl font-black bg-gradient-to-r from-dark-green to-primary-green bg-clip-text text-transparent"
                   >
-                    {{ promo.currentPrice !== undefined ? promo.currentPrice : '' }} CFA
+                    {{
+                      promo.currentPrice !== undefined ? promo.currentPrice : ""
+                    }}
+                    CFA
                   </span>
                 </div>
                 <div class="text-sm text-green-600 font-semibold">
-                  Économie: 
-                  <template v-if="promo.originalPrice !== undefined && promo.currentPrice !== undefined">
+                  Économie:
+                  <template
+                    v-if="
+                      promo.originalPrice !== undefined &&
+                      promo.currentPrice !== undefined
+                    "
+                  >
                     {{ promo.originalPrice - promo.currentPrice }} CFA
                   </template>
-                  <template v-else>
-                    —
-                  </template>
+                  <template v-else> — </template>
                 </div>
               </div>
             </div>
