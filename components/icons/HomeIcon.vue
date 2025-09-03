@@ -1,19 +1,24 @@
 <template>
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     :width="size"
     :height="size"
-    viewBox="0 0 24 24"
+    viewBox="0 0 16 16"
     fill="none"
-    stroke="currentColor"
-    :stroke-width="strokeWidth"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
     :class="className"
   >
-    <path
-      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-    />
+    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g
+      id="SVGRepo_tracerCarrier"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    ></g>
+    <g id="SVGRepo_iconCarrier">
+      <path
+        d="M1 6V15H6V11C6 9.89543 6.89543 9 8 9C9.10457 9 10 9.89543 10 11V15H15V6L8 0L1 6Z"
+        fill="currentColor"
+      />
+    </g>
   </svg>
 </template>
 
@@ -22,10 +27,6 @@ defineProps({
   size: {
     type: [String, Number],
     default: 24,
-  },
-  strokeWidth: {
-    type: [String, Number],
-    default: 2,
   },
   className: {
     type: String,

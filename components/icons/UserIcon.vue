@@ -4,8 +4,6 @@
     :height="size"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
-    id="package-alt-2"
-    class="icon glyph"
     :class="className"
   >
     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -16,7 +14,7 @@
     ></g>
     <g id="SVGRepo_iconCarrier">
       <path
-        d="M21.86,7.5H13V2h2.59A2,2,0,0,1,17,2.59l4.71,4.7A1,1,0,0,1,21.86,7.5Zm0,1H13V13a1,1,0,0,1-2,0V8.5H2V20a2,2,0,0,0,2,2H20a2,2,0,0,0,2-2V8.5ZM11,2H8.41A2,2,0,0,0,7,2.59L2.29,7.29a1,1,0,0,0-.15.21H11Z"
+        d="M4,21a1,1,0,0,0,1,1H19a1,1,0,0,0,1-1V3a1,1,0,0,0-1-1H5A1,1,0,0,0,4,3ZM12,7.5a2,2,0,1,1-2,2A2,2,0,0,1,12,7.5ZM8.211,16.215a4,4,0,0,1,7.578,0A.993.993,0,0,1,14.83,17.5H9.18A1,1,0,0,1,8.211,16.215Z"
         fill="currentColor"
       />
     </g>

@@ -29,6 +29,21 @@
 import { onMounted } from "vue";
 import { useCartStore, useCartAutoSave } from "~/stores/cart";
 import { useProductsStore } from "~/stores/products";
+import { useRoute, navigateTo, useHead, createError } from "nuxt/app";
+
+// Protection : empêcher l'utilisation du layout par défaut sur les routes admin (sauf login)
+const route = useRoute();
+if (route.path.startsWith("/admin") && route.path !== "/admin/login") {
+  console.warn(
+    "⚠️ Layout par défaut détecté sur une route admin. Redirection vers le layout admin."
+  );
+  // Cette route admin devrait utiliser le layout admin, pas le layout par défaut
+  throw createError({
+    statusCode: 500,
+    statusMessage:
+      "Configuration incorrecte: cette page admin doit utiliser le layout admin",
+  });
+}
 
 // Initialisation des stores
 const cartStore = useCartStore();
@@ -65,10 +80,4 @@ useHead({
 
 // Auto-save du panier
 useCartAutoSave();
-</script>
-
-<script lang="ts">
-export default {
-  middleware: ["admin"],
-};
 </script>

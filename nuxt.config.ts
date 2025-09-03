@@ -4,9 +4,8 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt", "@vueuse/nuxt"],
-  pinia: {},
   ssr: true,
-  // ...
+
   css: ["@/assets/css/main.css"],
   typescript: {
     strict: true,
@@ -31,7 +30,7 @@ export default defineNuxtConfig({
             "Votre fournisseur de fournitures scolaires au Sénégal. Packs scolaires complets pour tous les niveaux. Livraison partout au Sénégal.",
         },
         { name: "format-detection", content: "telephone=yes" },
-        { name: "theme-color", content: "#10B981" },
+        { name: "theme-color", content: "#059669" },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: "EduShop Sénégal" },
         { property: "og:locale", content: "fr_FR" },
@@ -43,6 +42,8 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "manifest", href: "/manifest.json" },
+        { rel: "apple-touch-icon", href: "/icons/icon-512x512.svg" },
         {
           rel: "preconnect",
           href: "https://fonts.googleapis.com",
@@ -111,6 +112,8 @@ export default defineNuxtConfig({
             "fade-in-up": "fadeInUp 0.6s ease-out",
             "pulse-btn": "pulse 2s infinite",
             "slide-down": "slideDown 0.8s ease-out",
+            float: "float 6s ease-in-out infinite",
+            "float-delayed": "float 8s ease-in-out infinite 2s",
           },
           keyframes: {
             fadeInUp: {
@@ -121,6 +124,15 @@ export default defineNuxtConfig({
               "0%": { opacity: "0", transform: "translateY(-20px)" },
               "100%": { opacity: "1", transform: "translateY(0)" },
             },
+            float: {
+              "0%, 100%": { transform: "translateY(0px)" },
+              "50%": { transform: "translateY(-20px)" },
+            },
+          },
+          backgroundImage: {
+            "grid-white":
+              "url(\"data:image/svg+xml,%3csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cpattern id='grid' width='40' height='40' patternUnits='userSpaceOnUse'%3e%3cpath d='m 40 0 l 0 40 m -40 0 l 40 0' fill='none' stroke='white' stroke-width='1' opacity='0.1'/%3e%3c/pattern%3e%3c/defs%3e%3crect width='100%25' height='100%25' fill='url(%23grid)' /%3e%3c/svg%3e\")",
+            "fourniture-pattern": "url('/images/fournitureBanniere.png')",
           },
         },
       },
@@ -154,5 +166,5 @@ export default defineNuxtConfig({
       facebookPixelId: process.env.FACEBOOK_PIXEL_ID,
     },
   },
-  compatibilityDate: "2025-08-27",
+  compatibilityDate: "2025-09-02",
 });
