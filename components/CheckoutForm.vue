@@ -5,7 +5,9 @@
       <h1 class="text-3xl font-bold text-gray-900 mb-2">
         Finaliser ma commande
       </h1>
-      <p class="text-gray-600">Sécurisé par PayTech - Paiement 100% sécurisé</p>
+      <p class="text-gray-600">
+        Commande via WhatsApp - Paiement personnalisé avec Wave
+      </p>
     </div>
 
     <!-- Stepper -->
@@ -374,7 +376,7 @@
         v-show="currentStep === 3"
         class="bg-white p-6 rounded-lg shadow-sm border"
       >
-        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
           <svg
             class="w-5 h-5 mr-2"
             fill="none"
@@ -388,20 +390,158 @@
               d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
             />
           </svg>
-          Paiement
+          Choisissez votre mode de commande
         </h2>
 
-        <PaymentMethodSelector
-          v-model="form.target_payment"
-          :amount="totalAmount"
-          :country="getCountryFromPhone()"
-        />
+        <!-- Choix du mode de commande -->
+        <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"> -->
+        <div class="grid grid-cols-1 gap-4 mb-6">
+          <!-- Option Paiement Direct - TEMPORAIREMENT DÉSACTIVÉ -->
+          <!--
+          <div
+            @click="paymentMode = 'direct'"
+            :class="[
+              'p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
+              paymentMode === 'direct'
+                ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500 ring-opacity-20'
+                : 'border-gray-200 hover:border-gray-300',
+            ]"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <svg
+                  class="w-8 h-8 text-emerald-600 mr-3"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                  />
+                </svg>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Paiement Direct</h3>
+                  <p class="text-sm text-gray-600">Payez maintenant en ligne</p>
+                </div>
+              </div>
+              <div
+                :class="[
+                  'w-4 h-4 rounded-full border-2',
+                  paymentMode === 'direct'
+                    ? 'border-emerald-500 bg-emerald-500'
+                    : 'border-gray-300',
+                ]"
+              >
+                <div
+                  v-if="paymentMode === 'direct'"
+                  class="w-2 h-2 bg-white rounded-full m-0.5"
+                ></div>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              Sécurisé par PayTech • Paiement instantané
+            </div>
+          </div>
+          -->
+
+          <!-- Option WhatsApp -->
+          <div
+            @click="paymentMode = 'whatsapp'"
+            :class="[
+              'p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
+              paymentMode === 'whatsapp'
+                ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-opacity-20'
+                : 'border-gray-200 hover:border-gray-300',
+            ]"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <svg
+                  class="w-8 h-8 text-green-600 mr-3"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
+                  />
+                </svg>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Commande WhatsApp</h3>
+                  <p class="text-sm text-gray-600">
+                    Envoyez votre commande sur WhatsApp
+                  </p>
+                </div>
+              </div>
+              <div
+                :class="[
+                  'w-4 h-4 rounded-full border-2',
+                  paymentMode === 'whatsapp'
+                    ? 'border-green-500 bg-green-500'
+                    : 'border-gray-300',
+                ]"
+              >
+                <div
+                  v-if="paymentMode === 'whatsapp'"
+                  class="w-2 h-2 bg-white rounded-full m-0.5"
+                ></div>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              Commande personnalisée • Lien de paiement Wave
+            </div>
+          </div>
+        </div>
+
+        <!-- Section paiement direct - TEMPORAIREMENT DÉSACTIVÉ -->
+        <!--
+        <div v-if="paymentMode === 'direct'" class="mb-6">
+          <PaymentMethodSelector
+            v-model="form.target_payment"
+            :amount="totalAmount"
+            :country="getCountryFromPhone()"
+          />
+        </div>
+        -->
+
+        <!-- Section WhatsApp -->
+        <div
+          v-if="paymentMode === 'whatsapp'"
+          class="mb-6 p-4 bg-green-50 rounded-lg border border-green-200"
+        >
+          <div class="flex items-start">
+            <svg
+              class="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <div>
+              <h4 class="font-medium text-green-800 mb-1">
+                Comment ça marche ?
+              </h4>
+              <ul class="text-sm text-green-700 space-y-1">
+                <li>1. Votre commande sera envoyée directement sur WhatsApp</li>
+                <li>2. Nous vous contacterons pour confirmer votre commande</li>
+                <li>3. Vous recevrez un lien de paiement Wave personnalisé</li>
+                <li>4. Livraison après confirmation du paiement</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         <div class="mt-6 flex space-x-4">
           <button type="button" @click="prevStep" class="btn-secondary flex-1">
             Retour
           </button>
+
+          <!-- Bouton paiement direct - TEMPORAIREMENT DÉSACTIVÉ -->
+          <!--
           <button
+            v-if="paymentMode === 'direct'"
             type="submit"
             :disabled="isProcessing || !isStep3Valid"
             class="btn-primary flex-1"
@@ -428,7 +568,22 @@
               </svg>
               Traitement...
             </span>
-            <span v-else> Payer {{ formatAmount(totalAmount) }} </span>
+            <span v-else"> Payer {{ formatAmount(totalAmount) }} </span>
+          </button>
+          -->
+          <button
+            v-if="paymentMode === 'whatsapp'"
+            type="button"
+            @click="sendToWhatsApp"
+            :disabled="isProcessing"
+            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex-1 flex items-center justify-center"
+          >
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
+              />
+            </svg>
+            Envoyer sur WhatsApp
           </button>
         </div>
       </div>
@@ -437,7 +592,13 @@
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, computed, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import PaymentMethodSelector from "./PaymentMethodSelector.vue";
+import {
+  formatWhatsAppOrderMessage,
+  createWhatsAppLink,
+} from "../utils/whatsapp-config";
 
 // Props et émissions
 interface Props {
@@ -487,6 +648,7 @@ const phonePrefix = ref("+221");
 const phoneNumber = ref("");
 const promoCode = ref("");
 const promoDiscount = ref(0);
+const paymentMode = ref("whatsapp"); // 'direct' ou 'whatsapp' - PayTech temporairement désactivé
 
 // Form data
 const form = reactive({
@@ -628,8 +790,123 @@ const applyPromoCode = async () => {
   }
 };
 
+// Fonction pour envoyer la commande sur WhatsApp
+const sendToWhatsApp = async () => {
+  console.log("🔄 Fonction sendToWhatsApp appelée");
+
+  // Vérifier les éléments du panier
+  console.log("🛒 Cart Items:", props.cartItems);
+  console.log("🛒 Cart Items Length:", props.cartItems.length);
+
+  if (props.cartItems.length === 0) {
+    console.error("❌ Panier vide - redirection vers /cart");
+    alert(
+      "Votre panier est vide. Ajoutez des produits avant de passer commande."
+    );
+    router.push("/cart");
+    return;
+  }
+
+  // Vérifier que les informations sont complètes
+  console.log("✅ Validation Step 1:", isStep1Valid.value);
+  console.log("✅ Validation Step 2:", isStep2Valid.value);
+  console.log("📋 Form data:", {
+    customer: form.customer,
+    shipping: form.shipping,
+    phonePrefix: phonePrefix.value,
+    phoneNumber: phoneNumber.value,
+  });
+
+  if (!isStep1Valid.value || !isStep2Valid.value) {
+    console.error("❌ Validation échouée - arrêt de l'envoi WhatsApp");
+    alert(
+      "Veuillez remplir tous les champs requis avant d'envoyer sur WhatsApp"
+    );
+    return;
+  }
+
+  try {
+    // Préparer les données de commande
+    const orderData = {
+      customer: {
+        name: form.customer.name,
+        email: form.customer.email,
+        phone: `${phonePrefix.value}${phoneNumber.value}`,
+      },
+      shipping: {
+        address: form.shipping.address,
+        city: form.shipping.city,
+        method: form.shipping.method,
+        cost: form.shipping.cost,
+      },
+      items: props.cartItems,
+      amounts: {
+        subtotal: subtotal.value,
+        shipping: form.shipping.cost,
+        discount: promoDiscount.value,
+        total: totalAmount.value,
+      },
+    };
+
+    // Formater le message WhatsApp avec les utilitaires
+    const message = formatWhatsAppOrderMessage(orderData);
+
+    // Créer le lien WhatsApp
+    const whatsappUrl = createWhatsAppLink(message);
+
+    // Sauvegarder la commande en attente
+    await saveOrderAsPending();
+
+    // Ouvrir WhatsApp
+    window.open(whatsappUrl, "_blank");
+
+    // Notification de succès
+    console.log("Commande envoyée sur WhatsApp avec succès");
+
+    // Optionnel: rediriger vers une page de confirmation après un délai
+    setTimeout(() => {
+      router.push("/success?mode=whatsapp");
+    }, 1500);
+  } catch (error) {
+    console.error("Erreur lors de l'envoi WhatsApp:", error);
+    alert(
+      "Erreur lors de la préparation de votre commande WhatsApp. Veuillez réessayer."
+    );
+  }
+};
+
+// Fonction pour sauvegarder la commande en attente
+const saveOrderAsPending = async () => {
+  try {
+    const orderData = {
+      customer: form.customer,
+      shipping: form.shipping,
+      items: props.cartItems,
+      amounts: {
+        subtotal: subtotal.value,
+        shipping: form.shipping.cost,
+        discount: promoDiscount.value,
+        total: totalAmount.value,
+      },
+      status: "pending_whatsapp",
+      createdAt: new Date().toISOString(),
+    };
+
+    await $fetch("/api/orders/create-pending", {
+      method: "POST",
+      body: orderData,
+    });
+
+    console.log("Commande sauvegardée en attente");
+  } catch (error) {
+    console.error("Erreur lors de la sauvegarde:", error);
+  }
+};
+
+// Fonction handleSubmit pour PayTech - TEMPORAIREMENT DÉSACTIVÉE
+/*
 const handleSubmit = async () => {
-  if (!isStep3Valid.value) return;
+  if (!isStep3Valid.value || paymentMode.value !== "direct") return;
 
   isProcessing.value = true;
 
@@ -663,6 +940,11 @@ const handleSubmit = async () => {
   } finally {
     isProcessing.value = false;
   }
+};
+*/
+const handleSubmit = () => {
+  // Fonction désactivée - Seul WhatsApp est disponible pour le moment
+  console.log("Paiement direct temporairement désactivé");
 };
 
 // Watchers

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Navigation Admin - Fournitures Scolaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Test Navigation Admin</h1>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Pages avec AdminSidebar ✅</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="/admin" class="block p-4 border border-green-200 rounded-lg hover:bg-green-50">
+                    <div class="flex items-center">
+                        <span class="text-green-600 mr-3">🏠</span>
+                        <div>
+                            <h3 class="font-medium">Tableau de bord</h3>
+                            <p class="text-sm text-gray-600">/admin</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/statistics" class="block p-4 border border-green-200 rounded-lg hover:bg-green-50">
+                    <div class="flex items-center">
+                        <span class="text-green-600 mr-3">📊</span>
+                        <div>
+                            <h3 class="font-medium">Statistiques</h3>
+                            <p class="text-sm text-gray-600">/admin/statistics</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/products" class="block p-4 border border-green-200 rounded-lg hover:bg-green-50">
+                    <div class="flex items-center">
+                        <span class="text-green-600 mr-3">📦</span>
+                        <div>
+                            <h3 class="font-medium">Produits</h3>
+                            <p class="text-sm text-gray-600">/admin/products</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/login" class="block p-4 border border-blue-200 rounded-lg hover:bg-blue-50">
+                    <div class="flex items-center">
+                        <span class="text-blue-600 mr-3">🔐</span>
+                        <div>
+                            <h3 class="font-medium">Connexion</h3>
+                            <p class="text-sm text-gray-600">/admin/login (sans sidebar)</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Pages à mettre à jour 🔄</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="/admin/packs" class="block p-4 border border-yellow-200 rounded-lg hover:bg-yellow-50">
+                    <div class="flex items-center">
+                        <span class="text-yellow-600 mr-3">📋</span>
+                        <div>
+                            <h3 class="font-medium">Packs</h3>
+                            <p class="text-sm text-gray-600">/admin/packs</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/promotions" class="block p-4 border border-yellow-200 rounded-lg hover:bg-yellow-50">
+                    <div class="flex items-center">
+                        <span class="text-yellow-600 mr-3">🏷️</span>
+                        <div>
+                            <h3 class="font-medium">Promotions</h3>
+                            <p class="text-sm text-gray-600">/admin/promotions</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/orders" class="block p-4 border border-yellow-200 rounded-lg hover:bg-yellow-50">
+                    <div class="flex items-center">
+                        <span class="text-yellow-600 mr-3">📝</span>
+                        <div>
+                            <h3 class="font-medium">Commandes</h3>
+                            <p class="text-sm text-gray-600">/admin/orders</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/admin/users" class="block p-4 border border-yellow-200 rounded-lg hover:bg-yellow-50">
+                    <div class="flex items-center">
+                        <span class="text-yellow-600 mr-3">👥</span>
+                        <div>
+                            <h3 class="font-medium">Utilisateurs</h3>
+                            <p class="text-sm text-gray-600">/admin/users</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="/" class="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors">
+                ← Retour au site principal
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>
