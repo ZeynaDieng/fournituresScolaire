@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>API Health Check</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 API Health Check</h1>
+        <p>Test des endpoints API pour diagnostiquer les problèmes de production.</p>
+
+        <div id="status" class="status info">
+            <strong>Status:</strong> Prêt pour les tests
+        </div>
+
+        <div>
+            <h3>Tests disponibles:</h3>
+            <button onclick="testEndpoint('/api/status', 'GET')">Test API Status</button>
+            <button onclick="testEndpoint('/api/test-simple', 'GET')">Test Simple GET</button>
+            <button onclick="testEndpoint('/api/test-whatsapp', 'POST')">Test WhatsApp POST</button>
+            <button onclick="testEndpoint('/api/orders/create-pending', 'POST')">Test WhatsApp Order</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function testEndpoint(url, method = 'GET') {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+
+            statusDiv.className = 'status info';
+            statusDiv.innerHTML = `<strong>Status:</strong> Testing ${method} ${url}...`;
+
+            try {
+                let options = { method };
+
+                if (method === 'POST') {
+                    options.headers = { 'Content-Type': 'application/json' };
+
+                    if (url.includes('create-pending')) {
+                        options.body = JSON.stringify({
+                            customer: { name: "Test User", phone: "221123456789", email: "test@example.com" },
+                            items: [{ name: "Test Product", quantity: 1, price: 1000 }],
+                            amounts: { total: 1000, subtotal: 1000, shipping: 0 },
+                            shipping: { method: "Standard", address: "Test Address" }
+                        });
+                    } else {
+                        options.body = JSON.stringify({ test: true, timestamp: new Date().toISOString() });
+                    }
+                }
+
+                const response = await fetch(url, options);
+                const text = await response.text();
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    data = { rawResponse: text };
+                }
+
+                const result = document.createElement('div');
+                result.innerHTML = `
+                    <h4>${method} ${url}</h4>
+                    <div class="${response.ok ? 'success' : 'error'} status">
+                        <strong>Status:</strong> ${response.status} ${response.statusText}
+                    </div>
+                    <pre>${JSON.stringify({
+                    status: response.status,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    data: data
+                }, null, 2)}</pre>
+                `;
+
+                resultsDiv.appendChild(result);
+
+                statusDiv.className = response.ok ? 'status success' : 'status error';
+                statusDiv.innerHTML = `<strong>Status:</strong> ${response.ok ? 'Success' : 'Error'} - ${response.status} ${response.statusText}`;
+
+            } catch (error) {
+                const result = document.createElement('div');
+                result.innerHTML = `
+                    <h4>${method} ${url}</h4>
+                    <div class="error status">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                    <pre>${JSON.stringify({ error: error.message, stack: error.stack }, null, 2)}</pre>
+                `;
+
+                resultsDiv.appendChild(result);
+
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `<strong>Status:</strong> Network Error - ${error.message}`;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('status').className = 'status info';
+            document.getElementById('status').innerHTML = '<strong>Status:</strong> Prêt pour les tests';
+        }
+
+        // Test automatically on load
+        window.onload = function () {
+            setTimeout(() => testEndpoint('/api/status', 'GET'), 1000);
+        };
+    </script>
+</body>
+
+</html>
