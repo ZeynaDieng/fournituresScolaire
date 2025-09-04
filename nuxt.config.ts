@@ -139,6 +139,7 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    // Configuration PayTech (désactivée)
     paytech: {
       apiKey: process.env.PAYTECH_API_KEY,
       secretKey: process.env.PAYTECH_SECRET_KEY,
@@ -146,22 +147,43 @@ export default defineNuxtConfig({
         process.env.PAYTECH_SANDBOX === "true" ||
         process.env.NODE_ENV !== "production",
     },
+
+    // Configuration Google Sheets (NOUVEAU)
+    googleSheets: {
+      sheetId: process.env.GOOGLE_SHEET_ID,
+      apiKey: process.env.GOOGLE_SHEETS_API_KEY,
+    },
+
+    // Configuration WhatsApp (NOUVEAU)
+    whatsapp: {
+      businessNumber: process.env.WHATSAPP_BUSINESS_NUMBER || "221123456789",
+    },
+
     public: {
       siteUrl:
         process.env.NUXT_PUBLIC_SITE_URL ||
         process.env.BASE_URL ||
         "https://fournitures-scolaire.vercel.app",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "/api",
+
+      // Configuration PayTech publique (optionnelle maintenant)
       paytechApiKey:
         process.env.NUXT_PUBLIC_PAYTECH_API_KEY || process.env.PAYTECH_API_KEY,
       paytechApiSecret: process.env.NUXT_PUBLIC_PAYTECH_API_SECRET,
       paytechMerchantId: process.env.NUXT_PUBLIC_PAYTECH_MERCHANT_ID,
       paytechSandbox: process.env.NODE_ENV !== "production",
+
       baseUrl:
         process.env.BASE_URL ||
         process.env.NUXT_PUBLIC_SITE_URL ||
         "https://fournitures-scolaire.vercel.app",
       payTechApiKey: process.env.PAYTECH_API_KEY,
+
+      // Configuration publique WhatsApp
+      whatsappBusinessNumber:
+        process.env.WHATSAPP_BUSINESS_NUMBER || "221123456789",
+
+      // Analytics
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID,
       facebookPixelId: process.env.FACEBOOK_PIXEL_ID,
     },

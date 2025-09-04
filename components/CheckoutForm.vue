@@ -879,7 +879,11 @@ const sendToWhatsApp = async () => {
 const saveOrderAsPending = async () => {
   try {
     const orderData = {
-      customer: form.customer,
+      customer: {
+        name: form.customer.name,
+        email: form.customer.email,
+        phone: `${phonePrefix.value}${phoneNumber.value}`,
+      },
       shipping: form.shipping,
       items: props.cartItems,
       amounts: {
@@ -892,14 +896,27 @@ const saveOrderAsPending = async () => {
       createdAt: new Date().toISOString(),
     };
 
-    await $fetch("/api/orders/create-pending", {
+    const response = (await $fetch("/api/orders/create-pending", {
       method: "POST",
       body: orderData,
-    });
+    })) as any;
 
-    console.log("Commande sauvegardée en attente");
+    console.log("✅ Commande sauvegardée:", response);
+
+    // Afficher un feedback si Google Sheets fonctionne
+    if (response.googleSheets?.success) {
+      console.log(
+        "✅ Ajoutée à Google Sheets:",
+        response.googleSheets.orderRef
+      );
+    } else {
+      console.log("⚠️ Google Sheets non disponible, mais commande sauvegardée");
+    }
+
+    return response;
   } catch (error) {
-    console.error("Erreur lors de la sauvegarde:", error);
+    console.error("❌ Erreur lors de la sauvegarde:", error);
+    throw error;
   }
 };
 

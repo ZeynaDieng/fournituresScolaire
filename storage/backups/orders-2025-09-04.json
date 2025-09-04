@@ -1,0 +1,39 @@
+[
+  {
+    "ref": "TEST-1756994663352",
+    "customer": {
+      "name": "Seynabou Dieng",
+      "email": "zeynash1@gmail.com",
+      "phone": "+221 77 778 04 56"
+    },
+    "shipping": {
+      "address": "Parcelle, Thiès",
+      "city": "Thiès",
+      "method": "Standard",
+      "cost": 500
+    },
+    "items": [
+      {
+        "name": "Pack CE2 - Fournitures scolaires",
+        "quantity": 1,
+        "price": 4800
+      }
+    ],
+    "amounts": {
+      "subtotal": 4800,
+      "shipping": 500,
+      "discount": 0,
+      "total": 5300
+    },
+    "status": "pending",
+    "paymentStatus": "pending",
+    "paymentMethod": "test",
+    "source": "web",
+    "metadata": {
+      "userAgent": "Test Agent",
+      "createdVia": "test"
+    },
+    "id": "1756994663359",
+    "timestamp": "2025-09-04T14:04:23.359Z"
+  }
+]
