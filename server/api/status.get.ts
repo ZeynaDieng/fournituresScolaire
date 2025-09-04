@@ -5,11 +5,19 @@ export default defineEventHandler(async (event) => {
   const envInfo = {
     NODE_ENV: process.env.NODE_ENV,
     hasEmailConfig: !!(
-      process.env.SMTP_HOST &&
-      process.env.SMTP_USER &&
-      process.env.SMTP_PASS
+      process.env.NOTIFICATION_EMAIL_USER &&
+      process.env.NOTIFICATION_EMAIL_PASSWORD &&
+      process.env.ADMIN_EMAIL
     ),
     hasWhatsAppConfig: !!process.env.WHATSAPP_BUSINESS_NUMBER,
+    emailUser: process.env.NOTIFICATION_EMAIL_USER ? "configured" : "missing",
+    emailPassword: process.env.NOTIFICATION_EMAIL_PASSWORD
+      ? "configured"
+      : "missing",
+    adminEmail: process.env.ADMIN_EMAIL ? "configured" : "missing",
+    whatsappNumber: process.env.WHATSAPP_BUSINESS_NUMBER
+      ? "configured"
+      : "missing",
     timestamp: new Date().toISOString(),
   };
 
