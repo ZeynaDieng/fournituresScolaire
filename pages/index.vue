@@ -74,19 +74,7 @@
             class="btn-primary inline-flex items-center space-x-2 mx-auto group relative overflow-hidden px-8 py-3 rounded-full font-medium bg-gradient-to-r from-primary-green to-primary-dark-green text-white hover:shadow-lg hover:shadow-primary-green/20 transition-all duration-300 transform hover:-translate-y-0.5"
           >
             <span>Découvrir tous nos packs</span>
-            <svg
-              class="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-200"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
+
             <span
               class="absolute inset-0 bg-white/10 group-hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             ></span>
