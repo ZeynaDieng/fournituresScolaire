@@ -5,6 +5,14 @@ export default defineEventHandler(async (event) => {
   try {
     console.log("📱 API create-pending appelée");
 
+    // Log request info for debugging
+    console.log(
+      "📱 Headers:",
+      Object.fromEntries(Object.entries(event.node.req.headers))
+    );
+    console.log("📱 Method:", event.node.req.method);
+    console.log("📱 URL:", event.node.req.url);
+
     const body = await readBody(event);
     console.log("📱 Données reçues:", JSON.stringify(body, null, 2));
 
