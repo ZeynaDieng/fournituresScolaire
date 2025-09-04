@@ -1,6 +1,6 @@
 // /server/api/orders/create-pending.post.ts
 import { readBody, defineEventHandler } from "h3";
-// import { sendOrderNotification } from "../../../utils/email-notifications"; // TEMPORARILY DISABLED
+import { sendOrderNotification } from "../../../utils/email-notifications";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -89,9 +89,7 @@ export default defineEventHandler(async (event) => {
 
     console.log("📧 Préparation envoi email...", emailOrderData.ref);
 
-    // 📧 Envoyer notification email pour commande WhatsApp - TEMPORAIREMENT DÉSACTIVÉ
-    console.log("⚠️ Email temporairement désactivé pour diagnostic");
-    /*
+    // 📧 Envoyer notification email pour commande WhatsApp
     try {
       const emailSent = await sendOrderNotification(emailOrderData);
       console.log(
@@ -104,8 +102,8 @@ export default defineEventHandler(async (event) => {
         "⚠️ Erreur envoi email WhatsApp (commande créée):",
         emailError instanceof Error ? emailError.message : emailError
       );
+      // Continue processing even if email fails
     }
-    */
 
     // Créer un objet de commande simulé pour la réponse (compatible Vercel)
     const savedOrder = {
