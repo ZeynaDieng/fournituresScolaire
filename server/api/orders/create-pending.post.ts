@@ -1,136 +1,88 @@
 // /server/api/orders/create-pending.post.ts
-import { addOrderToGoogleSheets } from "../../../utils/google-sheets";
 import { sendOrderNotification } from "../../../utils/email-notifications";
 
 export default defineEventHandler(async (event) => {
   try {
+    console.log("📱 API create-pending appelée");
+
     const body = await readBody(event);
+    console.log("📱 Données reçues:", JSON.stringify(body, null, 2));
+
+    // Validation des données essentielles
+    if (!body.customer) {
+      throw new Error("Informations client manquantes");
+    }
+
+    if (!body.customer.name || !body.customer.phone) {
+      throw new Error("Nom et téléphone du client requis");
+    }
+
+    if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
+      throw new Error("Articles de commande manquants");
+    }
+
+    if (
+      !body.amounts ||
+      typeof body.amounts.total !== "number" ||
+      body.amounts.total <= 0
+    ) {
+      throw new Error("Total de commande invalide");
+    }
 
     // Générer une référence unique pour la commande
     const orderRef = `WA-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
 
-    // Log des informations pour le développement
-    const customerData = {
-      name: body.customer.name,
-      email: body.customer.email,
-      phone: body.customer.phone,
-      address: `${body.shipping.address}, ${body.shipping.city}`,
-    };
-
     console.log("📱 Commande WhatsApp reçue:", {
       ref: orderRef,
-      customer: customerData,
-      total: body.amounts.total,
-      items: body.items.length + " articles",
-      timestamp: new Date().toLocaleString("fr-FR"),
-    });
-
-    // Préparer les données pour Google Sheets
-    const orderDataForSheet = {
       customer: {
         name: body.customer.name,
         email: body.customer.email,
         phone: body.customer.phone,
+        address: body.shipping?.address,
+      },
+      total: body.amounts.total,
+      items: body.items.length + " articles",
+      timestamp: new Date().toLocaleString("fr-FR", {
+        timeZone: "Africa/Dakar",
+      }),
+    });
+
+    // Préparer les données pour l'email (compatible Vercel)
+    const emailOrderData = {
+      ref: orderRef,
+      customer: {
+        name: body.customer.name,
+        email: body.customer.email || "",
+        phone: body.customer.phone,
       },
       shipping: {
-        address: body.shipping.address,
-        city: body.shipping.city,
-        method: body.shipping.method,
-        cost: body.amounts.shipping,
+        address: body.shipping?.address || "",
+        city: body.shipping?.city || "",
+        method: body.shipping?.method || "Standard",
+        cost: body.amounts.shipping || 0,
       },
       items: body.items.map((item) => ({
         name: item.name,
-        quantity: item.quantity,
-        price: item.price,
+        quantity: item.quantity || 1,
+        price: item.price || 0,
       })),
       amounts: {
-        subtotal: body.amounts.subtotal,
-        shipping: body.amounts.shipping,
+        subtotal: body.amounts.subtotal || body.amounts.total,
+        shipping: body.amounts.shipping || 0,
         discount: body.amounts.discount || 0,
         total: body.amounts.total,
       },
+      source: "whatsapp" as const,
+      createdAt: new Date().toISOString(),
     };
 
-    // Essayer d'ajouter à Google Sheets en premier
-    let sheetResult;
-    try {
-      sheetResult = await addOrderToGoogleSheets(orderDataForSheet);
-      console.log("✅ Commande ajoutée à Google Sheets:", sheetResult.orderRef);
-    } catch (sheetError) {
-      console.warn(
-        "⚠️ Erreur Google Sheets (la commande continue):",
-        sheetError.message
-      );
-    }
-
-    // Essayer de sauvegarder dans la base si elle est disponible
-    let savedOrder;
-    try {
-      const { prisma } = await import("../../prismaClient");
-
-      const orderData = {
-        ref: orderRef,
-        items: JSON.stringify(body.items),
-        total: Math.round(body.amounts.total),
-        status: "pending_whatsapp",
-      };
-
-      savedOrder = await prisma.order.create({
-        data: orderData,
-      });
-
-      console.log(
-        "✅ Commande sauvegardée dans la base de données:",
-        savedOrder.id
-      );
-    } catch (dbError) {
-      console.warn(
-        "⚠️ Base de données non disponible, commande traitée en mode local:",
-        dbError.message
-      );
-
-      // Créer un objet de commande simulé pour la réponse
-      savedOrder = {
-        id: Date.now(),
-        ref: orderRef,
-        total: Math.round(body.amounts.total),
-        status: "pending_whatsapp",
-      };
-    }
+    console.log("📧 Préparation envoi email...", emailOrderData.ref);
 
     // 📧 Envoyer notification email pour commande WhatsApp
     try {
-      const emailData = {
-        ref: orderRef,
-        customer: {
-          name: body.customer.name,
-          email: body.customer.email,
-          phone: body.customer.phone,
-        },
-        shipping: {
-          address: body.shipping.address,
-          city: body.shipping.city,
-          method: body.shipping.method,
-          cost: body.amounts.shipping,
-        },
-        items: body.items.map((item) => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        amounts: {
-          subtotal: body.amounts.subtotal,
-          shipping: body.amounts.shipping,
-          discount: body.amounts.discount || 0,
-          total: body.amounts.total,
-        },
-        source: "whatsapp" as const,
-        createdAt: new Date().toISOString(),
-      };
-
-      const emailSent = await sendOrderNotification(emailData);
+      const emailSent = await sendOrderNotification(emailOrderData);
       console.log(
         emailSent
           ? "✅ Email de notification WhatsApp envoyé"
@@ -143,6 +95,16 @@ export default defineEventHandler(async (event) => {
       );
     }
 
+    // Créer un objet de commande simulé pour la réponse (compatible Vercel)
+    const savedOrder = {
+      id: Date.now(),
+      ref: orderRef,
+      total: Math.round(body.amounts.total),
+      status: "pending_whatsapp",
+    };
+
+    console.log("✅ Commande WhatsApp traitée:", savedOrder.id);
+
     return {
       success: true,
       order: {
@@ -151,15 +113,6 @@ export default defineEventHandler(async (event) => {
         total: savedOrder.total,
         status: savedOrder.status,
       },
-      googleSheets: sheetResult
-        ? {
-            success: true,
-            orderRef: sheetResult.orderRef,
-          }
-        : {
-            success: false,
-            error: "Google Sheets non configuré ou erreur",
-          },
       message: "Commande WhatsApp créée avec succès",
     };
   } catch (error) {
@@ -168,9 +121,11 @@ export default defineEventHandler(async (event) => {
       error
     );
 
-    return createError({
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Erreur inconnue",
       statusCode: 500,
       statusMessage: "Erreur lors de la création de la commande",
-    });
+    };
   }
 });
