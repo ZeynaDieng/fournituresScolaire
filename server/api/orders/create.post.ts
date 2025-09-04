@@ -1,16 +1,24 @@
 // server/api/orders/create.post.ts
 
-import { prisma } from "../../prismaClient";
-import { readBody } from "h3";
+import { readBody, getHeader } from "h3";
+import { addOrderToGoogleSheets } from "../../../utils/google-sheets";
+import { saveOrder } from "../../../utils/local-storage";
+import { sendOrderNotification } from "../../../utils/email-notifications";
+import { addOrderToMasterExcel } from "../../../utils/excel-master";
 
 interface OrderRequestBody {
   name: string;
   email: string;
   phone: string;
   address: string;
+  city?: string;
+  shippingMethod?: string;
+  shippingCost?: number;
   ref: string;
   items: any[];
   total: number;
+  subtotal?: number;
+  discount?: number;
 }
 
 export default defineEventHandler(async (event) => {
@@ -35,55 +43,109 @@ export default defineEventHandler(async (event) => {
     }
   }
   try {
-    // Création ou récupération de l'utilisateur
+    // Générer une référence unique pour la commande
+    const orderRef =
+      body.ref ||
+      `CMD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    let user = await prisma.user.findUnique({ where: { email: body.email! } });
-    if (!user) {
-      try {
-        user = await prisma.user.create({
-          data: {
-            name: body.name!,
-            email: body.email!,
-            phone: body.phone!,
-            address: body.address!,
-          },
-        });
-      } catch (userError) {
-        if (userError instanceof Error) {
-          return { success: false, message: userError.message };
-        } else {
-          return { success: false, message: "Failed to create user" };
-        }
-      }
-    }
-    if (!user) {
-      return { success: false, message: "User creation failed" };
-    }
-
-    // Création de la commande
-
-    const order = await prisma.order.create({
-      data: {
-        ref: body.ref!,
-        userId: user.id,
-        items: JSON.stringify(body.items),
+    // Préparer les données de commande pour le stockage local
+    const orderData = {
+      ref: orderRef,
+      customer: {
+        name: body.name!,
+        email: body.email!,
+        phone: body.phone!,
+      },
+      shipping: {
+        address: body.address!,
+        city: body.city || "",
+        method: body.shippingMethod || "Standard",
+        cost: body.shippingCost || 0,
+      },
+      items: body.items!.map((item: any) => ({
+        name: item.name || item.title || "Article",
+        quantity: item.quantity || 1,
+        price: item.price || 0,
+      })),
+      amounts: {
+        subtotal: body.subtotal || body.total!,
+        shipping: body.shippingCost || 0,
+        discount: body.discount || 0,
         total: body.total!,
-        status: "pending",
       },
-    });
-
-    // Création du paiement (statut en attente)
-
-    await prisma.payment.create({
-      data: {
-        orderId: order.id,
-        provider: "paytech",
-        status: "pending",
-        amount: body.total!,
+      status: "pending",
+      paymentStatus: "pending",
+      paymentMethod: "paytech",
+      source: "web" as const,
+      metadata: {
+        userAgent: getHeader(event, "user-agent"),
+        createdVia: "api",
       },
-    });
+    };
 
-    return { success: true, orderId: order.id };
+    // Sauvegarder dans le stockage local
+    const savedOrder = await saveOrder(orderData);
+
+    // 📧 Envoyer notification email immédiate
+    try {
+      const emailData = {
+        ...orderData,
+        createdAt: new Date().toISOString(),
+      };
+
+      await sendOrderNotification(emailData);
+      console.log(
+        "✅ Notification email envoyée pour la commande:",
+        savedOrder.ref
+      );
+    } catch (emailError) {
+      console.warn(
+        "⚠️ Erreur envoi email (la commande est sauvegardée):",
+        emailError instanceof Error ? emailError.message : emailError
+      );
+    }
+
+    // 📊 Ajouter au fichier Excel maître (non bloquant)
+    try {
+      await addOrderToMasterExcel({
+        ...orderData,
+        id: savedOrder.id,
+      });
+      console.log(
+        "✅ Commande ajoutée au fichier Excel maître:",
+        savedOrder.ref
+      );
+    } catch (excelError) {
+      console.warn(
+        "⚠️ Erreur Excel (la commande est sauvegardée):",
+        excelError instanceof Error ? excelError.message : excelError
+      );
+    }
+
+    // Essayer d'intégrer Google Sheets en parallèle (non bloquant)
+    try {
+      const orderDataForSheet = {
+        customer: orderData.customer,
+        shipping: orderData.shipping,
+        items: orderData.items,
+        amounts: orderData.amounts,
+      };
+
+      const sheetResult = await addOrderToGoogleSheets(orderDataForSheet);
+      console.log("✅ Commande ajoutée à Google Sheets:", sheetResult.orderRef);
+    } catch (sheetError) {
+      console.warn(
+        "⚠️ Erreur Google Sheets (la commande continue):",
+        sheetError instanceof Error ? sheetError.message : sheetError
+      );
+    }
+
+    return {
+      success: true,
+      orderId: savedOrder.id,
+      orderRef: savedOrder.ref,
+      message: "Commande sauvegardée avec succès",
+    };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, message: error.message };

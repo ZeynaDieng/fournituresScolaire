@@ -1,0 +1,3 @@
+ID,Référence,Date/Heure,Nom Client,Email,Téléphone,Adresse,Ville,Mode Livraison,Articles,Sous-total,Livraison,Réduction,Total,Statut,Paiement,Source
+"1756994663359","TEST-1756994663352","04/09/2025 14:04:23","Seynabou Dieng","zeynash1@gmail.com","+221 77 778 04 56","Parcelle, Thiès","Thiès","Standard","Pack CE2 - Fournitures scolaires (1x4800)","4800","500","0","5300","pending","pending","web"
+"1756994690556","WEB-001","04/09/2025 14:04:50","Fatou Sarr","fatou.sarr@example.com","+221 77 123 45 67","Rue 10, Parcelles Assainies","Dakar","Express","Pack CP - Fournitures complètes (2x3500) | Cahier spirale (5x300)","8500","1000","0","8500","pending","pending","web"

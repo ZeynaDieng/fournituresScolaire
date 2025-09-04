@@ -1,4 +1,7 @@
 // /server/api/orders/create-pending.post.ts
+import { addOrderToGoogleSheets } from "../../../utils/google-sheets";
+import { sendOrderNotification } from "../../../utils/email-notifications";
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
@@ -23,6 +26,44 @@ export default defineEventHandler(async (event) => {
       items: body.items.length + " articles",
       timestamp: new Date().toLocaleString("fr-FR"),
     });
+
+    // Préparer les données pour Google Sheets
+    const orderDataForSheet = {
+      customer: {
+        name: body.customer.name,
+        email: body.customer.email,
+        phone: body.customer.phone,
+      },
+      shipping: {
+        address: body.shipping.address,
+        city: body.shipping.city,
+        method: body.shipping.method,
+        cost: body.amounts.shipping,
+      },
+      items: body.items.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      amounts: {
+        subtotal: body.amounts.subtotal,
+        shipping: body.amounts.shipping,
+        discount: body.amounts.discount || 0,
+        total: body.amounts.total,
+      },
+    };
+
+    // Essayer d'ajouter à Google Sheets en premier
+    let sheetResult;
+    try {
+      sheetResult = await addOrderToGoogleSheets(orderDataForSheet);
+      console.log("✅ Commande ajoutée à Google Sheets:", sheetResult.orderRef);
+    } catch (sheetError) {
+      console.warn(
+        "⚠️ Erreur Google Sheets (la commande continue):",
+        sheetError.message
+      );
+    }
 
     // Essayer de sauvegarder dans la base si elle est disponible
     let savedOrder;
@@ -59,6 +100,49 @@ export default defineEventHandler(async (event) => {
       };
     }
 
+    // 📧 Envoyer notification email pour commande WhatsApp
+    try {
+      const emailData = {
+        ref: orderRef,
+        customer: {
+          name: body.customer.name,
+          email: body.customer.email,
+          phone: body.customer.phone,
+        },
+        shipping: {
+          address: body.shipping.address,
+          city: body.shipping.city,
+          method: body.shipping.method,
+          cost: body.amounts.shipping,
+        },
+        items: body.items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        amounts: {
+          subtotal: body.amounts.subtotal,
+          shipping: body.amounts.shipping,
+          discount: body.amounts.discount || 0,
+          total: body.amounts.total,
+        },
+        source: "whatsapp" as const,
+        createdAt: new Date().toISOString(),
+      };
+
+      const emailSent = await sendOrderNotification(emailData);
+      console.log(
+        emailSent
+          ? "✅ Email de notification WhatsApp envoyé"
+          : "❌ Échec envoi email WhatsApp"
+      );
+    } catch (emailError) {
+      console.warn(
+        "⚠️ Erreur envoi email WhatsApp (commande créée):",
+        emailError instanceof Error ? emailError.message : emailError
+      );
+    }
+
     return {
       success: true,
       order: {
@@ -67,6 +151,15 @@ export default defineEventHandler(async (event) => {
         total: savedOrder.total,
         status: savedOrder.status,
       },
+      googleSheets: sheetResult
+        ? {
+            success: true,
+            orderRef: sheetResult.orderRef,
+          }
+        : {
+            success: false,
+            error: "Google Sheets non configuré ou erreur",
+          },
       message: "Commande WhatsApp créée avec succès",
     };
   } catch (error) {

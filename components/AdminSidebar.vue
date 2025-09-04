@@ -72,6 +72,26 @@
         <span>Statistiques</span>
       </NuxtLink>
 
+      <!-- Rapports -->
+      <NuxtLink
+        to="/admin/rapports"
+        class="sidebar-link"
+        :class="{
+          'bg-emerald-50 text-emerald-700 border-r-2 border-emerald-500':
+            $route.path === '/admin/rapports',
+        }"
+        @click="closeSidebarOnMobile"
+      >
+        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>Rapports & Analytics</span>
+      </NuxtLink>
+
       <!-- Divider -->
       <div class="border-t border-gray-200 my-4"></div>
 
@@ -164,6 +184,37 @@
       <!-- Divider -->
       <div class="border-t border-gray-200 my-4"></div>
 
+      <!-- Configuration/Tests -->
+      <div class="mb-2">
+        <span
+          class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+          >Configuration</span
+        >
+      </div>
+
+      <!-- Test Google Sheets -->
+      <NuxtLink
+        to="/admin/test-google-sheets"
+        class="sidebar-link"
+        :class="{
+          'bg-emerald-50 text-emerald-700 border-r-2 border-emerald-500':
+            $route.path === '/admin/test-google-sheets',
+        }"
+        @click="closeSidebarOnMobile"
+      >
+        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>Test Google Sheets</span>
+      </NuxtLink>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-200 my-4"></div>
+
       <!-- Commandes -->
       <NuxtLink
         to="/admin/orders"
@@ -187,6 +238,36 @@
           class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1"
         >
           {{ stats?.pendingOrders || pendingOrders }}
+        </span>
+      </NuxtLink>
+
+      <!-- Commandes Locales -->
+      <NuxtLink
+        to="/admin/commandes-locales"
+        class="sidebar-link"
+        :class="{
+          'bg-emerald-50 text-emerald-700 border-r-2 border-emerald-500':
+            $route.path === '/admin/commandes-locales',
+        }"
+        @click="closeSidebarOnMobile"
+      >
+        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
+            clip-rule="evenodd"
+          />
+          <path
+            fill-rule="evenodd"
+            d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h4a1 1 0 100-2H7z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>Commandes Locales</span>
+        <span
+          class="ml-auto bg-orange-100 text-orange-700 text-xs rounded-full px-2 py-1"
+        >
+          TEMP
         </span>
       </NuxtLink>
 
