@@ -231,31 +231,27 @@ const loadOrders = async () => {
     }
   } catch (error) {
     console.error("Erreur chargement commandes:", error);
-    // Fallback: essayer de charger directement (simulation)
-    const { getAllOrders, getOrdersStats } = await import(
-      "~/utils/local-storage"
-    );
-
-    try {
-      const allOrders = await getAllOrders();
-      const orderStats = await getOrdersStats();
-
-      orders.value = allOrders;
-      stats.value = orderStats;
-    } catch (localError) {
-      console.error("Erreur chargement local:", localError);
-    }
+    // En cas d'erreur, afficher un message utilisateur
+    orders.value = [];
+    stats.value = {
+      total: 0,
+      byStatus: {},
+      bySource: {},
+      totalRevenue: 0,
+    };
   }
 };
 
 // Exporter les commandes
 const exportOrders = async () => {
   try {
-    const { exportOrdersToCSV } = await import("~/utils/local-storage");
-    const csvContent = await exportOrdersToCSV();
+    // Utiliser l'endpoint API pour l'export
+    const response = await $fetch("/api/admin/orders/export");
 
     // Créer un lien de téléchargement
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([String(response)], {
+      type: "text/csv;charset=utf-8;",
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
