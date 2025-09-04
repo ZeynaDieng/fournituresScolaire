@@ -85,7 +85,7 @@ export default defineNuxtConfig({
   },
   nitro: {
     compressPublicAssets: true,
-    minify: true,
+    minify: false, // Désactivé temporairement pour debug
     prerender: {
       ignore: ["/"],
       crawlLinks: false,
