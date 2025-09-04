@@ -88,7 +88,9 @@ export default defineEventHandler(async (event) => {
 
     console.log("📧 Préparation envoi email...", emailOrderData.ref);
 
-    // 📧 Envoyer notification email pour commande WhatsApp
+    // 📧 Envoyer notification email pour commande WhatsApp - TEMPORAIREMENT DÉSACTIVÉ
+    console.log("⚠️ Email temporairement désactivé pour diagnostic");
+    /*
     try {
       const emailSent = await sendOrderNotification(emailOrderData);
       console.log(
@@ -102,6 +104,7 @@ export default defineEventHandler(async (event) => {
         emailError instanceof Error ? emailError.message : emailError
       );
     }
+    */
 
     // Créer un objet de commande simulé pour la réponse (compatible Vercel)
     const savedOrder = {
