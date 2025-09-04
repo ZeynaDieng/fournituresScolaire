@@ -1,7 +1,5 @@
 // /utils/email-notifications.ts
 import nodemailer from "nodemailer";
-import { getMasterExcelPath } from "./excel-master";
-import { promises as fs } from "fs";
 
 interface OrderEmailData {
   ref: string;
@@ -202,27 +200,12 @@ export async function sendOrderNotification(
     } (${orderData.amounts.total.toLocaleString()} CFA)`;
     const html = formatOrderEmailHTML(orderData);
 
-    // Préparer les pièces jointes
+    // Préparer les pièces jointes (Excel disabled for Vercel serverless)
     const attachments: any[] = [];
 
-    // Ajouter le fichier Excel maître en pièce jointe
-    try {
-      const excelPath = getMasterExcelPath();
-
-      // Vérifier que le fichier existe avant de l'attacher
-      await fs.access(excelPath);
-
-      attachments.push({
-        filename: "commandes-master.xlsx",
-        path: excelPath,
-        contentType:
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-
-      console.log("📎 Fichier Excel maître ajouté en pièce jointe");
-    } catch (error) {
-      console.warn("⚠️ Impossible d'attacher le fichier Excel:", error.message);
-    }
+    // Note: Excel attachment disabled for serverless compatibility
+    // In serverless environments, file system access is limited
+    console.log("📧 Excel attachment skipped for serverless compatibility");
 
     // Email à l'admin
     await transporter.sendMail({
