@@ -1,9 +1,7 @@
 // server/api/paytech/webhook.post.ts
 import crypto from "crypto";
-import { PrismaClient } from "@prisma/client";
 import { updateOrderStatusInAirtable } from "../../../utils/airtable-orders";
-
-const prisma = new PrismaClient();
+import { NotificationService } from "../../../utils/notification-service";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
