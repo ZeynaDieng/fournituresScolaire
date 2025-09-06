@@ -895,7 +895,7 @@ const saveOrderAsPending = async () => {
       createdAt: new Date().toISOString(),
     };
 
-    const response = (await $fetch("/api/orders/create-pending", {
+    const response = (await $fetch("/api/airtable/orders/create-pending", {
       method: "POST",
       body: orderData,
     })) as any;

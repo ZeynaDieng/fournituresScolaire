@@ -37,7 +37,7 @@ async function testPaytechWithNgrok() {
     console.log("1️⃣ Test de création de commande simple (WhatsApp)...");
 
     const createResponse = await fetch(
-      `${ngrokUrl}/api/orders/create-pending`,
+      `${ngrokUrl}/api/airtable/orders/create-pending`,
       {
         method: "POST",
         headers: {

@@ -82,11 +82,14 @@ async function testNotificationSystem() {
       phoneNumber: "+221771234567",
     };
 
-    const orderResponse = await fetch(`${baseUrl}/api/orders/whatsapp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderData),
-    });
+    const orderResponse = await fetch(
+      `${baseUrl}/api/airtable/orders/whatsapp`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      }
+    );
 
     if (orderResponse.ok) {
       const orderResult = await orderResponse.json();

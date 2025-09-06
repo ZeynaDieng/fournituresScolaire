@@ -336,10 +336,13 @@ const searchOrders = async () => {
   orders.value = [];
 
   try {
-    const response = await $fetch<ApiResponse>(`/api/orders/by-email`, {
-      method: "POST",
-      body: { email: searchEmail.value },
-    });
+    const response = await $fetch<ApiResponse>(
+      `/api/airtable/orders/by-email`,
+      {
+        method: "POST",
+        body: { email: searchEmail.value },
+      }
+    );
 
     if (response.success && response.orders) {
       orders.value = response.orders;
@@ -358,7 +361,7 @@ const downloadInvoice = async (orderRef: string) => {
 
   try {
     const response = await $fetch<{ success: boolean; invoiceUrl?: string }>(
-      `/api/orders/${orderRef}/invoice`
+      `/api/airtable/orders/${orderRef}/invoice`
     );
 
     if (response.success && response.invoiceUrl) {

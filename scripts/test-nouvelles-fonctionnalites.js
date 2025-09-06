@@ -13,18 +13,18 @@ async function testEndpoints() {
   const tests = [
     {
       name: "Test 'Mes commandes' par email",
-      url: `${BASE_URL}/api/orders/by-email?email=test@example.com`,
+      url: `${BASE_URL}/api/airtable/orders/by-email?email=test@example.com`,
       method: "GET",
     },
     {
       name: "Test 'Mes commandes' email invalide",
-      url: `${BASE_URL}/api/orders/by-email?email=invalid-email`,
+      url: `${BASE_URL}/api/airtable/orders/by-email?email=invalid-email`,
       method: "GET",
       expectError: true,
     },
     {
       name: "Test facture commande inexistante",
-      url: `${BASE_URL}/api/orders/TEST123/invoice`,
+      url: `${BASE_URL}/api/airtable/orders/TEST123/invoice`,
       method: "GET",
       expectError: true,
     },

@@ -58,7 +58,7 @@ async function testWithResponse(url, method = "GET", body = null) {
 async function runTests() {
   console.log("\n1. 📄 Test nouveau endpoint facture...");
   const invoiceTest = await testEndpoint(
-    `${BASE_URL}/api/orders/invoice/TEST_ORDER_123`
+    `${BASE_URL}/api/airtable/orders/invoice/TEST_ORDER_123`
   );
   console.log(
     `   Statut: ${invoiceTest.status} ${invoiceTest.success ? "✅" : "❌"}`
@@ -66,7 +66,7 @@ async function runTests() {
 
   console.log("\n2. 📋 Test nouveau endpoint mes commandes...");
   const ordersTest = await testWithResponse(
-    `${BASE_URL}/api/orders/customer?email=test@example.com`
+    `${BASE_URL}/api/airtable/orders/customer?email=test@example.com`
   );
   console.log(`   Statut: ${ordersTest.success ? "✅" : "❌"}`);
   if (ordersTest.response) {
@@ -123,8 +123,8 @@ async function runTests() {
 
   console.log("\n5. 🧪 Test du build et des nouvelles fonctionnalités...");
   console.log("   ✅ Build Nuxt réussi");
-  console.log("   ✅ Endpoints créés: /api/orders/invoice/[orderRef]");
-  console.log("   ✅ Endpoints créés: /api/orders/customer");
+  console.log("   ✅ Endpoints créés: /api/airtable/orders/invoice/[orderRef]");
+  console.log("   ✅ Endpoints créés: /api/airtable/orders/customer");
   console.log("   ✅ Webhook PayTech recodé complètement");
   console.log("   ✅ Contact Airtable avec noms de champs anglais");
 

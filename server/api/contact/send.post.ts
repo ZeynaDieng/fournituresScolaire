@@ -71,51 +71,18 @@ export default defineEventHandler(async (event) => {
 
     if (!airtableResponse.ok) {
       const errorData = await airtableResponse.json();
-      console.error("Erreur Airtable:", errorData);
+      console.error("❌ Erreur Airtable:", errorData);
 
-      // IMPORTANT: Envoyer les notifications même si Airtable échoue !
-      try {
-        const notificationData = {
-          type: "contact" as const,
-          recipient: {
-            name: name,
-            email: email,
-            phone: phone || "",
-          },
-          admin: {
-            name: process.env.FROM_NAME || "Admin",
-            email: process.env.ADMIN_EMAIL || "",
-            phone: process.env.WHATSAPP_BUSINESS_NUMBER || "",
-          },
-          data: {
-            subject: subject,
-            message: message,
-          },
-        };
-
-        console.log(
-          "📧 Envoi notifications (mode fallback):",
-          notificationData
-        );
-        const notificationResults = await NotificationService.sendNotification(
-          notificationData
-        );
-        console.log(
-          "📧📱 Notifications fallback envoyées:",
-          notificationResults
-        );
-      } catch (notifError) {
-        console.error("Erreur notifications fallback:", notifError);
-      }
-
-      // En cas d'erreur Airtable, on peut quand même envoyer par email
-      await sendContactEmail(body);
-
-      return {
-        success: true,
-        message: "Message enregistré localement et notifications envoyées",
-        fallback: true,
-      };
+      // En production, on DOIT enregistrer dans Airtable
+      // Si ça échoue, on retourne une erreur pour que l'utilisateur réessaie
+      throw createError({
+        statusCode: 500,
+        statusMessage: "Erreur lors de l'enregistrement du message",
+        data: {
+          airtableError: errorData,
+          suggestion: "Veuillez réessayer dans quelques instants",
+        },
+      });
     }
 
     const airtableResult = await airtableResponse.json();

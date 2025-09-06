@@ -1,4 +1,4 @@
-// server/api/orders/create.post.ts
+// server/api/airtable/orders/create.post.ts
 
 import { readBody, getHeader } from "h3";
 import { addOrderToGoogleSheets } from "../../../utils/google-sheets";

@@ -34,27 +34,30 @@ async function testRealNotifications() {
 
     console.log("\n2. Test d'une commande WhatsApp réelle...");
 
-    const orderResponse = await fetch(`${BASE_URL}/api/orders/whatsapp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerName: "Test Client Real",
-        customerEmail: "zeynash1@gmail.com", // Votre email
-        customerPhone: "221777780456", // Votre WhatsApp
-        items: [
-          {
-            id: "test-1",
-            name: "Cahier test",
-            quantity: 2,
-            price: 500,
-          },
-        ],
-        totalAmount: 1000,
-        deliveryAddress: "Dakar, Sénégal",
-      }),
-    });
+    const orderResponse = await fetch(
+      `${BASE_URL}/api/airtable/orders/whatsapp`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName: "Test Client Real",
+          customerEmail: "zeynash1@gmail.com", // Votre email
+          customerPhone: "221777780456", // Votre WhatsApp
+          items: [
+            {
+              id: "test-1",
+              name: "Cahier test",
+              quantity: 2,
+              price: 500,
+            },
+          ],
+          totalAmount: 1000,
+          deliveryAddress: "Dakar, Sénégal",
+        }),
+      }
+    );
 
     const orderResult = await orderResponse.json();
     console.log("🛒 Résultat commande:", orderResult);

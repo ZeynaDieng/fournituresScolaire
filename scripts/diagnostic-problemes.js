@@ -150,7 +150,7 @@ async function diagnosticComplet() {
   };
 
   const whatsappResult = await testAPI(
-    "/api/orders/whatsapp",
+    "/api/airtable/orders/whatsapp",
     "POST",
     whatsappOrderData
   );

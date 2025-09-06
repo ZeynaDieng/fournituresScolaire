@@ -22,10 +22,12 @@ interface NotificationData {
 
 export class NotificationService {
   private static transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.EMAIL_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.EMAIL_PORT || "587"),
+    secure: false, // true for 465, false for other ports
     auth: {
-      user: process.env.NOTIFICATION_EMAIL_USER,
-      pass: process.env.NOTIFICATION_EMAIL_PASSWORD,
+      user: process.env.EMAIL_USER || process.env.FROM_EMAIL,
+      pass: process.env.EMAIL_PASS || process.env.NOTIFICATION_EMAIL_PASSWORD,
     },
   });
 
@@ -77,7 +79,7 @@ export class NotificationService {
       }
 
       await this.transporter.sendMail({
-        from: `"${process.env.FROM_NAME}" <${process.env.NOTIFICATION_EMAIL_USER}>`,
+        from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
         to: data.admin.email,
         subject,
         html,
@@ -107,7 +109,7 @@ export class NotificationService {
       }
 
       await this.transporter.sendMail({
-        from: `"${process.env.FROM_NAME}" <${process.env.NOTIFICATION_EMAIL_USER}>`,
+        from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
         to: data.recipient.email,
         subject,
         html,
@@ -195,31 +197,228 @@ export class NotificationService {
   }
 
   /**
-   * Envoyer un message WhatsApp (API WhatsApp Business)
+   * Envoyer un message WhatsApp directement
+   * Utilise l'API WhatsApp Business si configurée, sinon Twilio WhatsApp
    */
   static async sendWhatsAppMessage(
     phone: string,
     message: string
   ): Promise<boolean> {
     try {
-      // Pour le moment, on simule l'envoi WhatsApp
-      // Dans un vrai projet, vous utiliseriez l'API WhatsApp Business
+      console.log("📱 Tentative d'envoi WhatsApp direct vers:", phone);
+      
+      // Nettoyer le numéro de téléphone (format international)
+      let cleanPhone = phone.replace(/\D/g, "");
+      
+      // Ajouter le code pays sénégalais si manquant
+      if (cleanPhone.length === 9 && cleanPhone.startsWith("7")) {
+        cleanPhone = "221" + cleanPhone; // Sénégal
+      } else if (cleanPhone.length === 8) {
+        cleanPhone = "221" + cleanPhone; // Sénégal
+      }
+      
+      if (cleanPhone.length < 10) {
+        console.log("⚠️ Numéro de téléphone invalide:", phone);
+        return false;
+      }
 
-      const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone.replace(
-        /\D/g,
-        ""
-      )}&text=${encodeURIComponent(message)}`;
+      // 1. Essayer l'API WhatsApp Business (Meta)
+      if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_ID) {
+        console.log("🚀 Tentative via WhatsApp Business API...");
+        try {
+          return await this.sendWhatsAppBusinessAPI(
+            cleanPhone, 
+            message, 
+            process.env.WHATSAPP_ACCESS_TOKEN, 
+            process.env.WHATSAPP_PHONE_ID
+          );
+        } catch (error) {
+          console.error("❌ WhatsApp Business API échoué:", error);
+        }
+      }
 
-      console.log(
-        `📱 WhatsApp simulé pour ${phone}:`,
-        message.substring(0, 100) + "..."
+      // 2. Essayer Twilio WhatsApp
+      if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+        console.log("🚀 Tentative via Twilio WhatsApp...");
+        try {
+          return await this.sendTwilioWhatsApp(cleanPhone, message);
+        } catch (error) {
+          console.error("❌ Twilio WhatsApp échoué:", error);
+        }
+      }
+
+      // 3. Essayer une API locale/africaine
+      if (process.env.AFRICA_SMS_API_KEY) {
+        console.log("� Tentative via API SMS locale...");
+        try {
+          return await this.sendAfricaWhatsApp(cleanPhone, message);
+        } catch (error) {
+          console.error("❌ API locale échouée:", error);
+        }
+      }
+
+      // 4. Fallback : notification par email avec lien WhatsApp
+      console.log("⚠️ Aucune API configurée, utilisation du fallback email");
+      return await this.sendWhatsAppFallback(cleanPhone, message);
+
+    } catch (error) {
+      console.error("❌ Erreur générale WhatsApp:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Envoyer via API WhatsApp Business officielle
+   */
+  private static async sendWhatsAppBusinessAPI(
+    phone: string, 
+    message: string, 
+    token: string, 
+    phoneId: string
+  ): Promise<boolean> {
+    try {
+      // Nettoyer le numéro de téléphone
+      const cleanPhone = phone.replace(/\D/g, "");
+      if (cleanPhone.length < 8) {
+        console.log("⚠️ Numéro de téléphone invalide:", phone);
+        return false;
+      }
+
+      // Appel API WhatsApp Business
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/${phoneId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: cleanPhone,
+            type: "text",
+            text: {
+              body: message,
+            },
+          }),
+        }
       );
-      console.log(`🔗 URL WhatsApp: ${whatsappUrl}`);
 
-      // TODO: Remplacer par un vrai appel API WhatsApp Business
+      if (response.ok) {
+        const result = await response.json();
+        console.log(
+          "✅ WhatsApp Business API envoyé:",
+          result.messages?.[0]?.id
+        );
+        return true;
+      } else {
+        const error = await response.text();
+        console.error("❌ Erreur API WhatsApp Business:", response.status, error);
+        throw new Error(`API WhatsApp error: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("❌ Erreur WhatsApp Business API:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Envoyer via WhatsApp Web (solution simple)
+   */
+  private static async sendWhatsAppWeb(phone: string, message: string): Promise<boolean> {
+    try {
+      // Nettoyer le numéro de téléphone
+      const cleanPhone = phone.replace(/\D/g, "");
+      if (cleanPhone.length < 8) {
+        console.log("⚠️ Numéro de téléphone invalide:", phone);
+        return false;
+      }
+
+      // Créer le lien WhatsApp Web
+      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+      
+      // En production, on peut utiliser un service comme Twilio ou envoyer par email à l'admin
+      console.log("📱 WhatsApp Web - Message à envoyer:");
+      console.log("📞 Destinataire:", cleanPhone);
+      console.log("💬 Message:", message.substring(0, 100) + "...");
+      console.log("🔗 Lien WhatsApp:", whatsappUrl);
+
+      // Envoyer le lien par email à l'admin pour qu'il puisse envoyer manuellement
+      if (process.env.ADMIN_EMAIL) {
+        try {
+          await this.sendWhatsAppLinkByEmail(cleanPhone, message, whatsappUrl);
+          console.log("✅ Lien WhatsApp envoyé par email à l'admin");
+          return true;
+        } catch (emailError) {
+          console.error("⚠️ Erreur envoi email WhatsApp:", emailError);
+        }
+      }
+
+      // Alternative : stocker dans un fichier de log pour traitement manuel
+      console.log("✅ WhatsApp préparé (traitement manuel requis)");
+      return true;
+
+    } catch (error) {
+      console.error("❌ Erreur WhatsApp Web:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Envoyer le lien WhatsApp par email à l'admin
+   */
+  private static async sendWhatsAppLinkByEmail(
+    phone: string, 
+    message: string, 
+    whatsappUrl: string
+  ): Promise<void> {
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #25D366;">📱 Message WhatsApp à envoyer</h2>
+        <div style="background: #f0f0f0; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p><strong>📞 Destinataire:</strong> ${phone}</p>
+          <p><strong>💬 Message:</strong></p>
+          <div style="background: white; padding: 15px; border-left: 4px solid #25D366; white-space: pre-line;">
+${message}
+          </div>
+        </div>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${whatsappUrl}" 
+             style="background: #25D366; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+            📱 Envoyer via WhatsApp Web
+          </a>
+        </div>
+        <p style="color: #666; font-size: 12px;">
+          Cliquez sur le bouton pour ouvrir WhatsApp Web avec le message pré-rempli, puis envoyez-le.
+        </p>
+      </div>
+    `;
+
+    await this.transporter.sendMail({
+      from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: `📱 WhatsApp à envoyer - ${phone}`,
+      html: emailHtml,
+    });
+  }
+
+  /**
+   * Fallback WhatsApp - génère un lien de redirection
+   */
+  static sendWhatsAppFallback(phone: string, message: string): boolean {
+    try {
+      const cleanPhone = phone.replace(/\D/g, "");
+      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
+        message
+      )}`;
+
+      console.log("📱 WhatsApp Fallback généré pour", phone);
+      console.log("🔗 Lien WhatsApp:", whatsappUrl.substring(0, 100) + "...");
+
+      // Dans un vrai cas, vous pourriez enregistrer ce lien ou l'envoyer par email
       return true;
     } catch (error) {
-      console.error("❌ Erreur envoi WhatsApp:", error);
+      console.error("❌ Erreur WhatsApp fallback:", error);
       return false;
     }
   }

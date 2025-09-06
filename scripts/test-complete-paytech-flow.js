@@ -91,7 +91,7 @@ async function testCompletePaytechFlow() {
       console.log("   Mode: Simulation (pas de clés PayTech)");
 
       const simulationResponse = await fetch(
-        `${BASE_URL}/api/orders/create-pending`,
+        `${BASE_URL}/api/airtable/orders/create-pending`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

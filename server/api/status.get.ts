@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
   const apiRoutes = [
     "/api/test-simple",
     "/api/test-whatsapp",
-    "/api/orders/create-pending",
+    "/api/airtable/orders/create-pending",
   ];
 
   console.log("🔍 Environment:", envInfo);

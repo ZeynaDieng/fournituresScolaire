@@ -49,15 +49,13 @@ export default defineEventHandler(async (event) => {
     // Formatter les données
     const messages = airtableResult.records.map((record: any) => ({
       id: record.id,
-      name: record.fields.Nom || "",
+      name: record.fields.Name || "",
       email: record.fields.Email || "",
-      phone: record.fields.Téléphone || "",
-      subject: record.fields.Sujet || "",
+      phone: record.fields.Phone || "",
+      subject: record.fields.Subject || "",
       message: record.fields.Message || "",
       date: record.fields.Date || "",
       status: record.fields.Statut || "Nouveau",
-      processed: record.fields.Traité || false,
-      createdTime: record.createdTime,
     }));
 
     return {
