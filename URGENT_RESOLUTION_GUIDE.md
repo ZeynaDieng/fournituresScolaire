@@ -2,7 +2,7 @@
 
 ## 🎯 SITUATION ACTUELLE
 
-✅ **Site déployé** : https://fournitures-scolaire.vercel.app
+✅ **Site déployé** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app
 ❌ **Erreur 500** : `/api/paytech/initiate` (variables d'environnement manquantes)
 ❌ **Erreur 404** : `/images/payment/default.png` (image existe mais pas accessible)
 

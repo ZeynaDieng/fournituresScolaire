@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative flex items-center justify-center min-h-[600px] bg-gradient-to-br from-primary-green/10 to-primary-yellow/10 overflow-hidden"
+    class="relative flex items-center justify-center min-h-[600px] bg-gradient-to-br from-primary-600/10 to-accent-400/10 overflow-hidden"
   >
     <!-- Background with overlay -->
     <div class="absolute inset-0">
@@ -12,16 +12,16 @@
 
     <!-- Floating circles -->
     <div
-      class="absolute top-10 left-10 w-40 h-40 bg-primary-green/10 rounded-full animate-float-slow"
+      class="absolute top-10 left-10 w-40 h-40 bg-primary-600/10 rounded-full animate-float-slow"
     ></div>
     <div
-      class="absolute top-32 right-20 w-32 h-32 bg-primary-yellow/10 rounded-full animate-float-medium"
+      class="absolute top-32 right-20 w-32 h-32 bg-accent-400/10 rounded-full animate-float-medium"
     ></div>
     <div
-      class="absolute bottom-20 left-1/4 w-24 h-24 bg-primary-green/10 rounded-full animate-float-slow"
+      class="absolute bottom-20 left-1/4 w-24 h-24 bg-primary-600/10 rounded-full animate-float-slow"
     ></div>
     <div
-      class="absolute bottom-32 right-1/3 w-48 h-48 bg-primary-yellow/10 rounded-full animate-float-medium"
+      class="absolute bottom-32 right-1/3 w-48 h-48 bg-accent-400/10 rounded-full animate-float-medium"
     ></div>
 
     <!-- Content -->
@@ -161,11 +161,11 @@
 
 /* Button Styles */
 .btn-primary {
-  @apply bg-primary-green hover:bg-primary-dark-green text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+  @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
 }
 
 .btn-secondary {
-  @apply bg-white text-gray-800 border-2 border-gray-200 hover:border-primary-green font-semibold rounded-xl transition-all duration-300 hover:bg-gray-50;
+  @apply bg-white text-gray-800 border-2 border-gray-200 hover:border-primary-600 font-semibold rounded-xl transition-all duration-300 hover:bg-gray-50;
 }
 
 /* Section Styles */
@@ -174,7 +174,7 @@
 }
 
 .section-title {
-  @apply text-3xl md:text-4xl font-bold text-primary-dark-green mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-green to-primary-dark-green;
+  @apply text-3xl md:text-4xl font-bold text-primary-700 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-700;
   position: relative;
   display: inline-block;
 
@@ -188,8 +188,8 @@
     height: 3px;
     background: linear-gradient(
       90deg,
-      var(--primary-green),
-      var(--primary-dark-green)
+      #16a34a,
+      #15803d
     );
     border-radius: 3px;
   }
@@ -210,11 +210,11 @@
 }
 
 .btn-primary {
-  @apply bg-primary-green text-white font-bold rounded-full shadow-lg hover:bg-primary-dark-green transition-all duration-300 transform hover:-translate-y-1;
+  @apply bg-primary-600 text-white font-bold rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 transform hover:-translate-y-1;
 }
 
 .btn-secondary {
-  @apply bg-white text-primary-green font-bold rounded-full shadow-md hover:shadow-xl border border-primary-light-green hover:border-primary-green transition-all duration-300 transform hover:-translate-y-1;
+  @apply bg-white text-primary-600 font-bold rounded-full shadow-md hover:shadow-xl border border-primary-100 hover:border-primary-600 transition-all duration-300 transform hover:-translate-y-1;
 }
 
 /* Animations */

@@ -25,7 +25,7 @@
         <div class="p-6 bg-white rounded-lg shadow-xl">
           <div class="flex items-center space-x-3">
             <div
-              class="w-5 h-5 border-2 border-primary-green border-t-transparent rounded-full animate-spin"
+              class="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"
             ></div>
             <span>Chargement...</span>
           </div>

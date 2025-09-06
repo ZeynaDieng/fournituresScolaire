@@ -7,7 +7,7 @@
 
 const https = require("https");
 
-const SITE_URL = "https://fournitures-scolaire.vercel.app";
+const SITE_URL = "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app";
 
 console.log("🎯 VALIDATION FINALE - FOURNITURES SCOLAIRES");
 console.log("=".repeat(60));

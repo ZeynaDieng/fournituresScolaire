@@ -3,7 +3,7 @@
     <!-- Animated Background Elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div
-        class="absolute -top-24 -right-24 w-96 h-96 bg-primary-green rounded-full blur-3xl animate-pulse"
+        class="absolute -top-24 -right-24 w-96 h-96 bg-primary-600 rounded-full blur-3xl animate-pulse"
       ></div>
       <div
         class="absolute -bottom-32 -left-32 w-80 h-80 bg-green-500 rounded-full blur-3xl animate-pulse delay-1000"
@@ -35,7 +35,7 @@
         </div>
 
         <h2
-          class="text-5xl md:text-6xl font-black mb-6 bg-primary-green bg-clip-text text-transparent animate-fade-in"
+          class="text-5xl md:text-6xl font-black mb-6 bg-primary-600 bg-clip-text text-transparent animate-fade-in"
         >
           Promotions Limitées
         </h2>
@@ -97,7 +97,7 @@
             <div class="flex items-center mb-6">
               <div class="flex-1">
                 <h3
-                  class="text-2xl font-bold text-gray-800 mb-1 group-hover:text-primary-green transition-colors"
+                  class="text-2xl font-bold text-gray-800 mb-1 group-hover:text-primary-600 transition-colors"
                 >
                   {{ promo.title }}
                 </h3>
@@ -172,7 +172,7 @@
                     >{{ promo.originalPrice }} CFA</span
                   >
                   <span
-                    class="text-3xl font-black bg-gradient-to-r from-dark-green to-primary-green bg-clip-text text-transparent"
+                    class="text-3xl font-black bg-gradient-to-r from-dark-green to-primary-600 bg-clip-text text-transparent"
                   >
                     {{
                       promo.currentPrice !== undefined ? promo.currentPrice : ""
@@ -265,7 +265,7 @@
               <!-- Bouton de partage -->
               <button
                 @click="sharePromo(promo)"
-                class="w-full bg-white border-2 border-primary-green text-dark-green py-2 px-4 rounded-xl font-medium hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
+                class="w-full bg-white border-2 border-primary-600 text-dark-green py-2 px-4 rounded-xl font-medium hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
               >
                 <svg
                   class="w-4 h-4"
@@ -287,7 +287,7 @@
 
           <!-- Decorative Elements -->
           <div
-            class="absolute bottom-0 left-0 w-full h-1 bg-primary-green transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl"
+            class="absolute bottom-0 left-0 w-full h-1 bg-primary-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl"
           ></div>
           <div
             class="absolute top-0 right-0 w-32 h-32 bg-dark-green rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"
@@ -320,7 +320,7 @@
           >
             <NuxtLink
               to="/promotions"
-              class="group bg-primary-green text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-red-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center space-x-3"
+              class="group bg-primary-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-red-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center space-x-3"
             >
               <svg
                 class="w-6 h-6 group-hover:animate-bounce"

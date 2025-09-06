@@ -1,7 +1,7 @@
 # Variables à configurer dans Vercel Dashboard
-# https://vercel.com/dashboard → votre projet → Settings → Environment Variables
+# https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app → Settings → Environment Variables
 
-# PRIORITÉ 1 - CRITIQUES
+# PRIORITÉ 1 - CRITIQUES (pour résoudre erreur 500)
 PAYTECH_API_KEY=0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b
 PAYTECH_SECRET_KEY=566126b0d75afe81e81bf9b78231c79843a6c4034d14cdb21835b38c91e479ee
 PAYTECH_SANDBOX=true
@@ -21,14 +21,3 @@ NUXT_PUBLIC_PAYTECH_API_KEY=0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea17
 NUXT_PUBLIC_PAYTECH_API_SECRET=566126b0d75afe81e81bf9b78231c79843a6c4034d14cdb21835b38c91e479ee
 WHATSAPP_BUSINESS_NUMBER=221777780456
 NUXT_PUBLIC_API_BASE=/api
-
-# OPTIONNELLES
-NUXT_PUBLIC_PAYTECH_MERCHANT_ID=VotreMerchantId
-NUXT_PUBLIC_WHATSAPP_NUMBER=221777780456
-GOOGLE_SHEET_ID=1H5QEGhyaXB5A3ZBz9xqRqGp0CM508k4YyMZUtygTjl0
-GOOGLE_SHEETS_API_KEY=AIzaSyAc7pdCISf_pyi65pmnVU-RTc6KMFcORis
-NOTIFICATION_EMAIL_USER=zeynash1@gmail.com
-NOTIFICATION_EMAIL_PASSWORD=zmruomypjxrjxfto
-ADMIN_EMAIL=zeynash1@gmail.com
-FROM_NAME=Fournitures Scolaires
-DATABASE_URL=mysql://root:root@127.0.0.1:8889/fourniturescolaire

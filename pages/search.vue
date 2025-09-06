@@ -23,7 +23,7 @@
             >
             <button 
               @click="searchStore.performSearch()"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-500 hover:text-primary-green"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-500 hover:text-primary-600"
             >
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -38,7 +38,7 @@
     <main class="container mx-auto px-4 py-6">
       <!-- Loading State -->
       <div v-if="searchStore.isLoading" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-green"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
       </div>
 
       <!-- No Results -->
@@ -52,7 +52,7 @@
           <div class="mt-6">
             <button
               @click="clearSearch"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-green hover:bg-primary-dark-green focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green"
             >
               Effacer la recherche
             </button>
@@ -82,7 +82,7 @@
               </div>
               <div class="p-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-1 line-clamp-2">{{ item.name }}</h3>
-                <p class="text-primary-green font-bold">
+                <p class="text-primary-600 font-bold">
                   {{ item.price ? `${item.price} CFA` : 'Voir les détails' }}
                 </p>
                 <div v-if="item.isPromotion" class="mt-2">

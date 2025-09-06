@@ -2,7 +2,7 @@
 
 ## ⚡ **SITUATION ACTUELLE**
 
-- ✅ **Site déployé** : https://fournitures-scolaire.vercel.app
+- ✅ **Site déployé** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app
 - ❌ **Statut** : 403 Forbidden (configuration incomplète)
 - 🎯 **Solution** : Variables d'environnement à configurer MAINTENANT
 
@@ -25,9 +25,9 @@ https://vercel.com/dashboard
 | `PAYTECH_SANDBOX`      | `true`                                                                               | Add New |
 | `AIRTABLE_API_KEY`     | `patrR71W7giuFrjP0.fadb29458ae74396bce8c0ffb8f2033c35164715f4546198bb8bbafb593ad83a` | Add New |
 | `AIRTABLE_BASE_ID`     | `appOtYkVavA4MMMnN`                                                                  | Add New |
-| `BASE_URL`             | `https://fournitures-scolaire.vercel.app`                                            | Add New |
-| `NUXT_PUBLIC_BASE_URL` | `https://fournitures-scolaire.vercel.app`                                            | Add New |
-| `NUXT_PUBLIC_SITE_URL` | `https://fournitures-scolaire.vercel.app`                                            | Add New |
+| `BASE_URL`             | `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`                                            | Add New |
+| `NUXT_PUBLIC_BASE_URL` | `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`                                            | Add New |
+| `NUXT_PUBLIC_SITE_URL` | `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`                                            | Add New |
 
 **Pour chaque variable :**
 

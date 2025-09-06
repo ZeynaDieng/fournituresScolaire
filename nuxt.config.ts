@@ -67,11 +67,6 @@ export default defineNuxtConfig({
   generate: {
     routes: ["/"],
   },
-  routeRules: {
-    "/about": { prerender: false },
-    "/paiement/**": { ssr: false },
-    "/api/**": { cors: true },
-  },
   build: {
     transpile: ["@heroicons/vue"],
   },
@@ -95,48 +90,6 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000,
     host: "0.0.0.0",
-  },
-  tailwindcss: {
-    config: {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              green: "#16a34a",
-              yellow: "#facc15",
-              "dark-green": "#15803d",
-              "light-green": "#dcfce7",
-            },
-          },
-          animation: {
-            "fade-in-up": "fadeInUp 0.6s ease-out",
-            "pulse-btn": "pulse 2s infinite",
-            "slide-down": "slideDown 0.8s ease-out",
-            float: "float 6s ease-in-out infinite",
-            "float-delayed": "float 8s ease-in-out infinite 2s",
-          },
-          keyframes: {
-            fadeInUp: {
-              "0%": { opacity: "0", transform: "translateY(30px)" },
-              "100%": { opacity: "1", transform: "translateY(0)" },
-            },
-            slideDown: {
-              "0%": { opacity: "0", transform: "translateY(-20px)" },
-              "100%": { opacity: "1", transform: "translateY(0)" },
-            },
-            float: {
-              "0%, 100%": { transform: "translateY(0px)" },
-              "50%": { transform: "translateY(-20px)" },
-            },
-          },
-          backgroundImage: {
-            "grid-white":
-              "url(\"data:image/svg+xml,%3csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cpattern id='grid' width='40' height='40' patternUnits='userSpaceOnUse'%3e%3cpath d='m 40 0 l 0 40 m -40 0 l 40 0' fill='none' stroke='white' stroke-width='1' opacity='0.1'/%3e%3c/pattern%3e%3c/defs%3e%3crect width='100%25' height='100%25' fill='url(%23grid)' /%3e%3c/svg%3e\")",
-            "fourniture-pattern": "url('/images/fournitureBanniere.png')",
-          },
-        },
-      },
-    },
   },
   runtimeConfig: {
     // Configuration PayTech (désactivée)

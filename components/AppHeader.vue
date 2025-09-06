@@ -62,7 +62,7 @@
         <!-- Logo -->
         <NuxtLink to="/" class="flex items-center space-x-2">
           <div
-            class="w-10 h-10 bg-primary-yellow rounded-lg flex items-center justify-center"
+            class="w-10 h-10 bg-accent-400 rounded-lg flex items-center justify-center"
           >
             <svg
               class="w-6 h-6 text-white"
@@ -79,7 +79,7 @@
             </svg>
           </div>
           <span class="text-2xl font-bold text-white"
-            >Edu<span class="text-primary-yellow">Shop</span></span
+            >Edu<span class="text-accent-400">Shop</span></span
           >
         </NuxtLink>
 
@@ -136,8 +136,8 @@
             v-for="item in navigation"
             :key="item.name"
             :to="item.path"
-            class="text-white hover:text-primary-yellow transition-colors text-sm font-medium"
-            :class="{ 'text-primary-yellow': $route.path === item.path }"
+            class="text-white hover:text-accent-400 transition-colors text-sm font-medium"
+            :class="{ 'text-accent-400': $route.path === item.path }"
           >
             {{ item.name }}
           </NuxtLink>
@@ -148,7 +148,7 @@
           <!-- Cart Button -->
           <button
             @click="cartStore.toggleCart()"
-            class="relative p-2 bg-primary-yellow text-primary-dark-green rounded-full hover:bg-yellow-300 transition-all transform hover:scale-105"
+            class="relative p-2 bg-accent-400 text-primary-700 rounded-full hover:bg-yellow-300 transition-all transform hover:scale-105"
             aria-label="Panier"
           >
             <ShoppingCartIcon :width="20" :height="20" fill="currentColor" />
@@ -165,7 +165,7 @@
           <!-- Mobile Search Button -->
           <button
             @click="searchStore.toggleSearch()"
-            class="p-2 text-white hover:text-primary-yellow md:hidden"
+            class="p-2 text-white hover:text-accent-400 md:hidden"
           >
             <svg
               class="h-6 w-6"
@@ -185,7 +185,7 @@
           <!-- Mobile Menu Button -->
           <button
             @click="toggleMobileMenu"
-            class="md:hidden p-2 text-white hover:text-primary-yellow transition-colors"
+            class="md:hidden p-2 text-white hover:text-accent-400 transition-colors"
             aria-label="Menu"
           >
             <svg
@@ -256,7 +256,7 @@
               >
                 <NuxtLink
                   to="/search"
-                  class="text-primary-green hover:underline"
+                  class="text-primary-600 hover:underline"
                   @click="searchStore.isSearchOpen = false"
                 >
                   Voir tous les résultats ({{
@@ -296,14 +296,14 @@
           <div class="flex items-center justify-between">
             <NuxtLink
               to="/"
-              class="flex items-center space-x-2 text-primary-green"
+              class="flex items-center space-x-2 text-primary-600"
               @click="isMobileMenuOpen = false"
             >
               <div
-                class="w-8 h-8 bg-primary-yellow rounded-lg flex items-center justify-center"
+                class="w-8 h-8 bg-accent-400 rounded-lg flex items-center justify-center"
               >
                 <svg
-                  class="w-5 h-5 text-primary-dark-green"
+                  class="w-5 h-5 text-primary-700"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

@@ -30,9 +30,9 @@ const envVars = {
   AIRTABLE_TESTIMONIALS_TABLE: "tblYjfi1FFk1CCH46",
 
   // URLs de production (CRITIQUE pour résoudre erreur 403)
-  BASE_URL: "https://fournitures-scolaire.vercel.app",
-  NUXT_PUBLIC_BASE_URL: "https://fournitures-scolaire.vercel.app",
-  NUXT_PUBLIC_SITE_URL: "https://fournitures-scolaire.vercel.app",
+  BASE_URL: "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
+  NUXT_PUBLIC_BASE_URL: "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
+  NUXT_PUBLIC_SITE_URL: "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
   NUXT_PUBLIC_API_BASE: "/api",
 
   // PayTech publiques
@@ -128,11 +128,11 @@ console.log("   • Attendre 2-3 minutes");
 
 console.log("\n6. ✅ Validation:");
 console.log(
-  "   • Site: https://fournitures-scolaire.vercel.app (doit passer de 403 → 200)"
+  "   • Site: https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app (doit passer de 403 → 200)"
 );
 console.log("   • PayTech: Pas d'erreur 500 au checkout");
 console.log(
-  "   • APIs: https://fournitures-scolaire.vercel.app/api/admin/products"
+  "   • APIs: https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app/api/admin/products"
 );
 
 console.log("\n🧪 TESTS AUTOMATIQUES:");

@@ -106,7 +106,7 @@
           <button
             :disabled="cartStore.items.length === 0"
             @click="handleCheckout"
-            class="w-full bg-primary-green text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Valider la commande
           </button>
