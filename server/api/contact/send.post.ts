@@ -33,23 +33,21 @@ export default defineEventHandler(async (event) => {
     const airtableApiKey = process.env.AIRTABLE_API_KEY;
     const airtableBaseId = process.env.AIRTABLE_BASE_ID;
 
-    // Créer une table pour les messages de contact (si elle n'existe pas déjà)
-    const contactTableId =
-      process.env.AIRTABLE_CONTACTS_TABLE || "tblContactMessages";
+    // ID de table pour les messages de contact
+    const contactTableId = process.env.AIRTABLE_CONTACTS_TABLE;
 
-    // Préparer les données pour Airtable
+    // Préparer les données pour Airtable (noms de champs en anglais)
     const contactData = {
       records: [
         {
           fields: {
-            Nom: name,
+            Name: name,
             Email: email,
-            Téléphone: phone || "",
-            Sujet: subject,
+            Phone: phone || "",
+            Subject: subject,
             Message: message,
-            Date: new Date().toISOString(),
-            Statut: "Nouveau",
-            Traité: false,
+            Status: "New",
+            Processed: false,
           },
         },
       ],
