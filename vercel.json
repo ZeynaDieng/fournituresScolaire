@@ -1,28 +1,6 @@
 {
   "version": 2,
-  "framework": "nuxtjs",
   "buildCommand": "npm run build",
-  "outputDirectory": ".output/public",
-  "serverFiles": [".output/server/**"],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "env": {
-    "NUXT_TELEMETRY_DISABLED": "1"
-  },
-  "functions": {
-    ".output/server/index.mjs": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "devCommand": "npm run dev",
+  "installCommand": "npm ci"
 }
