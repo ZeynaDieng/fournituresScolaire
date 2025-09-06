@@ -72,44 +72,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Méthode flexible: toutes les méthodes -->
-      <div class="border border-gray-200 rounded-lg p-4">
-        <div class="flex items-center justify-between mb-3">
-          <h4 class="font-medium text-gray-900">
-            Toutes les méthodes disponibles
-          </h4>
-          <button
-            @click="selectMultipleMethods"
-            :class="[
-              'px-3 py-1 rounded-full text-sm font-medium',
-              isMultipleSelected
-                ? 'bg-primary-green text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-            ]"
-          >
-            {{ isMultipleSelected ? "Sélectionné" : "Choisir" }}
-          </button>
-        </div>
-        <p class="text-sm text-gray-600 mb-3">
-          Vous pourrez choisir votre méthode sur la page de paiement
-        </p>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="method in availableMethods"
-            :key="`multi-${method}`"
-            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
-          >
-            <img
-              :src="getMethodIcon(method)"
-              :alt="method"
-              class="w-4 h-4 mr-1 rounded"
-              @error="handleImageError"
-            />
-            {{ method }}
-          </span>
-        </div>
-      </div>
     </div>
 
     <!-- Informations de sécurité -->

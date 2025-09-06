@@ -1,6 +1,7 @@
 // server/api/paytech/webhook.post.ts
 import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
+import { updateOrderStatusInAirtable } from "../../../utils/airtable-orders";
 
 const prisma = new PrismaClient();
 
@@ -195,6 +196,19 @@ async function handleSuccessfulPayment(paymentData: any) {
     }
 
     console.log(`Commande ${paymentData.ref_command} marquée comme payée`);
+
+    // 📊 Mettre à jour le statut dans Airtable
+    try {
+      await updateOrderStatusInAirtable(paymentData.ref_command, "Paid");
+      console.log(
+        `✅ Statut PayTech mis à jour dans Airtable: ${paymentData.ref_command} -> Paid`
+      );
+    } catch (airtableError) {
+      console.warn(
+        "⚠️ Erreur mise à jour Airtable pour paiement PayTech:",
+        airtableError instanceof Error ? airtableError.message : airtableError
+      );
+    }
 
     // Ici vous pouvez ajouter :
     // - Envoi d'email de confirmation

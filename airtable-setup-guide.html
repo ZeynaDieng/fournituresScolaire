@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide de Configuration Airtable - Fournitures Scolaires</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .table-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2d3748;
+            border-bottom: 3px solid #4299e1;
+            padding-bottom: 10px;
+        }
+        .field-item {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .field-name {
+            font-weight: bold;
+            color: #2b6cb0;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .field-instructions {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        .step-list {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .step-list ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .step-list li {
+            margin-bottom: 5px;
+        }
+        .checkbox-container {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .field-checkbox {
+            transform: scale(1.5);
+            margin-left: 10px;
+        }
+        .progress-bar {
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .completion-message {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+            display: none;
+        }
+        .next-steps {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .next-steps h3 {
+            color: #2b6cb0;
+            margin-top: 0;
+        }
+        .command-box {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            margin: 10px 0;
+        }
+        .airtable-link {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 10px 5px;
+            font-weight: bold;
+        }
+        .airtable-link:hover {
+            background: #3182ce;
+        }
+        .warning {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-pending { background: #ed8936; }
+        .status-complete { background: #48bb78; }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .table-section { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Guide de Configuration Airtable</h1>
+        <p>Configuration automatique des champs pour votre e-commerce de fournitures scolaires</p>
+        <p><strong>Base ID:</strong> appOtYkVavA4MMMnN</p>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText">0% complété</div>
+
+    
+      <div class="table-section">
+          <div class="table-title">
+              <span class="status-indicator status-pending"></span>
+              📦 Table Packs
+          </div>
+          <p><strong>1 champ(s) à créer</strong></p>
+          
+          <a href="https://airtable.com/appOtYkVavA4MMMnN/tbl4JVykOdi6YFvfd" 
+             class="airtable-link" target="_blank">
+             Ouvrir la table packs
+          </a>
+          
+          
+          <div class="field-item">
+              <div class="field-name">Image URL</div>
+              <div class="field-instructions">Type: URL</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Image URL</strong></li>
+                      <li>Sélectionnez le type: <strong>URL</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="packs" 
+                             data-field="Image URL">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+      </div>
+      <div class="table-section">
+          <div class="table-title">
+              <span class="status-indicator status-pending"></span>
+              📦 Table Products
+          </div>
+          <p><strong>6 champ(s) à créer</strong></p>
+          
+          <a href="https://airtable.com/appOtYkVavA4MMMnN/tblxGbcySHadDtsyn" 
+             class="airtable-link" target="_blank">
+             Ouvrir la table products
+          </a>
+          
+          
+          <div class="field-item">
+              <div class="field-name">Name</div>
+              <div class="field-instructions">Type: Single line text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Name</strong></li>
+                      <li>Sélectionnez le type: <strong>Single line text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="products" 
+                             data-field="Name">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Image URL</div>
+              <div class="field-instructions">Type: URL</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Image URL</strong></li>
+                      <li>Sélectionnez le type: <strong>URL</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="products" 
+                             data-field="Image URL">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Images</div>
+              <div class="field-instructions">Type: Long text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Images</strong></li>
+                      <li>Sélectionnez le type: <strong>Long text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="products" 
+                             data-field="Images">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Specs</div>
+              <div class="field-instructions">Type: Long text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Specs</strong></li>
+                      <li>Sélectionnez le type: <strong>Long text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="products" 
+                             data-field="Specs">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Bulk Options</div>
+              <div class="field-instructions">Type: Long text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Bulk Options</strong></li>
+                      <li>Sélectionnez le type: <strong>Long text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="products" 
+                             data-field="Bulk Options">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Local ID</div>
+              <div class="field-instructions">Type: Single line text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Local ID</strong></li>
+                      <li>Sélectionnez le type: <strong>Single line text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="products" 
+                             data-field="Local ID">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+      </div>
+      <div class="table-section">
+          <div class="table-title">
+              <span class="status-indicator status-pending"></span>
+              📦 Table Orders
+          </div>
+          <p><strong>8 champ(s) à créer</strong></p>
+          
+          <a href="https://airtable.com/appOtYkVavA4MMMnN/tblIx2zvrcz1VY7xb" 
+             class="airtable-link" target="_blank">
+             Ouvrir la table orders
+          </a>
+          
+          
+          <div class="field-item">
+              <div class="field-name">Order ID</div>
+              <div class="field-instructions">Type: Single line text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Order ID</strong></li>
+                      <li>Sélectionnez le type: <strong>Single line text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Order ID">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Customer Name</div>
+              <div class="field-instructions">Type: Single line text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Customer Name</strong></li>
+                      <li>Sélectionnez le type: <strong>Single line text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Customer Name">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Customer Email</div>
+              <div class="field-instructions">Type: Email</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Customer Email</strong></li>
+                      <li>Sélectionnez le type: <strong>Email</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Customer Email">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Customer Phone</div>
+              <div class="field-instructions">Type: Phone number</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Customer Phone</strong></li>
+                      <li>Sélectionnez le type: <strong>Phone number</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Customer Phone">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Status</div>
+              <div class="field-instructions">Type: Single select, Options: Pending, Paid, Shipped, Delivered</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Status</strong></li>
+                      <li>Sélectionnez le type: <strong>Single select, Options: Pending, Paid, Shipped, Delivered</strong></li>
+                      <li>Ajoutez les options: <strong>Pending, Paid, Shipped, Delivered</strong></li>
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Status">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Created Date</div>
+              <div class="field-instructions">Type: Date</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Created Date</strong></li>
+                      <li>Sélectionnez le type: <strong>Date</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Created Date">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Items</div>
+              <div class="field-instructions">Type: Long text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Items</strong></li>
+                      <li>Sélectionnez le type: <strong>Long text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Items">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+          <div class="field-item">
+              <div class="field-name">Shipping Address</div>
+              <div class="field-instructions">Type: Long text</div>
+              
+              <div class="step-list">
+                  <strong>Étapes à suivre:</strong>
+                  <ol>
+                      <li>Cliquez sur le bouton "+" à droite des colonnes existantes</li>
+                      <li>Nommez le champ: <strong>Shipping Address</strong></li>
+                      <li>Sélectionnez le type: <strong>Long text</strong></li>
+                      
+                      <li>Cliquez sur "Créer le champ"</li>
+                  </ol>
+              </div>
+              
+              <div class="checkbox-container">
+                  <label>
+                      <input type="checkbox" class="field-checkbox" 
+                             onchange="updateProgress()" 
+                             data-table="orders" 
+                             data-field="Shipping Address">
+                      Terminé
+                  </label>
+              </div>
+          </div>
+          
+      </div>
+
+    <div class="completion-message" id="completionMessage">
+        <h2>🎉 Configuration terminée !</h2>
+        <p>Tous les champs ont été créés. Vous pouvez maintenant synchroniser vos données.</p>
+    </div>
+
+    <div class="next-steps">
+        <h3>📋 Prochaines étapes</h3>
+        <ol>
+            <li><strong>Vérifier la configuration:</strong>
+                <div class="command-box">npm run test:airtable-config</div>
+            </li>
+            <li><strong>Synchroniser vos données:</strong>
+                <div class="command-box">npm run sync:tables</div>
+            </li>
+            <li><strong>Vérifier la synchronisation:</strong>
+                <div class="command-box">npm run inspect:airtable</div>
+            </li>
+        </ol>
+    </div>
+
+    <script>
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.field-checkbox');
+            const checkedBoxes = document.querySelectorAll('.field-checkbox:checked');
+            const totalFields = checkboxes.length;
+            const completedFields = checkedBoxes.length;
+            
+            const percentage = totalFields > 0 ? Math.round((completedFields / totalFields) * 100) : 100;
+            
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = percentage + '% complété (' + completedFields + '/' + totalFields + ' champs)';
+            
+            // Afficher le message de completion
+            if (percentage === 100) {
+                document.getElementById('completionMessage').style.display = 'block';
+                
+                // Mettre à jour les indicateurs de status
+                document.querySelectorAll('.status-indicator').forEach(indicator => {
+                    indicator.className = 'status-indicator status-complete';
+                });
+            }
+            
+            // Sauvegarder l'état dans localStorage
+            const state = {};
+            checkboxes.forEach(checkbox => {
+                const key = checkbox.dataset.table + '_' + checkbox.dataset.field;
+                state[key] = checkbox.checked;
+            });
+            localStorage.setItem('airtable_setup_progress', JSON.stringify(state));
+        }
+        
+        // Restaurer l'état depuis localStorage
+        window.addEventListener('load', function() {
+            const savedState = localStorage.getItem('airtable_setup_progress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                document.querySelectorAll('.field-checkbox').forEach(checkbox => {
+                    const key = checkbox.dataset.table + '_' + checkbox.dataset.field;
+                    if (state[key]) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateProgress();
+            }
+        });
+    </script>
+</body>
+</html>

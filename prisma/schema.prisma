@@ -13,8 +13,21 @@ model User {
   email     String   @unique
   phone     String?
   address   String?
+  role      String   @default("customer") // customer, admin
+  isActive  Boolean  @default(true)
+  avatar    String?
+  dateOfBirth DateTime?
+  gender    String?
+  preferences String? // JSON
+  lastLoginAt DateTime?
   orders    Order[]
+  reviews   Review[]
+  addresses DeliveryAddress[]
+  wishlists Wishlist[]
+  notifications Notification[]
+  carts     Cart[]
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Pack {
@@ -28,9 +41,18 @@ model Pack {
   contents     String?   // JSON string array
   isPopular    Boolean   @default(false)
   inStock      Boolean   @default(true)
+  stockQuantity Int     @default(0)
   isPromotion  Boolean   @default(false)
   promotionEndDate DateTime?
+  reviews      Review[] // Relation avec les avis
+  wishlists    Wishlist[]
+  inventory    Inventory[]
+  rating       Float?
+  reviewCount  Int       @default(0)
+  soldCount    Int       @default(0)
+  isActive     Boolean   @default(true)
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Product {
@@ -45,11 +67,25 @@ model Product {
   specs        String?   // JSON string array [{label, value}]
   features     String?   // JSON string array [{label, value}]
   inStock      Boolean   @default(true)
+  stockQuantity Int     @default(0)
+  minStock     Int      @default(5)
   isPromotion  Boolean   @default(false)
   promotionEndDate DateTime?
-  reviews      String?   // JSON string array [{id, user, rating, comment, date}]
+  reviews      Review[] // Relation avec les avis
   bulkOptions  String?   // JSON string array [{quantity, unitPrice, discount}]
+  sku          String?   @unique
+  supplier     String?
+  tags         String?   // JSON string array
+  rating       Float?    // Note moyenne
+  reviewCount  Int       @default(0)
+  soldCount    Int       @default(0)
+  viewCount    Int       @default(0)
+  isActive     Boolean   @default(true)
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  wishlists    Wishlist[]
+  inventory    Inventory[]
 }
 
 model Order {
@@ -59,9 +95,24 @@ model Order {
   userId     Int?
   items      String   // JSON string [{productId:1, quantity:2},...]
   total      Int
+  subtotal   Int?
+  shipping   Int      @default(0)
+  tax        Int      @default(0)
+  discount   Int      @default(0)
   status     String   @default("pending")
+  paymentStatus String @default("pending")
+  shippingAddress String? // JSON
+  billingAddress  String? // JSON
+  trackingNumber  String?
+  estimatedDelivery DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+  cancelReason    String?
+  notes      String?
+  source     String   @default("web")
   payment    Payment?
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Payment {
@@ -83,4 +134,136 @@ model Promotion {
   endDate     DateTime
   products    String?   // JSON string array of product IDs
   type        String    // 'percentage' | 'fixed' | 'bogo'
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  productId Int?
+  packId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
+  pack      Pack?    @relation(fields: [packId], references: [id])
+  rating    Int      // 1 à 5 étoiles
+  comment   String?
+  title     String?
+  pros      String?  // Points positifs
+  cons      String?  // Points négatifs
+  isVerified Boolean @default(false)
+  isVisible  Boolean @default(true)
+  helpfulCount Int   @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  image       String?
+  parentId    Int?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  isActive    Boolean  @default(true)
+  sortOrder   Int?
+  createdAt   DateTime @default(now())
+}
+
+model Inventory {
+  id            Int      @id @default(autoincrement())
+  productId     Int?
+  packId        Int?
+  product       Product? @relation(fields: [productId], references: [id])
+  pack          Pack?    @relation(fields: [packId], references: [id])
+  quantity      Int
+  reservedQty   Int      @default(0)
+  minThreshold  Int      @default(5)
+  maxThreshold  Int?
+  supplier      String?
+  lastRestock   DateTime?
+  costPrice     Int?     // Prix d'achat
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model DeliveryAddress {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  address     String
+  city        String
+  region      String?
+  postalCode  String?
+  phone       String
+  isDefault   Boolean  @default(false)
+  instructions String? // Instructions de livraison
+  createdAt   DateTime @default(now())
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int?
+  packId    Int?
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
+  pack      Pack?    @relation(fields: [packId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, productId])
+  @@unique([userId, packId])
+}
+
+model PromoCode {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  discount    Int
+  type        String   // percentage, fixed
+  minAmount   Int?
+  maxUses     Int?
+  usedCount   Int      @default(0)
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  type      String   // order, stock, promo, system
+  title     String
+  message   String
+  data      String?  // JSON
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  sessionId String?  // Pour les utilisateurs non connectés
+  items     String   // JSON des articles
+  total     Int      @default(0)
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coupon {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  name        String
+  description String?
+  type        String   // percentage, fixed, free_shipping
+  value       Int
+  minAmount   Int?
+  maxAmount   Int?
+  maxUses     Int?
+  usedCount   Int      @default(0)
+  isActive    Boolean  @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
 }

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Airtable - Fournitures Scolaires</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .pack {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 Test d'intégration Airtable</h1>
+    <p>Cette page teste la connexion avec votre base Airtable.</p>
+
+    <div id="status"></div>
+
+    <button onclick="testProducts()">🧮 Tester Produits</button>
+    <button onclick="testPacks()">📦 Tester Packs</button>
+    <button onclick="testOrders()">📋 Tester Commandes</button>
+
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function showResults(data, title) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <h3>${title}</h3>
+                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        async function testEndpoint(endpoint, title) {
+            try {
+                showStatus(`🔄 Test en cours: ${title}...`, 'info');
+                const response = await fetch(`${API_BASE}/api/airtable/${endpoint}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    showStatus(`✅ ${title} - ${data.data.length} éléments récupérés`, 'success');
+                    showResults(data, title);
+                } else {
+                    showStatus(`❌ ${title} - Erreur: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ ${title} - Erreur réseau: ${error.message}`, 'error');
+            }
+        }
+
+        function testProducts() { testEndpoint('products', 'Produits Airtable'); }
+        function testPacks() { testEndpoint('packs', 'Packs Airtable'); }
+
+        async function testOrders() {
+            try {
+                showStatus('🔄 Test création commande...', 'info');
+                const testOrder = {
+                    customerName: 'Test Client',
+                    customerEmail: 'test@example.com',
+                    customerPhone: '+221123456789',
+                    items: [{ id: 'test', name: 'Test Product', quantity: 1, price: 1000 }],
+                    total: 1000
+                };
+
+                const response = await fetch(`${API_BASE}/api/airtable/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testOrder)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showStatus('✅ Commande créée avec succès', 'success');
+                    showResults(data, 'Nouvelle Commande');
+                } else {
+                    showStatus(`❌ Erreur création commande: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Erreur réseau: ${error.message}`, 'error');
+            }
+        }
+
+        // Test automatique au chargement
+        window.onload = () => {
+            showStatus('🚀 Page de test chargée - Cliquez sur les boutons pour tester', 'info');
+            testPacks(); // Test automatique des packs
+        };
+    </script>
+</body>
+
+</html>

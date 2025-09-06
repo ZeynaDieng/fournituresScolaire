@@ -234,8 +234,50 @@ useSeoMeta({
 });
 
 const cartStore = useCartStore();
+const airtableStore = useAirtableStore();
 
-const promotions = ref([
+// Charger les promotions au montage de la page
+onMounted(async () => {
+  if (airtableStore.promotions.length === 0) {
+    await airtableStore.fetchPromotions();
+  }
+});
+
+// Utiliser les promotions dynamiques d'Airtable ou fallback sur les données locales
+const promotions = computed(() => {
+  const airtablePromotions = airtableStore.activePromotions;
+
+  if (airtablePromotions.length > 0) {
+    return airtablePromotions.map((promo: any) => ({
+      id: promo.id,
+      title: promo.title,
+      description: promo.description,
+      price:
+        promo.currentPrice ||
+        (promo.originalPrice
+          ? Math.round(promo.originalPrice * (1 - promo.discount / 100))
+          : 0),
+      originalPrice: promo.originalPrice || 0,
+      discount: promo.discount,
+      icon: promo.icon || "🏷️",
+      featured: promo.featured || false,
+      endTime: promo.endDate
+        ? new Date(promo.endDate)
+        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      product: {
+        id: promo.id,
+        name: promo.title,
+        price: promo.currentPrice || 0,
+      },
+      features: promo.features || ["Offre limitée", "Qualité garantie"],
+    }));
+  }
+
+  // Fallback sur les données locales si Airtable n'est pas disponible
+  return fallbackPromotions.value;
+});
+
+const fallbackPromotions = ref([
   {
     id: 1,
     title: "Pack Cahiers Premium",

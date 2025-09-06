@@ -18,13 +18,23 @@
             style="--delay: 0.2s"
           >
             Nos packs les plus demandés pour chaque niveau scolaire
+            <span class="text-sm block mt-1">
+              {{
+                airtableStore.packs.length > 0
+                  ? `${airtableStore.packs.length} packs depuis Airtable`
+                  : "Données de démonstration"
+              }}
+            </span>
           </p>
         </div>
 
         <!-- Loading State with Better Skeleton -->
-        <div v-if="productsStore.loading" class="pack-grid">
+        <div
+          v-if="airtableStore.loading || productsStore.loading"
+          class="pack-grid"
+        >
           <div
-            v-for="n in 4"
+            v-for="n in 3"
             :key="n"
             class="bg-white rounded-2xl shadow-md overflow-hidden transition-shadow duration-300 h-full flex flex-col"
           >
@@ -46,10 +56,12 @@
           </div>
         </div>
 
-        <!-- Popular Packs Grid with Staggered Animation -->
+        <!-- Popular Packs Grid - Utilise les données Airtable en priorité -->
         <div v-else class="pack-grid">
           <AppPackCard
-            v-for="(pack, index) in productsStore.popularPacks"
+            v-for="(pack, index) in airtableStore.packs.length > 0
+              ? airtableStore.packs.slice(0, 3)
+              : productsStore.popularPacks"
             :key="pack.id"
             :pack="pack"
             class="transform transition-all duration-300 ease-out"
@@ -57,6 +69,7 @@
               '--delay': `${index * 0.1}s`,
               animation: `fadeInUp 0.6s ease-out forwards ${index * 0.1}s`,
             }"
+            @add-to-cart="addPackToCart"
             @mouseenter="
               $event.currentTarget.style.transform = 'translateY(-8px)'
             "
@@ -146,53 +159,18 @@
       </div>
     </section>
 
-    <!-- Promotions Section -->
+    <!-- Promotions Section - Utilise AppPromotionCard avec données limitées -->
+    <AppPromotionCard
+      :promotions="airtableStore.activePromotions.slice(0, 2)"
+    />
 
-    <AppPromotionCard />
-
-    <!-- Testimonials Section -->
-    <section class="section bg-white">
-      <div class="container">
-        <div class="text-center mb-12">
-          <h2 class="section-title">Ce que disent nos clients</h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-            Des milliers de parents satisfaits nous font confiance
-          </p>
-        </div>
-
-        <!-- Testimonials Carousel -->
-        <div class="relative">
-          <div class="overflow-hidden rounded-2xl">
-            <div
-              class="flex transition-transform duration-500 ease-in-out"
-              :style="{
-                transform: `translateX(-${currentTestimonial * 100}%)`,
-              }"
-            >
-              <TestimonialCard
-                v-for="(testimonial, index) in testimonials"
-                :key="index"
-                :testimonial="testimonial"
-              />
-            </div>
-          </div>
-
-          <!-- Carousel Navigation -->
-          <div class="flex justify-center mt-8 space-x-2">
-            <button
-              v-for="(_, index) in testimonials"
-              :key="index"
-              @click="currentTestimonial = index"
-              class="w-3 h-3 rounded-full transition-colors"
-              :class="{
-                'bg-primary-green': currentTestimonial === index,
-                'bg-gray-300': currentTestimonial !== index,
-              }"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Testimonials Section - Utilise AppTestimonials avec données limitées -->
+    <AppTestimonials
+      :testimonials="airtableStore.activeTestimonials.slice(0, 5)"
+      :limit="5"
+      :auto-cycle="true"
+      :cycle-duration="4000"
+    />
 
     <!-- Panel de test du panier (mode développement) -->
   </div>
@@ -201,18 +179,26 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useProductsStore } from "~/stores/products";
-import type { Product } from "~/stores/products";
+import { useAirtableStore } from "~/stores/airtable";
+import { useCartStore } from "~/stores/cart";
+import type { Product, Pack } from "~/stores/products";
 
 // Since AppPackCard, AppProductCard etc. are in components/, Nuxt 3 auto-imports them.
 // We just need to define the props they might expect if not done inside the components themselves.
 
 const productsStore = useProductsStore();
+const airtableStore = useAirtableStore();
+const cartStore = useCartStore();
 
 // Fetch data on component mount
-onMounted(() => {
+onMounted(async () => {
+  // Charger les données locales ET Airtable
   if (productsStore.products.length === 0) {
     productsStore.fetchProducts();
   }
+
+  // Initialiser le store Airtable
+  await airtableStore.initialize();
 });
 
 // Latest Products Section
@@ -227,31 +213,20 @@ const filteredProducts = computed(() => {
     .slice(0, 8);
 });
 
-// Testimonials Section
-const testimonials = ref([
-  {
-    id: 1,
-    name: "Awa Diop",
-    role: "Maman d'élève en CM2",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    text: "Un service incroyable ! J'ai commandé le pack scolaire complet pour mon fils et tout était parfait. La livraison a été rapide et les fournitures sont de très bonne qualité. Fini le stress de la rentrée !",
-  },
-  {
-    id: 2,
-    name: "Moussa Fall",
-    role: "Papa de deux collégiens",
-    avatar: "https://i.pravatar.cc/150?img=2",
-    text: "Je recommande vivement. Le site est facile à utiliser et les packs sont très bien pensés. Un gain de temps énorme pour les parents.",
-  },
-  {
-    id: 3,
-    name: "Fatima Ndiaye",
-    role: "Enseignante en primaire",
-    avatar: "https://i.pravatar.cc/150?img=3",
-    text: "Enfin une solution simple et efficace pour les fournitures scolaires au Sénégal. La qualité est au rendez-vous. Je le conseille à tous les parents de mes élèves.",
-  },
-]);
-const currentTestimonial = ref(0);
+// Fonction pour ajouter un pack au panier
+const addPackToCart = (pack: Pack) => {
+  console.log("🛒 Ajout du pack au panier:", pack);
+  cartStore.addItem({
+    id: pack.id,
+    name: pack.name,
+    price: pack.price,
+    image: pack.image,
+    type: "pack",
+    category: pack.category,
+    quantity: 1,
+  });
+  console.log("✅ Pack ajouté au panier avec succès");
+};
 
 // Quick Order
 const quickOrder = (level: string) => {

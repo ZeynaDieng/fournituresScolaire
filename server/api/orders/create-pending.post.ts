@@ -1,6 +1,7 @@
 // /server/api/orders/create-pending.post.ts
 import { readBody, defineEventHandler } from "h3";
 import { sendOrderNotification } from "../../../utils/email-notifications";
+import { addOrderToAirtable } from "../../../utils/airtable-orders";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -89,7 +90,21 @@ export default defineEventHandler(async (event) => {
 
     console.log("📧 Préparation envoi email...", emailOrderData.ref);
 
-    // 📧 Envoyer notification email pour commande WhatsApp
+    // � Enregistrer dans Airtable (prioritaire)
+    try {
+      await addOrderToAirtable(emailOrderData);
+      console.log(
+        "✅ Commande WhatsApp enregistrée dans Airtable:",
+        emailOrderData.ref
+      );
+    } catch (airtableError) {
+      console.warn(
+        "⚠️ Erreur Airtable pour commande WhatsApp (commande créée):",
+        airtableError instanceof Error ? airtableError.message : airtableError
+      );
+    }
+
+    // �📧 Envoyer notification email pour commande WhatsApp
     try {
       const emailSent = await sendOrderNotification(emailOrderData);
       console.log(

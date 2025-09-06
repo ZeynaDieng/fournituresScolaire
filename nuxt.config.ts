@@ -159,6 +159,10 @@ export default defineNuxtConfig({
       businessNumber: process.env.WHATSAPP_BUSINESS_NUMBER || "221123456789",
     },
 
+    // Configuration Airtable (NOUVEAU)
+    airtableApiKey: process.env.AIRTABLE_API_KEY,
+    airtableBaseId: process.env.AIRTABLE_BASE_ID,
+
     public: {
       siteUrl:
         process.env.NUXT_PUBLIC_SITE_URL ||

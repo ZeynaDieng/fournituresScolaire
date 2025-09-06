@@ -6,7 +6,7 @@
         Finaliser ma commande
       </h1>
       <p class="text-gray-600">
-        Commande via WhatsApp - Paiement personnalisé avec Wave
+        Commande via WhatsApp - Paiement personnalisé avec la méthode de votre choix
       </p>
     </div>
 
@@ -397,7 +397,6 @@
         <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"> -->
         <div class="grid grid-cols-1 gap-4 mb-6">
           <!-- Option Paiement Direct - TEMPORAIREMENT DÉSACTIVÉ -->
-          <!--
           <div
             @click="paymentMode = 'direct'"
             :class="[
@@ -441,7 +440,6 @@
               Sécurisé par PayTech • Paiement instantané
             </div>
           </div>
-          -->
 
           <!-- Option WhatsApp -->
           <div
@@ -492,7 +490,6 @@
         </div>
 
         <!-- Section paiement direct - TEMPORAIREMENT DÉSACTIVÉ -->
-        <!--
         <div v-if="paymentMode === 'direct'" class="mb-6">
           <PaymentMethodSelector
             v-model="form.target_payment"
@@ -500,7 +497,6 @@
             :country="getCountryFromPhone()"
           />
         </div>
-        -->
 
         <!-- Section WhatsApp -->
         <div
@@ -539,7 +535,6 @@
           </button>
 
           <!-- Bouton paiement direct - TEMPORAIREMENT DÉSACTIVÉ -->
-          <!--
           <button
             v-if="paymentMode === 'direct'"
             type="submit"
@@ -570,7 +565,6 @@
             </span>
             <span v-else"> Payer {{ formatAmount(totalAmount) }} </span>
           </button>
-          -->
           <button
             v-if="paymentMode === 'whatsapp'"
             type="button"
@@ -594,6 +588,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useCartStore } from "~/stores/cart";
 import PaymentMethodSelector from "./PaymentMethodSelector.vue";
 import {
   formatWhatsAppOrderMessage,
@@ -617,6 +612,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Composables
 const router = useRouter();
+const cartStore = useCartStore();
 
 // Fonction pour formater les montants
 const formatAmount = (amount: number, currency: string = "XOF"): string => {
@@ -857,6 +853,9 @@ const sendToWhatsApp = async () => {
     // Sauvegarder la commande en attente
     await saveOrderAsPending();
 
+    // Vider le panier après commande WhatsApp réussie
+    cartStore.clearCart();
+
     // Ouvrir WhatsApp
     window.open(whatsappUrl, "_blank");
 
@@ -959,9 +958,41 @@ const handleSubmit = async () => {
   }
 };
 */
-const handleSubmit = () => {
-  // Fonction désactivée - Seul WhatsApp est disponible pour le moment
-  console.log("Paiement direct temporairement désactivé");
+const handleSubmit = async () => {
+  if (!isStep3Valid.value) return;
+  isProcessing.value = true;
+  try {
+    form.amount = totalAmount.value;
+    if (paymentMode.value === 'direct') {
+      const paymentData = {
+        amount: form.amount,
+        currency: form.currency,
+        customer: form.customer,
+        items: form.items,
+        shipping: form.shipping,
+        target_payment: form.target_payment,
+        promoCode: promoCode.value || undefined,
+        promoDiscount: promoDiscount.value || undefined,
+      };
+      console.log('Initiation du paiement:', paymentData);
+      const response = (await initiatePayment(paymentData)) as any;
+      if (response.success && response.redirect_url) {
+        // Vider le panier avant la redirection PayTech
+        cartStore.clearCart();
+        window.location.href = response.redirect_url;
+      } else {
+        throw new Error("Erreur lors de l'initiation du paiement");
+      }
+    } else if (paymentMode.value === 'whatsapp') {
+      // Rediriger vers sendToWhatsApp pour gérer la logique WhatsApp
+      await sendToWhatsApp();
+    }
+  } catch (error: any) {
+    console.error('Erreur paiement:', error);
+    // Afficher le message d'erreur à l'utilisateur
+  } finally {
+    isProcessing.value = false;
+  }
 };
 
 // Watchers

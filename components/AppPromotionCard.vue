@@ -54,7 +54,7 @@
       <!-- Ultra Modern Promotions Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
         <div
-          v-for="(promo, index) in productsStore.promotions"
+          v-for="(promo, index) in displayedPromotions"
           :key="promo.id"
           class="group relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 hover:shadow-4xl transition-all duration-500 transform hover:-translate-y-3 hover:rotate-1 animate-fade-in-up"
           :style="{ animationDelay: `${index * 200}ms` }"
@@ -358,6 +358,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+import { navigateTo } from "nuxt/app";
+
+// Props
+const props = defineProps<{
+  promotions?: any[];
+}>();
+
 // Types
 interface Promotion {
   id: string;
@@ -376,31 +384,62 @@ interface Promotion {
   currentPrice?: number;
 }
 
-// Store
-const productsStore = useProductsStore();
+// Stores
+const airtableStore = useAirtableStore();
+const cartStore = useCartStore();
+
+// Utiliser les promotions passées en props ou celles du store
+const displayedPromotions = computed(() => {
+  return props.promotions || airtableStore.activePromotions;
+});
 
 // Computed properties pour les stats
-const activePromosCount = computed(() => productsStore.activePromotions.length);
+const activePromosCount = computed(() => displayedPromotions.value.length);
 const totalSavings = computed(() => {
-  const savings = productsStore.activePromotions.map((p) => p.discount);
+  const savings = displayedPromotions.value.map((p) => p.discount);
   return savings.length
     ? Math.round(savings.reduce((a, b) => a + b, 0) / savings.length)
     : 0;
 });
-const averageRating = computed(() => 4.8); // Peut être calculé depuis les données réelles
+const averageRating = computed(() => 4.8);
 
 // Méthodes
 function handlePromoClick(promo: any) {
-  // Logique pour gérer le clic sur une promotion
-  // Par exemple: redirection vers la page produit, ajout au panier, etc.
   console.log("Promo clicked:", promo);
 
-  // Exemple d'ajout au panier avec animation
-  const cartStore = useCartStore();
-  cartStore.addItem(promo);
+  // Si la promotion a un prix et peut être considérée comme un produit
+  if (promo.currentPrice && promo.originalPrice) {
+    // Créer un objet produit à partir de la promotion
+    const productToAdd = {
+      id: promo.id,
+      name: promo.title,
+      price: promo.currentPrice,
+      originalPrice: promo.originalPrice,
+      image: promo.image || "/images/promotions/default.jpg", // Image par défaut
+      type: "promotion" as const,
+      category: promo.category || "Promotion",
+      description: promo.description,
+      discount: promo.discount,
+      features: promo.features || [],
+    };
 
-  // Notification personnalisée
-  showNotification(`${promo.title} ajouté au panier !`, "success");
+    // Ajouter au panier via le store
+    cartStore.addItem(productToAdd, 1);
+  } else {
+    // Si la promotion n'est pas directement achetable, rediriger vers les produits liés
+    if (promo.products && promo.products.length > 0) {
+      // Rediriger vers le premier produit de la promotion
+      navigateTo(`/products/${promo.products[0]}`);
+      showNotification(`Redirection vers le produit...`, "success");
+    } else {
+      // Rediriger vers la page promotions pour plus de détails
+      navigateTo("/promotions");
+      showNotification(
+        `Découvrez plus d'offres sur notre page promotions`,
+        "success"
+      );
+    }
+  }
 }
 
 // Fonction de partage
