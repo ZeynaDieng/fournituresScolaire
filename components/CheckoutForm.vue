@@ -739,8 +739,8 @@ const formatPhoneNumber = () => {
 
 const updateShippingCost = () => {
   const costs: Record<string, number> = {
-    standard: 2000,
-    express: 5000,
+    standard: 500,
+    express: 2000,
     pickup: 0,
   };
   form.shipping.cost = costs[form.shipping.method] || 0;

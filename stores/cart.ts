@@ -62,7 +62,7 @@ export const useCartStore = defineStore("cart", {
     // Frais de livraison
     deliveryFee(state): number {
       // Logique de calcul des frais de livraison
-      return this.subtotal > 0 ? 2000 : 0; // 2000 FCFA de frais de livraison par défaut
+      return this.subtotal > 0 ? 0 : 0; //  défaut
     },
 
     // Total avec livraison et réductions
