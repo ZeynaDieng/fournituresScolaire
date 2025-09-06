@@ -224,7 +224,7 @@ watch(() => props.endDate, () => {
 }
 
 .time-value {
-  @apply text-2xl font-bold text-primary-green;
+  @apply text-2xl font-bold text-primary-600;
   font-variant-numeric: tabular-nums;
   animation: countdownPulse 1s ease-in-out infinite;
 }

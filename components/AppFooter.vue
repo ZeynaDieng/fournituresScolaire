@@ -6,7 +6,7 @@
         <div class="space-y-4">
           <NuxtLink to="/" class="flex items-center space-x-2">
             <div
-              class="w-10 h-10 bg-primary-yellow rounded-lg flex items-center justify-center"
+              class="w-10 h-10 bg-accent-400 rounded-lg flex items-center justify-center"
             >
               <svg
                 class="w-6 h-6 text-white"
@@ -23,7 +23,7 @@
               </svg>
             </div>
             <span class="text-2xl font-bold text-white"
-              >Edu<span class="text-primary-yellow">Shop</span></span
+              >Edu<span class="text-accent-400">Shop</span></span
             >
           </NuxtLink>
           <p class="text-gray-300 text-sm">

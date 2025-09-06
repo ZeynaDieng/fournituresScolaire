@@ -84,7 +84,7 @@
         >
           <NuxtLink
             to="/packs"
-            class="btn-primary inline-flex items-center space-x-2 mx-auto group relative overflow-hidden px-8 py-3 rounded-full font-medium bg-gradient-to-r from-primary-green to-primary-dark-green text-white hover:shadow-lg hover:shadow-primary-green/20 transition-all duration-300 transform hover:-translate-y-0.5"
+            class="btn-primary inline-flex items-center space-x-2 mx-auto group relative overflow-hidden px-8 py-3 rounded-full font-medium bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:shadow-lg hover:shadow-primary-600/20 transition-all duration-300 transform hover:-translate-y-0.5"
           >
             <span>Découvrir tous nos packs</span>
 
@@ -115,8 +115,8 @@
             @click="selectedCategory = category"
             class="px-4 py-2 rounded-full font-medium transition-all"
             :class="{
-              'bg-primary-green text-white': selectedCategory === category,
-              'bg-gray-100 text-gray-700 hover:bg-primary-light-green':
+              'bg-primary-600 text-white': selectedCategory === category,
+              'bg-gray-100 text-gray-700 hover:bg-primary-100':
                 selectedCategory !== category,
             }"
           >
@@ -318,11 +318,11 @@ const quickOrder = (level: string) => {
 
 /* Button Styles */
 .btn-primary {
-  @apply bg-primary-green hover:bg-primary-dark-green text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+  @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
 }
 
 .btn-secondary {
-  @apply bg-white text-gray-800 border-2 border-gray-200 hover:border-primary-green font-semibold rounded-xl transition-all duration-300 hover:bg-gray-50;
+  @apply bg-white text-gray-800 border-2 border-gray-200 hover:border-primary-600 font-semibold rounded-xl transition-all duration-300 hover:bg-gray-50;
 }
 
 /* Section Styles */
@@ -331,7 +331,7 @@ const quickOrder = (level: string) => {
 }
 
 .section-title {
-  @apply text-3xl md:text-4xl font-bold text-primary-dark-green mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-green to-primary-dark-green;
+  @apply text-3xl md:text-4xl font-bold text-primary-700 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-700;
   position: relative;
   display: inline-block;
 
@@ -345,8 +345,8 @@ const quickOrder = (level: string) => {
     height: 3px;
     background: linear-gradient(
       90deg,
-      var(--primary-green),
-      var(--primary-dark-green)
+      #16a34a,
+      #15803d
     );
     border-radius: 3px;
   }
@@ -367,11 +367,11 @@ const quickOrder = (level: string) => {
 }
 
 .btn-primary {
-  @apply bg-primary-green text-white font-bold rounded-full shadow-lg hover:bg-primary-dark-green transition-all duration-300 transform hover:-translate-y-1;
+  @apply bg-primary-600 text-white font-bold rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 transform hover:-translate-y-1;
 }
 
 .btn-secondary {
-  @apply bg-white text-primary-green font-bold rounded-full shadow-md hover:shadow-xl border border-primary-light-green hover:border-primary-green transition-all duration-300 transform hover:-translate-y-1;
+  @apply bg-white text-primary-600 font-bold rounded-full shadow-md hover:shadow-xl border border-primary-100 hover:border-primary-600 transition-all duration-300 transform hover:-translate-y-1;
 }
 
 /* Animations */

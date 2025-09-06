@@ -2,7 +2,7 @@
 
 ## ✅ DIAGNOSTIC CONFIRMÉ
 
-- **URL du projet** : `https://fournitures-scolaire.vercel.app`
+- **URL du projet** : `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`
 - **Statut** : 403 Forbidden (projet existe mais problème de configuration)
 - **Problème principal** : Variables d'environnement manquantes en production
 
@@ -29,9 +29,9 @@
 | `PAYTECH_SANDBOX`          | `true`                                                                               | Production, Preview, Development |
 | `AIRTABLE_API_KEY`         | `patrR71W7giuFrjP0.fadb29458ae74396bce8c0ffb8f2033c35164715f4546198bb8bbafb593ad83a` | Production, Preview, Development |
 | `AIRTABLE_BASE_ID`         | `appOtYkVavA4MMMnN`                                                                  | Production, Preview, Development |
-| `BASE_URL`                 | `https://fournitures-scolaire.vercel.app`                                            | Production, Preview, Development |
-| `NUXT_PUBLIC_BASE_URL`     | `https://fournitures-scolaire.vercel.app`                                            | Production, Preview, Development |
-| `NUXT_PUBLIC_SITE_URL`     | `https://fournitures-scolaire.vercel.app`                                            | Production, Preview, Development |
+| `BASE_URL`                 | `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`                                            | Production, Preview, Development |
+| `NUXT_PUBLIC_BASE_URL`     | `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`                                            | Production, Preview, Development |
+| `NUXT_PUBLIC_SITE_URL`     | `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`                                            | Production, Preview, Development |
 | `WHATSAPP_BUSINESS_NUMBER` | `221777780456`                                                                       | Production, Preview, Development |
 | `DATABASE_URL`             | `mysql://root:root@127.0.0.1:8889/fourniturescolaire`                                | Production, Preview, Development |
 
@@ -46,9 +46,9 @@
 
 Une fois redéployé, testez :
 
-- **Site principal** : https://fournitures-scolaire.vercel.app
-- **Test API** : https://fournitures-scolaire.vercel.app/api/admin/products
-- **Test image** : https://fournitures-scolaire.vercel.app/images/payment/default.png
+- **Site principal** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app
+- **Test API** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app/api/admin/products
+- **Test image** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app/images/payment/default.png
 
 ## 🎯 ERREURS ACTUELLES → SOLUTIONS
 

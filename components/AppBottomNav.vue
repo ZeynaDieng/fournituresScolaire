@@ -8,7 +8,7 @@
         :to="item.path"
         class="nav-item flex-1"
         :class="{
-          'text-primary-green': $route.path === item.path,
+          'text-primary-600': $route.path === item.path,
           'text-gray-500': $route.path !== item.path,
         }"
       >
@@ -21,7 +21,7 @@
         @click="cartStore.toggleCart()"
         class="nav-item flex-1 relative"
         :class="{
-          'text-primary-green': cartStore.isOpen,
+          'text-primary-600': cartStore.isOpen,
           'text-gray-500': !cartStore.isOpen,
         }"
       >
@@ -65,7 +65,7 @@ const { navItems } = useNavigation();
 }
 
 .nav-item.router-link-active {
-  @apply text-primary-green;
+  @apply text-primary-600;
 }
 
 /* Animation pour le badge du panier */

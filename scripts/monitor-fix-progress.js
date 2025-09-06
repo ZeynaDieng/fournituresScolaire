@@ -9,7 +9,7 @@
 
 const https = require("https");
 
-const SITE_URL = "https://fournitures-scolaire.vercel.app";
+const SITE_URL = "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app";
 const CHECK_INTERVAL = 30000; // 30 secondes
 const MAX_CHECKS = 20; // 10 minutes maximum
 

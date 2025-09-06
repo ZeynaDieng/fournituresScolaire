@@ -9,7 +9,7 @@ const https = require("https");
 const http = require("http");
 
 // 🌐 URL Vercel confirmée (code 403 détecté, projet existe)
-const PRODUCTION_URL = "https://fournitures-scolaire.vercel.app";
+const PRODUCTION_URL = "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app";
 
 console.log("🧪 Test Automatique de Production - Fournitures Scolaires");
 console.log("=".repeat(60));

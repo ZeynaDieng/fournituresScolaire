@@ -9,7 +9,7 @@
 /* Variables CSS personnalisées */
 :root {
   --primary-green: #16a34a;
-  --primary-yellow: #facc15;
+  --accent-400: #facc15;
   --dark-green: #15803d;
   --light-green: #dcfce7;
 }
@@ -56,15 +56,15 @@
 
   /* Boutons avec styles cohérents */
   .btn-primary {
-    @apply bg-primary-green text-white px-6 py-3 rounded-xl font-medium shadow-soft hover:shadow-soft-hover hover:bg-dark-green transform hover:-translate-y-0.5 transition-all duration-300 ease-out;
+    @apply bg-primary-600 text-white px-6 py-3 rounded-xl font-medium shadow-soft hover:shadow-soft-hover hover:bg-dark-green transform hover:-translate-y-0.5 transition-all duration-300 ease-out;
   }
 
   .btn-secondary {
-    @apply bg-white text-primary-green border-2 border-primary-green px-6 py-3 rounded-xl font-medium hover:bg-primary-green hover:text-white transform hover:-translate-y-0.5 transition-all duration-300 ease-out;
+    @apply bg-white text-primary-600 border-2 border-primary-600 px-6 py-3 rounded-xl font-medium hover:bg-primary-600 hover:text-white transform hover:-translate-y-0.5 transition-all duration-300 ease-out;
   }
 
   .btn-yellow {
-    @apply bg-primary-yellow text-gray-800 px-6 py-3 rounded-xl font-medium shadow-yellow hover:shadow-yellow-hover hover:bg-yellow-500 transform hover:-translate-y-0.5 transition-all duration-300 ease-out;
+    @apply bg-accent-400 text-gray-800 px-6 py-3 rounded-xl font-medium shadow-yellow hover:shadow-yellow-hover hover:bg-yellow-500 transform hover:-translate-y-0.5 transition-all duration-300 ease-out;
   }
 
   /* Cartes avec styles cohérents */
@@ -79,12 +79,12 @@
 
   /* Navigation links */
   .nav-link {
-    @apply text-gray-600 hover:text-primary-green font-medium transition-colors duration-200 ease-out relative;
+    @apply text-gray-600 hover:text-primary-600 font-medium transition-colors duration-200 ease-out relative;
   }
 
   .nav-link::after {
     content: "";
-    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary-green transition-all duration-300 ease-out;
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 transition-all duration-300 ease-out;
   }
 
   .nav-link:hover::after {
@@ -122,7 +122,7 @@
   }
 
   .bg-gradient-yellow {
-    background: linear-gradient(135deg, var(--primary-yellow) 0%, #fbbf24 100%);
+    background: linear-gradient(135deg, var(--accent-400) 0%, #fbbf24 100%);
   }
 
   /* Texte avec gradient */
