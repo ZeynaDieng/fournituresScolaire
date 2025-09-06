@@ -404,21 +404,37 @@ async function sendMessage() {
   isLoading.value = true;
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Appel API pour enregistrer le message
+    const response = await $fetch("/api/contact/send", {
+      method: "POST",
+      body: {
+        name: name.value,
+        email: email.value,
+        phone: phone.value,
+        subject: subject.value,
+        message: message.value,
+      },
+    });
 
-    alert(
-      `Merci ${name.value}, votre message a été envoyé ! Nous vous répondrons dans les plus brefs délais.`
-    );
+    if (response.success) {
+      alert(
+        `Merci ${name.value}, votre message a été envoyé et enregistré ! Nous vous répondrons dans les plus brefs délais.`
+      );
 
-    // Reset form
-    name.value = "";
-    email.value = "";
-    phone.value = "";
-    subject.value = "";
-    message.value = "";
+      // Reset form
+      name.value = "";
+      email.value = "";
+      phone.value = "";
+      subject.value = "";
+      message.value = "";
+    } else {
+      throw new Error(response.message || "Erreur lors de l'envoi");
+    }
   } catch (error) {
-    alert("Une erreur est survenue. Veuillez réessayer.");
+    console.error("Erreur envoi message:", error);
+    alert(
+      "Une erreur est survenue lors de l'envoi du message. Veuillez réessayer ou nous contacter directement."
+    );
   } finally {
     isLoading.value = false;
   }

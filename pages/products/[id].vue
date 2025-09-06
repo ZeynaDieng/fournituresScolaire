@@ -479,7 +479,7 @@
                     </svg>
                   </div>
                   <h3 class="text-lg font-bold text-slate-900">
-                    Tarifs dégressifs
+                    Tarifs avec réductions
                   </h3>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
