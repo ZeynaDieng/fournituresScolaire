@@ -10,9 +10,12 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
-  type: "pack" | "product";
+  type: "pack" | "product" | "promotion";
   category?: string;
   description?: string;
+  originalPrice?: number;
+  discount?: number;
+  features?: string[];
 }
 
 export interface ShippingInfo {
@@ -98,17 +101,38 @@ export const useCartStore = defineStore("cart", {
   actions: {
     // Ajouter un article au panier
     addItem(item: Omit<CartItem, "quantity">, quantity: number = 1) {
+      // Validation des données pour éviter les NaN
+      const validatedItem = {
+        ...item,
+        price: Number(item.price) || 0, // S'assurer que le prix est un nombre valide
+        quantity: Math.max(1, Number(quantity) || 1), // S'assurer que la quantité est valide
+      };
+
+      // Vérification supplémentaire
+      if (
+        !validatedItem.id ||
+        !validatedItem.name ||
+        isNaN(validatedItem.price)
+      ) {
+        console.error("Données invalides pour l'article:", item);
+        this.showToast("Erreur: données de produit invalides", "error");
+        return;
+      }
+
       const existingItem = this.items.find(
-        (cartItem: CartItem) => cartItem.id === item.id
+        (cartItem: CartItem) => cartItem.id === validatedItem.id
       );
 
       if (existingItem) {
-        existingItem.quantity += quantity;
+        existingItem.quantity += validatedItem.quantity;
       } else {
-        this.items.push({ ...item, quantity } as CartItem);
+        this.items.push({
+          ...validatedItem,
+          quantity: validatedItem.quantity,
+        } as CartItem);
       }
 
-      this.showToast(`${item.name} ajouté au panier`, "success");
+      this.showToast(`${validatedItem.name} ajouté au panier`, "success");
       this.saveToStorage();
     },
 

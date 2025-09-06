@@ -1,6 +1,7 @@
 // server/api/paytech/initiate.post.ts
 import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
+import { addOrderToAirtable } from "../../../utils/airtable-orders";
 
 const prisma = new PrismaClient();
 
@@ -87,6 +88,54 @@ export default defineEventHandler(async (event) => {
           createdAt: new Date(),
         },
       });
+
+      // 📊 Enregistrer dans Airtable au moment de l'initiation PayTech
+      try {
+        // Préparer les données pour Airtable
+        let parsedItems = [];
+        let shippingAddress = "";
+        try {
+          const customData = JSON.parse(paytechData.custom_field || "{}");
+          parsedItems = customData.items || [];
+          shippingAddress = customData.shipping?.address || "";
+        } catch (e) {
+          console.warn("Erreur parsing custom_field pour Airtable:", e);
+        }
+
+        const airtableOrderData = {
+          ref: ref,
+          customer: {
+            name: customer.name,
+            email: customer.email,
+            phone: customer.phone,
+          },
+          shipping: {
+            address: shippingAddress,
+            city: "",
+            method: "Standard",
+            cost: 0,
+          },
+          items:
+            parsedItems.length > 0
+              ? parsedItems
+              : [{ name: itemName, quantity: 1, price: itemPrice }],
+          amounts: {
+            total: itemPrice,
+            subtotal: itemPrice,
+            shipping: 0,
+            discount: 0,
+          },
+          status: "Pending",
+        };
+
+        await addOrderToAirtable(airtableOrderData);
+        console.log("✅ Commande PayTech enregistrée dans Airtable:", ref);
+      } catch (airtableError) {
+        console.warn(
+          "⚠️ Erreur Airtable lors de l'initiation PayTech (commande créée):",
+          airtableError instanceof Error ? airtableError.message : airtableError
+        );
+      }
     } catch (dbError: any) {
       console.warn("Erreur base de données (non-bloquante):", dbError.message);
     }

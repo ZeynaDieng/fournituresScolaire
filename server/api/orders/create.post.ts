@@ -5,6 +5,7 @@ import { addOrderToGoogleSheets } from "../../../utils/google-sheets";
 import { saveOrder } from "../../../utils/local-storage";
 import { sendOrderNotification } from "../../../utils/email-notifications";
 import { addOrderToMasterExcel } from "../../../utils/excel-master";
+import { addOrderToAirtable } from "../../../utils/airtable-orders";
 
 interface OrderRequestBody {
   name: string;
@@ -102,6 +103,17 @@ export default defineEventHandler(async (event) => {
       console.warn(
         "⚠️ Erreur envoi email (la commande est sauvegardée):",
         emailError instanceof Error ? emailError.message : emailError
+      );
+    }
+
+    // 📊 Ajouter à Airtable (prioritaire)
+    try {
+      await addOrderToAirtable(orderData);
+      console.log("✅ Commande enregistrée dans Airtable:", savedOrder.ref);
+    } catch (airtableError) {
+      console.warn(
+        "⚠️ Erreur Airtable (la commande est sauvegardée):",
+        airtableError instanceof Error ? airtableError.message : airtableError
       );
     }
 
