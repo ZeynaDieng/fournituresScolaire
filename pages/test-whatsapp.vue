@@ -128,7 +128,7 @@ const testWhatsApp = async () => {
     window.open(whatsappUrl, "_blank");
 
     // Simuler la sauvegarde de commande
-    const response = await $fetch("/api/orders/create-pending", {
+    const response = await $fetch("/api/airtable/orders/create-pending", {
       method: "POST",
       body: testData.value,
     });

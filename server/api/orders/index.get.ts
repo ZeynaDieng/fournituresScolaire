@@ -1,6 +1,6 @@
 /**
  * API endpoint pour récupérer toutes les commandes
- * GET /api/orders
+ * GET /api/airtable/orders
  */
 
 import { defineEventHandler, createError, getQuery } from "h3";

@@ -1,4 +1,4 @@
-// /server/api/orders/create-pending.post.ts
+// /server/api/airtable/orders/create-pending.post.ts
 import { readBody, defineEventHandler } from "h3";
 import { sendOrderNotification } from "../../../utils/email-notifications";
 import { addOrderToAirtable } from "../../../utils/airtable-orders";

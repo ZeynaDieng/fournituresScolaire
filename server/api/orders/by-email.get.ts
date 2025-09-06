@@ -1,6 +1,6 @@
 /**
  * API endpoint pour récupérer les commandes d'un client par email
- * GET /api/orders/by-email?email=client@example.com
+ * GET /api/airtable/orders/by-email?email=client@example.com
  */
 
 import { defineEventHandler, createError, getQuery } from "h3";

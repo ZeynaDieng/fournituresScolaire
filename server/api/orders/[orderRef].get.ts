@@ -1,6 +1,6 @@
 /**
  * API endpoint pour récupérer les détails d'une commande spécifique
- * GET /api/orders/[orderRef]
+ * GET /api/airtable/orders/[orderRef]
  */
 
 import { defineEventHandler, createError, getRouterParam } from "h3";

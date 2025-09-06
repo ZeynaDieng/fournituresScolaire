@@ -137,7 +137,7 @@ npx prisma studio
 
 ```bash
 # Tester l'API orders (qui utilise la DB)
-curl https://fournitures-scolaire.vercel.app/api/orders/create \
+curl https://fournitures-scolaire.vercel.app/api/airtable/orders/create \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"test": true}'

@@ -1,6 +1,6 @@
 /**
  * Endpoint pour traiter les commandes WhatsApp
- * POST /api/orders/whatsapp
+ * POST /api/airtable/orders/whatsapp
  */
 
 import { defineEventHandler, readBody, createError } from "h3";

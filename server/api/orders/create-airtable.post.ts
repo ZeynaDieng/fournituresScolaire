@@ -1,4 +1,4 @@
-// server/api/orders/create-airtable.post.ts
+// server/api/airtable/orders/create-airtable.post.ts
 import { readBody, getHeader, defineEventHandler } from "h3";
 import { AirtableService } from "../../../utils/airtable";
 import { sendOrderNotification } from "../../../utils/email-notifications";
@@ -21,32 +21,41 @@ interface OrderRequestBody {
 export default defineEventHandler(async (event) => {
   try {
     console.log("🎯 API create-airtable appelée");
-    
+
     const body = (await readBody(event)) as Partial<OrderRequestBody>;
     console.log("📊 Données reçues:", JSON.stringify(body, null, 2));
 
     // Validation des champs requis
-    const requiredFields = ["name", "email", "phone", "address", "items", "total"];
+    const requiredFields = [
+      "name",
+      "email",
+      "phone",
+      "address",
+      "items",
+      "total",
+    ];
     for (const field of requiredFields) {
       if (!body[field as keyof OrderRequestBody]) {
-        return { 
-          success: false, 
-          message: `Champ requis manquant: ${field}` 
+        return {
+          success: false,
+          message: `Champ requis manquant: ${field}`,
         };
       }
     }
 
     // Validation des items
     if (!Array.isArray(body.items) || body.items.length === 0) {
-      return { 
-        success: false, 
-        message: "Articles de commande manquants" 
+      return {
+        success: false,
+        message: "Articles de commande manquants",
       };
     }
 
     // Générer une référence unique pour la commande
-    const orderRef = body.ref || `CMD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+    const orderRef =
+      body.ref ||
+      `CMD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     console.log(`📝 Création commande avec référence: ${orderRef}`);
 
     // Préparer les données pour Airtable
@@ -76,7 +85,7 @@ export default defineEventHandler(async (event) => {
         metadata: {
           userAgent: getHeader(event, "user-agent"),
           createdVia: "web-airtable",
-        }
+        },
       }),
       Total: body.total!,
       Status: "pending",
@@ -85,10 +94,10 @@ export default defineEventHandler(async (event) => {
     };
 
     console.log("💾 Sauvegarde dans Airtable...");
-    
+
     // Créer la commande dans Airtable
     const airtableOrderId = await AirtableService.createOrder(orderData);
-    
+
     if (!airtableOrderId) {
       throw new Error("Impossible de créer la commande dans Airtable");
     }
@@ -143,12 +152,11 @@ export default defineEventHandler(async (event) => {
       orderRef: orderRef,
       message: "Commande sauvegardée avec succès dans Airtable",
     };
-
   } catch (error) {
     console.error("❌ Erreur lors de la création de la commande:", error);
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : "Erreur inconnue" 
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Erreur inconnue",
     };
   }
 });

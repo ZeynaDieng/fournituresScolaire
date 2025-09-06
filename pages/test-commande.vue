@@ -212,7 +212,7 @@ const passerCommande = async () => {
     };
 
     // Appeler l'API
-    const response = (await $fetch("/api/orders/create-pending", {
+    const response = (await $fetch("/api/airtable/orders/create-pending", {
       method: "POST",
       body: orderData,
     })) as any;

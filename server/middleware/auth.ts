@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     "/api/admin/testimonials",
     "/api/paytech/initiate",
     "/api/paytech/webhook",
-    "/api/orders/create",
+    "/api/airtable/orders/create",
   ];
 
   const url = event.node.req.url || "";

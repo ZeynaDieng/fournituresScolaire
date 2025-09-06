@@ -226,7 +226,7 @@ const downloadInvoice = async () => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Ici, vous pourriez appeler une API pour générer et télécharger la facture
-    // const response = await $fetch(`/api/orders/${orderRef.value}/invoice`);
+    // const response = await $fetch(`/api/airtable/orders/${orderRef.value}/invoice`);
 
     console.log(
       `Téléchargement de la facture pour la commande ${orderRef.value}`

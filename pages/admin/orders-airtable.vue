@@ -347,7 +347,7 @@ async function updateOrderStatus(orderRef, newStatus) {
 // Créer une commande de test
 async function createTestOrder() {
   try {
-    const response = await $fetch("/api/orders/create", {
+    const response = await $fetch("/api/airtable/orders/create", {
       method: "POST",
       body: {
         name: "Test Client",

@@ -327,7 +327,7 @@ const fetchOrderData = async () => {
 
   try {
     const response = await $fetch<ApiResponse>(
-      `/api/orders/${orderRef.value}`,
+      `/api/airtable/orders/${orderRef.value}`,
       {
         method: "GET",
       }
@@ -389,29 +389,21 @@ const downloadInvoice = async () => {
   isDownloading.value = true;
 
   try {
-    // Appeler l'API pour générer et télécharger la facture
-    const response = await $fetch<ApiResponse>(
-      `/api/orders/${orderRef.value}/invoice`,
-      {
-        method: "GET",
-      }
-    );
+    // Ouvrir la facture dans une nouvelle fenêtre pour impression/téléchargement
+    const invoiceUrl = `/api/airtable/orders/${orderRef.value}/invoice`;
+    const newWindow = window.open(invoiceUrl, "_blank");
 
-    if (response.success && response.invoiceUrl) {
-      // Créer un lien de téléchargement
-      const link = document.createElement("a");
-      link.href = response.invoiceUrl;
-      link.download = `facture-${orderRef.value}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    if (newWindow) {
+      // La facture s'ouvrira dans une nouvelle fenêtre avec un bouton d'impression
+      console.log(`Facture ouverte pour la commande ${orderRef.value}`);
     } else {
-      throw new Error("Impossible de générer la facture");
+      // Si les popups sont bloquées, naviguer directement
+      window.location.href = invoiceUrl;
     }
   } catch (error: any) {
-    console.error("Erreur lors du téléchargement de la facture:", error);
-    // Afficher une notification d'erreur à l'utilisateur
-    alert("Erreur lors du téléchargement de la facture. Veuillez réessayer.");
+    console.error("Erreur lors de l'ouverture de la facture:", error);
+    // Essayer la navigation directe en cas d'erreur
+    window.location.href = `/api/airtable/orders/${orderRef.value}/invoice`;
   } finally {
     isDownloading.value = false;
   }

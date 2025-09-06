@@ -1,6 +1,6 @@
 /**
  * API endpoint pour télécharger une facture
- * GET /api/orders/[ref]/invoice
+ * GET /api/airtable/orders/[ref]/invoice
  */
 
 import { defineEventHandler, getRouterParam, createError } from "h3";
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
         date: orderDetails.createdAt,
         status: orderDetails.status,
         items: orderDetails.items,
-        downloadUrl: `${process.env.NUXT_PUBLIC_BASE_URL}/api/orders/${orderRef}/invoice/download`,
+        downloadUrl: `${process.env.NUXT_PUBLIC_BASE_URL}/api/airtable/orders/${orderRef}/invoice/download`,
       },
     };
   } catch (error: any) {

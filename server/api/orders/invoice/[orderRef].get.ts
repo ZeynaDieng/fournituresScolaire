@@ -1,6 +1,6 @@
 /**
  * API endpoint pour télécharger la facture d'une commande
- * GET /api/orders/invoice/[orderRef]
+ * GET /api/airtable/orders/invoice/[orderRef]
  */
 
 import { defineEventHandler, getRouterParam, createError } from "h3";

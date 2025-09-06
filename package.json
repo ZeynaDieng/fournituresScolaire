@@ -67,10 +67,12 @@
     "@vueuse/nuxt": "^10.5.0",
     "airtable": "^0.12.2",
     "date-fns": "^2.30.0",
+    "dotenv": "^17.2.2",
     "formidable": "^3.5.4",
     "node-fetch": "^2.7.0",
     "nodemailer": "^7.0.6",
     "pinia": "^2.1.7",
+    "puppeteer": "^24.19.0",
     "swiper": "^11.2.10",
     "xlsx": "^0.18.5"
   },

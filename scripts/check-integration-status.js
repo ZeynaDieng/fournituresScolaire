@@ -134,8 +134,8 @@ async function checkIntegrationStatus() {
     // 4. Vérifier les endpoints critiques
     console.log("🔗 Vérification des endpoints...");
     const endpoints = [
-      "/api/orders/create",
-      "/api/orders/create-pending",
+      "/api/airtable/orders/create",
+      "/api/airtable/orders/create-pending",
       "/api/paytech/initiate",
       "/api/paytech/webhook",
       "/api/airtable/orders",
@@ -175,7 +175,7 @@ async function checkIntegrationStatus() {
     if (checks.server) {
       try {
         // Test indirect via l'API
-        const response = await fetch(`${BASE_URL}/api/orders/create-pending`, {
+        const response = await fetch(`${BASE_URL}/api/airtable/orders/create-pending`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}), // Données vides pour tester la validation
