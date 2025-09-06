@@ -22,43 +22,43 @@ const deploymentSteps = [
     name: "Clonage du repository",
     status: "✅ TERMINÉ",
     duration: "455ms",
-    description: "Code source récupéré depuis GitHub"
+    description: "Code source récupéré depuis GitHub",
   },
   {
     step: 2,
     name: "Installation des dépendances",
     status: "🔄 EN COURS",
     duration: "~1-3 min",
-    description: "npm ci --only=production"
+    description: "npm ci --only=production",
   },
   {
     step: 3,
     name: "Build Nuxt",
     status: "⏳ EN ATTENTE",
     duration: "~2-5 min",
-    description: "npm run build"
+    description: "npm run build",
   },
   {
     step: 4,
     name: "Optimisation des assets",
-    status: "⏳ EN ATTENTE", 
+    status: "⏳ EN ATTENTE",
     duration: "~30s",
-    description: "Compression et optimisation"
+    description: "Compression et optimisation",
   },
   {
     step: 5,
     name: "Déploiement serverless",
     status: "⏳ EN ATTENTE",
     duration: "~1 min",
-    description: "Déploiement des fonctions"
+    description: "Déploiement des fonctions",
   },
   {
     step: 6,
     name: "Assignation du domaine",
     status: "⏳ EN ATTENTE",
     duration: "~10s",
-    description: "URL finale disponible"
-  }
+    description: "URL finale disponible",
+  },
 ];
 
 deploymentSteps.forEach(({ step, name, status, duration, description }) => {
@@ -98,7 +98,9 @@ console.log("   → Vérifier AIRTABLE_* et WHATSAPP_*");
 console.log("\n🎯 Configuration recommandée post-déploiement:");
 console.log("==============================================");
 console.log("1. Variables d'environnement à ajouter:");
-console.log("   AIRTABLE_API_KEY=patrR71W7giuFrjP0.fadb29458ae74396bce8c0ffb8f2033c35164715f4546198bb8bbafb593ad83a");
+console.log(
+  "   AIRTABLE_API_KEY=patrR71W7giuFrjP0.fadb29458ae74396bce8c0ffb8f2033c35164715f4546198bb8bbafb593ad83a"
+);
 console.log("   AIRTABLE_BASE_ID=appOtYkVavA4MMMnN");
 console.log("   AIRTABLE_PRODUCTS_TABLE=tblxGbcySHadDtsyn");
 console.log("   AIRTABLE_PACKS_TABLE=tbl4JVykOdi6YFvfd");
@@ -130,7 +132,7 @@ console.log("\n💡 Conseils d'optimisation:");
 console.log("============================");
 console.log("• Activer la compression Vercel");
 console.log("• Utiliser les headers de cache appropriés");
-console.log("• Optimiser les images avec Next/Image"); 
+console.log("• Optimiser les images avec Next/Image");
 console.log("• Monitorer avec Vercel Analytics");
 
 console.log("\n🎉 Une fois le déploiement terminé:");
