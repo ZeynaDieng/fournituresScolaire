@@ -1,9 +1,11 @@
 # 🚨 RÉSOLUTION FINALE - URL RÉELLE DÉTECTÉE !
 
 ## ✅ **URL RÉELLE CONFIRMÉE**
+
 **Votre site** : `https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app`
 
 ## 🎯 **ERREUR IDENTIFIÉE**
+
 - **Endpoint** : `/api/paytech/initiate`
 - **Statut** : 500 Internal Server Error
 - **Cause** : Variables d'environnement manquantes dans Vercel
@@ -40,6 +42,7 @@ NUXT_PUBLIC_API_BASE=/api
 ## 🚀 **ÉTAPES DE RÉSOLUTION (10 minutes)**
 
 ### 1. **Vercel Dashboard**
+
 ```
 https://vercel.com/dashboard
 → Sélectionner votre projet
@@ -47,7 +50,9 @@ https://vercel.com/dashboard
 ```
 
 ### 2. **Ajouter chaque variable**
+
 Pour **chaque variable** ci-dessus :
+
 - Cliquer **"Add New"**
 - **Name** : `PAYTECH_API_KEY`
 - **Value** : `0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b`
@@ -55,12 +60,14 @@ Pour **chaque variable** ci-dessus :
 - Cliquer **"Save"**
 
 ### 3. **Redéploiement obligatoire**
+
 ```
 Deployments → Cliquer sur le dernier déploiement → Redeploy
 Attendre 2-3 minutes
 ```
 
 ### 4. **Tests de validation**
+
 - **Site** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app
 - **PayTech** : Plus d'erreur 500 au checkout
 - **APIs** : https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app/api/admin/products
@@ -68,11 +75,13 @@ Attendre 2-3 minutes
 ## ✅ **RÉSULTAT ATTENDU**
 
 ### **AVANT** (maintenant) :
+
 - ❌ Erreur 500 sur `/api/paytech/initiate`
 - ❌ Variables d'environnement manquantes
 - ❌ PayTech non fonctionnel
 
 ### **APRÈS** (dans 10 minutes) :
+
 - ✅ PayTech opérationnel (pas d'erreur 500)
 - ✅ Toutes les APIs fonctionnelles
 - ✅ Site e-commerce 100% opérationnel
