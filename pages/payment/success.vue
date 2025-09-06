@@ -35,7 +35,56 @@
       </div>
 
       <!-- Détails de la commande -->
-      <div class="bg-white shadow rounded-lg p-6">
+      <div v-if="isLoading" class="bg-white shadow rounded-lg p-6">
+        <div class="animate-pulse">
+          <div class="border-b border-gray-200 pb-4 mb-4">
+            <div class="h-4 bg-gray-200 rounded w-32"></div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <div class="h-3 bg-gray-200 rounded w-20"></div>
+              <div class="h-3 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div class="flex justify-between">
+              <div class="h-3 bg-gray-200 rounded w-16"></div>
+              <div class="h-3 bg-gray-200 rounded w-20"></div>
+            </div>
+            <div class="flex justify-between">
+              <div class="h-3 bg-gray-200 rounded w-18"></div>
+              <div class="h-3 bg-gray-200 rounded w-16"></div>
+            </div>
+            <div class="flex justify-between">
+              <div class="h-3 bg-gray-200 rounded w-12"></div>
+              <div class="h-3 bg-gray-200 rounded w-28"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-else-if="error"
+        class="bg-red-50 border border-red-200 rounded-lg p-4"
+      >
+        <div class="flex">
+          <svg
+            class="h-5 w-5 text-red-400 mt-0.5 mr-2"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <div>
+            <h3 class="text-sm font-medium text-red-900">Erreur</h3>
+            <p class="mt-1 text-sm text-red-700">{{ error }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="bg-white shadow rounded-lg p-6">
         <div class="border-b border-gray-200 pb-4 mb-4">
           <h2 class="text-lg font-medium text-gray-900">
             Détails de la commande
@@ -65,8 +114,50 @@
           <div class="flex justify-between">
             <span class="text-sm font-medium text-gray-500">Date</span>
             <span class="text-sm text-gray-900">{{
-              formatDate(new Date())
+              orderData?.createdAt
+                ? formatDate(orderData.createdAt)
+                : formatDate(new Date())
             }}</span>
+          </div>
+
+          <div v-if="orderData?.customerName" class="flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Client</span>
+            <span class="text-sm text-gray-900">{{
+              orderData.customerName
+            }}</span>
+          </div>
+
+          <div v-if="orderData?.status" class="flex justify-between">
+            <span class="text-sm font-medium text-gray-500">Statut</span>
+            <span
+              class="text-sm px-2 py-1 bg-green-100 text-green-800 rounded-full"
+            >
+              {{ getStatusLabel(orderData.status) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Détails des articles commandés -->
+        <div
+          v-if="orderData?.items && orderData.items.length > 0"
+          class="mt-6 pt-4 border-t border-gray-200"
+        >
+          <h3 class="text-sm font-medium text-gray-900 mb-3">
+            Articles commandés
+          </h3>
+          <div class="space-y-2">
+            <div
+              v-for="(item, index) in orderData.items"
+              :key="index"
+              class="flex justify-between text-sm"
+            >
+              <span class="text-gray-600"
+                >{{ item.name }} (x{{ item.quantity }})</span
+              >
+              <span class="text-gray-900">{{
+                formatAmount(item.price * item.quantity)
+              }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -174,9 +265,38 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
+
+// Types
+interface OrderData {
+  id: string;
+  orderRef: string;
+  amount: number;
+  paymentMethod?: string;
+  status: string;
+  customerName?: string;
+  customerEmail?: string;
+  createdAt: string;
+  items?: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+}
+
+interface ApiResponse {
+  success: boolean;
+  order?: OrderData;
+  invoiceUrl?: string;
+  message?: string;
+}
+
+// Composables Nuxt
+const route = useRoute();
+
 // Meta
 useHead({
-  title: "Paiement réussi - EduShop",
+  title: "Paiement réussi - Fournitures Scolaires",
   meta: [
     {
       name: "description",
@@ -187,13 +307,48 @@ useHead({
 });
 
 // States
-const route = useRoute();
 const isDownloading = ref(false);
+const isLoading = ref(true);
+const orderData = ref<OrderData | null>(null);
+const error = ref<string | null>(null);
 
-// Récupération des paramètres
+// Récupération des paramètres URL (fallback)
 const orderRef = ref((route.query.ref as string) || "N/A");
 const orderAmount = ref(parseInt(route.query.amount as string) || 0);
 const paymentMethod = ref((route.query.method as string) || "PayTech");
+
+// Fonction pour récupérer les données de la commande depuis Airtable
+const fetchOrderData = async () => {
+  if (!orderRef.value || orderRef.value === "N/A") {
+    error.value = "Référence de commande manquante";
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    const response = await $fetch<ApiResponse>(
+      `/api/orders/${orderRef.value}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.success && response.order) {
+      orderData.value = response.order;
+      // Mettre à jour les données avec les vraies valeurs
+      orderAmount.value = response.order.amount;
+      paymentMethod.value = response.order.paymentMethod || "PayTech";
+    } else {
+      throw new Error("Commande non trouvée");
+    }
+  } catch (err: any) {
+    console.error("Erreur récupération commande:", err);
+    error.value =
+      err.message || "Impossible de récupérer les données de la commande";
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // Methods
 const formatAmount = (amount: number): string => {
@@ -204,14 +359,26 @@ const formatAmount = (amount: number): string => {
   }).format(amount);
 };
 
-const formatDate = (date: Date): string => {
+const formatDate = (date: string | Date): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat("fr-FR", {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(date);
+  }).format(dateObj);
+};
+
+const getStatusLabel = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    paid: "Payé",
+    pending: "En attente",
+    cancelled: "Annulé",
+    processing: "En traitement",
+    completed: "Terminé",
+  };
+  return statusMap[status] || status;
 };
 
 const downloadInvoice = async () => {
@@ -222,30 +389,43 @@ const downloadInvoice = async () => {
   isDownloading.value = true;
 
   try {
-    // Simuler le téléchargement de facture
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Ici, vous pourriez appeler une API pour générer et télécharger la facture
-    // const response = await $fetch(`/api/orders/${orderRef.value}/invoice`);
-
-    console.log(
-      `Téléchargement de la facture pour la commande ${orderRef.value}`
+    // Appeler l'API pour générer et télécharger la facture
+    const response = await $fetch<ApiResponse>(
+      `/api/orders/${orderRef.value}/invoice`,
+      {
+        method: "GET",
+      }
     );
-  } catch (error) {
+
+    if (response.success && response.invoiceUrl) {
+      // Créer un lien de téléchargement
+      const link = document.createElement("a");
+      link.href = response.invoiceUrl;
+      link.download = `facture-${orderRef.value}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      throw new Error("Impossible de générer la facture");
+    }
+  } catch (error: any) {
     console.error("Erreur lors du téléchargement de la facture:", error);
+    // Afficher une notification d'erreur à l'utilisateur
+    alert("Erreur lors du téléchargement de la facture. Veuillez réessayer.");
   } finally {
     isDownloading.value = false;
   }
 };
 
-// Vérification du statut de paiement au montage
+// Charger les données au montage
 onMounted(async () => {
+  await fetchOrderData();
+
+  // Vérification optionnelle du statut de paiement
   if (orderRef.value && orderRef.value !== "N/A") {
     try {
-      // Optionnel: vérifier le statut final avec PayTech
-      // const status = await $fetch(`/api/paytech/status/${orderRef.value}`);
       console.log(
-        `Confirmation du paiement pour la commande ${orderRef.value}`
+        `✅ Confirmation du paiement pour la commande ${orderRef.value}`
       );
     } catch (error) {
       console.error("Erreur lors de la vérification du statut:", error);
