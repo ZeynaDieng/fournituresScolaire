@@ -343,11 +343,7 @@ const quickOrder = (level: string) => {
     transform: translateX(-50%);
     width: 80px;
     height: 3px;
-    background: linear-gradient(
-      90deg,
-      #16a34a,
-      #15803d
-    );
+    background: linear-gradient(90deg, #16a34a, #15803d);
     border-radius: 3px;
   }
 }
