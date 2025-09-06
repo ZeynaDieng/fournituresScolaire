@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     // ID de table pour les messages de contact
     const contactTableId = process.env.AIRTABLE_CONTACTS_TABLE;
 
-    // Préparer les données pour Airtable (noms de champs en anglais)
+    // Préparer les données pour Airtable (seulement les champs qui existent)
     const contactData = {
       records: [
         {
@@ -46,12 +46,15 @@ export default defineEventHandler(async (event) => {
             Phone: phone || "",
             Subject: subject,
             Message: message,
-            Status: "New",
-            Processed: false,
           },
         },
       ],
     };
+
+    console.log(
+      "📤 Données à envoyer à Airtable:",
+      JSON.stringify(contactData, null, 2)
+    );
 
     // Envoyer vers Airtable
     const airtableResponse = await fetch(
@@ -70,12 +73,47 @@ export default defineEventHandler(async (event) => {
       const errorData = await airtableResponse.json();
       console.error("Erreur Airtable:", errorData);
 
+      // IMPORTANT: Envoyer les notifications même si Airtable échoue !
+      try {
+        const notificationData = {
+          type: "contact" as const,
+          recipient: {
+            name: name,
+            email: email,
+            phone: phone || "",
+          },
+          admin: {
+            name: process.env.FROM_NAME || "Admin",
+            email: process.env.ADMIN_EMAIL || "",
+            phone: process.env.WHATSAPP_BUSINESS_NUMBER || "",
+          },
+          data: {
+            subject: subject,
+            message: message,
+          },
+        };
+
+        console.log(
+          "📧 Envoi notifications (mode fallback):",
+          notificationData
+        );
+        const notificationResults = await NotificationService.sendNotification(
+          notificationData
+        );
+        console.log(
+          "📧📱 Notifications fallback envoyées:",
+          notificationResults
+        );
+      } catch (notifError) {
+        console.error("Erreur notifications fallback:", notifError);
+      }
+
       // En cas d'erreur Airtable, on peut quand même envoyer par email
       await sendContactEmail(body);
 
       return {
         success: true,
-        message: "Message enregistré localement et envoyé par email",
+        message: "Message enregistré localement et notifications envoyées",
         fallback: true,
       };
     }

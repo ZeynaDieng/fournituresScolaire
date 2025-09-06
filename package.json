@@ -68,7 +68,7 @@
     "airtable": "^0.12.2",
     "date-fns": "^2.30.0",
     "formidable": "^3.5.4",
-    "node-fetch": "^3.3.2",
+    "node-fetch": "^2.7.0",
     "nodemailer": "^7.0.6",
     "pinia": "^2.1.7",
     "swiper": "^11.2.10",

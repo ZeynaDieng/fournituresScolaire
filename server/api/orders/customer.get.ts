@@ -75,7 +75,7 @@ async function getCustomerOrdersFromAirtable(email: string) {
 
     // Encoder l'email pour l'utiliser dans l'URL
     const encodedEmail = encodeURIComponent(email);
-    
+
     const response = await fetch(
       `https://api.airtable.com/v0/${airtableBaseId}/${ordersTableId}?filterByFormula=LOWER({Customer Email})="${email.toLowerCase()}"&sort%5B0%5D%5Bfield%5D=Created%20At&sort%5B0%5D%5Bdirection%5D=desc`,
       {

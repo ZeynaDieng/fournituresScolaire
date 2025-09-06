@@ -120,7 +120,7 @@ async function getOrderDetailsFromAirtable(orderRef: string) {
 async function generateInvoicePDF(orderDetails: any): Promise<Buffer> {
   // Pour l'instant, générer un HTML simple qui sera converti en PDF
   // Dans une vraie application, utilisez une librairie comme puppeteer ou jsPDF
-  
+
   const invoiceHTML = `
 <!DOCTYPE html>
 <html>
@@ -190,7 +190,9 @@ async function generateInvoicePDF(orderDetails: any): Promise<Buffer> {
   <div class="header">
     <h1>FACTURE</h1>
     <h2>Fournitures Scolaires</h2>
-    <p>📧 ${process.env.ADMIN_EMAIL} | 📱 ${process.env.WHATSAPP_BUSINESS_NUMBER}</p>
+    <p>📧 ${process.env.ADMIN_EMAIL} | 📱 ${
+    process.env.WHATSAPP_BUSINESS_NUMBER
+  }</p>
   </div>
 
   <div class="company-info">
@@ -206,7 +208,11 @@ async function generateInvoicePDF(orderDetails: any): Promise<Buffer> {
     <p><strong>${orderDetails.customerName}</strong></p>
     <p>Email: ${orderDetails.customerEmail}</p>
     <p>Téléphone: ${orderDetails.customerPhone}</p>
-    ${orderDetails.customerAddress ? `<p>Adresse: ${orderDetails.customerAddress}</p>` : ''}
+    ${
+      orderDetails.customerAddress
+        ? `<p>Adresse: ${orderDetails.customerAddress}</p>`
+        : ""
+    }
   </div>
 
   <div class="invoice-details">
@@ -215,7 +221,9 @@ async function generateInvoicePDF(orderDetails: any): Promise<Buffer> {
       <p><strong>Référence commande:</strong> ${orderDetails.orderRef}</p>
     </div>
     <div>
-      <p><strong>Date de création:</strong> ${new Date(orderDetails.createdAt).toLocaleDateString('fr-FR')}</p>
+      <p><strong>Date de création:</strong> ${new Date(
+        orderDetails.createdAt
+      ).toLocaleDateString("fr-FR")}</p>
       <p><strong>Méthode de paiement:</strong> ${orderDetails.paymentMethod}</p>
     </div>
   </div>
@@ -230,24 +238,30 @@ async function generateInvoicePDF(orderDetails: any): Promise<Buffer> {
       </tr>
     </thead>
     <tbody>
-      ${orderDetails.items.map((item: any) => `
+      ${orderDetails.items
+        .map(
+          (item: any) => `
         <tr>
           <td>${item.name}</td>
           <td>${item.quantity}</td>
-          <td>${item.price.toLocaleString('fr-FR')} FCFA</td>
-          <td>${(item.price * item.quantity).toLocaleString('fr-FR')} FCFA</td>
+          <td>${item.price.toLocaleString("fr-FR")} FCFA</td>
+          <td>${(item.price * item.quantity).toLocaleString("fr-FR")} FCFA</td>
         </tr>
-      `).join('')}
+      `
+        )
+        .join("")}
     </tbody>
   </table>
 
   <div class="total">
-    <p>Total: ${orderDetails.amount.toLocaleString('fr-FR')} FCFA</p>
+    <p>Total: ${orderDetails.amount.toLocaleString("fr-FR")} FCFA</p>
   </div>
 
   <div class="footer">
     <p>Merci pour votre commande !</p>
-    <p>Cette facture a été générée automatiquement le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</p>
+    <p>Cette facture a été générée automatiquement le ${new Date().toLocaleDateString(
+      "fr-FR"
+    )} à ${new Date().toLocaleTimeString("fr-FR")}</p>
     <p>Pour toute question, contactez-nous à ${process.env.ADMIN_EMAIL}</p>
   </div>
 </body>
@@ -255,5 +269,5 @@ async function generateInvoicePDF(orderDetails: any): Promise<Buffer> {
 
   // Pour l'instant, retourner le HTML (en production, convertir en PDF)
   // Vous pouvez utiliser puppeteer pour générer un vrai PDF
-  return Buffer.from(invoiceHTML, 'utf-8');
+  return Buffer.from(invoiceHTML, "utf-8");
 }
