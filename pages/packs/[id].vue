@@ -350,71 +350,70 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useHead } from "@unhead/vue";
 import { useProductsStore } from "~/stores/products";
 import { useAirtableStore } from "~/stores/airtable";
 import { useCartStore } from "~/stores/cart";
 import { useFormatter } from "~/composables/useFormatter";
+import { useNotification } from "~/composables/useNotification";
 
 const route = useRoute();
 const productsStore = useProductsStore();
 const airtableStore = useAirtableStore();
 const cartStore = useCartStore();
 const { formatPrice } = useFormatter();
-
-// Toast notification - version simple
-const toast = {
-  success: (message: string) => {
-    console.log('Success:', message);
-    // Fallback: utiliser une alerte simple
-    if (typeof window !== 'undefined') {
-      alert(message);
-    }
-  },
-  info: (message: string) => {
-    console.log('Info:', message);
-  }
-};
+const {
+  success: showSuccess,
+  error: showError,
+  info: showInfo,
+} = useNotification();
 
 // Charger les données Airtable si pas encore fait
 onMounted(async () => {
-  console.log('🔄 Chargement des données pour la page pack détail...');
-  
+  console.log("🔄 Chargement des données pour la page pack détail...");
+
   if (airtableStore.packs.length === 0) {
-    console.log('📡 Chargement des packs depuis Airtable...');
+    console.log("📡 Chargement des packs depuis Airtable...");
     await airtableStore.fetchPacks();
   }
-  
+
   // Fallback sur les données locales si pas de données Airtable
   if (productsStore.packs.length === 0) {
-    console.log('📦 Chargement des packs locaux...');
+    console.log("📦 Chargement des packs locaux...");
     productsStore.fetchProducts();
   }
-  
-  console.log('📊 Packs Airtable:', airtableStore.packs.length);
-  console.log('📦 Packs locaux:', productsStore.packs.length);
+
+  console.log("📊 Packs Airtable:", airtableStore.packs.length);
+  console.log("📦 Packs locaux:", productsStore.packs.length);
 });
 
 // Chercher d'abord dans Airtable, puis dans le store local
 const pack = computed(() => {
   const packId = route.params.id;
-  console.log('🔍 Recherche du pack avec ID:', packId);
-  
+  console.log("🔍 Recherche du pack avec ID:", packId);
+
   // Essayer d'abord dans Airtable
   let foundPack = airtableStore.packs.find((p) => p.id === packId);
-  console.log('📡 Pack trouvé dans Airtable:', !!foundPack);
-  
+  console.log("📡 Pack trouvé dans Airtable:", !!foundPack);
+
   // Fallback sur les données locales
   if (!foundPack) {
     foundPack = productsStore.packs.find((p) => p.id === packId);
-    console.log('📦 Pack trouvé dans store local:', !!foundPack);
+    console.log("📦 Pack trouvé dans store local:", !!foundPack);
   }
-  
+
   if (!foundPack) {
-    console.warn('⚠️  Aucun pack trouvé avec l\'ID:', packId);
-    console.log('Available Airtable pack IDs:', airtableStore.packs.map(p => p.id));
-    console.log('Available local pack IDs:', productsStore.packs.map(p => p.id));
+    console.warn("⚠️  Aucun pack trouvé avec l'ID:", packId);
+    console.log(
+      "Available Airtable pack IDs:",
+      airtableStore.packs.map((p) => p.id)
+    );
+    console.log(
+      "Available local pack IDs:",
+      productsStore.packs.map((p) => p.id)
+    );
   }
-  
+
   return foundPack;
 });
 
@@ -431,10 +430,7 @@ function addToCart(pack: any) {
     1
   );
 
-  toast.success(`${pack.name} a été ajouté à votre panier`, {
-    timeout: 3000,
-    icon: "i-heroicons-check-circle",
-  });
+  showSuccess(`${pack.name} a été ajouté à votre panier`);
 }
 
 const sharePack = async () => {
@@ -449,10 +445,7 @@ const sharePack = async () => {
       await navigator.share(shareData);
     } else {
       await navigator.clipboard.writeText(shareData.url);
-      toast.info("Le lien a été copié dans le presse-papier", {
-        timeout: 3000,
-        icon: "i-heroicons-clipboard-document",
-      });
+      showInfo("Le lien a été copié dans le presse-papier");
     }
   } catch (err) {
     console.error("Error sharing:", err);
