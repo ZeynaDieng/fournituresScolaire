@@ -135,10 +135,10 @@
         </div>
 
         <!-- View All Button -->
-        <div class="text-center mt-12">
+        <div class="text-center p-4 mt-12">
           <NuxtLink
             to="/products"
-            class="btn-primary inline-flex items-center space-x-2"
+            class="btn-primary inline-flex items-center p-4 space-x-2"
           >
             <span>Voir tous les articles</span>
             <svg
