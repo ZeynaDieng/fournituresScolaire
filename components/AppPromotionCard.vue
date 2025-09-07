@@ -76,7 +76,10 @@
           </div>
 
           <!-- Trending Badge -->
-          <div v-if="promo.trending" class="absolute top-4 left-4 z-10">
+          <div
+            v-if="promo.trending"
+            class="absolute top-0 bottom-8 left-4 z-10"
+          >
             <div
               class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center animate-pulse"
             >

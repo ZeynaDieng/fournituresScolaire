@@ -36,30 +36,6 @@
     </div>
 
     <!-- Wishlist Button -->
-    <div class="absolute top-4 left-4 z-30">
-      <button
-        @click.stop="toggleWishlist"
-        class="group/heart w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 hover:bg-white hover:shadow-xl"
-        :class="{
-          'text-red-500 bg-red-50 opacity-100 scale-100': isWishlisted,
-          'text-slate-400': !isWishlisted,
-        }"
-      >
-        <svg
-          class="w-5 h-5 transition-transform group-hover/heart:scale-110"
-          :fill="isWishlisted ? 'currentColor' : 'none'"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-          />
-        </svg>
-      </button>
-    </div>
 
     <!-- Image Container -->
     <div
@@ -208,7 +184,6 @@
               </span>
             </div>
           </div>
-          <div class="text-xs text-slate-500">/pièce</div>
         </div>
       </div>
 
@@ -314,7 +289,7 @@
             />
           </svg>
           <span class="text-sm font-medium text-slate-700"
-            >Tarifs dégressifs</span
+            >Tarifs avec reduction</span
           >
         </div>
         <div class="grid grid-cols-3 gap-2">
