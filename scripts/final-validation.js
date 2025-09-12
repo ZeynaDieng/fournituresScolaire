@@ -7,7 +7,8 @@
 
 const https = require("https");
 
-const SITE_URL = "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app";
+const SITE_URL =
+  "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app";
 
 console.log("🎯 VALIDATION FINALE - FOURNITURES SCOLAIRES");
 console.log("=".repeat(60));
@@ -132,7 +133,7 @@ async function runValidation() {
     console.log("   • E-commerce totalement dynamique");
 
     console.log(`\n🌐 Votre site: ${SITE_URL}`);
-    console.log("📱 WhatsApp: +221 77 778 04 56");
+    console.log("📱 WhatsApp: +221 78 291 18 44");
     console.log("💳 Paiements: PayTech opérationnel");
   } else {
     console.log("\n🔧 PROBLÈMES À RÉSOUDRE:");

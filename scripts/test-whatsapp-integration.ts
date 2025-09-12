@@ -246,7 +246,7 @@ console.log("\n");
 console.log("📊 Résumé des Tests");
 console.log("==================");
 console.log("✅ Fonctionnalité WhatsApp opérationnelle");
-console.log("📱 Numéro configuré: +221 77 778 04 56");
+console.log("📱 Numéro configuré: +221 78 291 18 44");
 console.log("🔗 Liens générés correctement");
 console.log("📝 Messages formatés avec succès");
 console.log("\n");
@@ -258,6 +258,6 @@ console.log("2. Remplir le formulaire de commande complet");
 console.log("3. Choisir l'option 'Commande WhatsApp' (option par défaut)");
 console.log("4. Cliquer sur 'Envoyer sur WhatsApp'");
 console.log("5. Le message formaté s'ouvrira dans WhatsApp");
-console.log("6. Envoyer le message au commerçant (+221 77 778 04 56)");
+console.log("6. Envoyer le message au commerçant (+221 78 291 18 44)");
 
 console.log("\n✨ Test terminé avec succès !");

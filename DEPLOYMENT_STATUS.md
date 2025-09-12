@@ -58,14 +58,14 @@ Configuration `vercel.json` simplifiée et optimisée pour Nuxt 3 :
 - 🛍️ **Catalogue produits** synchronisé avec Airtable
 - 📦 **Packs scolaires** configurés
 - 🏷️ **Promotions** avec ajout au panier fonctionnel
-- 📱 **WhatsApp Business** (+221 77 778 04 56) opérationnel
+- 📱 **WhatsApp Business** (+221 78 291 18 44) opérationnel
 - 🛒 **Checkout complet** avec validation
 - 🔌 **64 routes API** déployées
 - 🎨 **Design responsive** optimisé
 
 ### 📱 **WhatsApp parfaitement configuré :**
 
-- ✅ Numéro business : +221 77 778 04 56
+- ✅ Numéro business : +221 78 291 18 44
 - ✅ Messages formatés avec émojis
 - ✅ Informations client complètes
 - ✅ Calculs automatiques des totaux
