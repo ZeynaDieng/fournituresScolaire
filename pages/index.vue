@@ -597,40 +597,14 @@
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink
               to="/products"
-              class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 inline-flex items-center justify-center"
+              class="bg-white text-green-600 px-6 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 inline-flex items-center justify-center"
             >
-              <svg
-                class="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                ></path>
-              </svg>
               Voir tous les produits
             </NuxtLink>
             <NuxtLink
               to="/packs"
-              class="border-2 border-primary-700 text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors duration-300 inline-flex items-center justify-center"
+              class="border-2 border-primary-700 text-primary-700 px-6 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors duration-300 inline-flex items-center justify-center"
             >
-              <svg
-                class="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                ></path>
-              </svg>
               Découvrir les packs
             </NuxtLink>
           </div>
