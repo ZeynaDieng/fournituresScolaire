@@ -111,7 +111,7 @@ export const saveOrder = async (
 };
 
 // Mettre à jour le statut d'une commande
-export const updateOrderStatus = async (
+export const updateLocalOrderStatus = async (
   orderRef: string,
   updates: {
     status?: string;

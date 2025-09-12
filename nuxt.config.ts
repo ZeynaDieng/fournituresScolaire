@@ -80,12 +80,14 @@ export default defineNuxtConfig({
   },
   nitro: {
     compressPublicAssets: true,
-    minify: false, // Désactivé temporairement pour debug
+    minify: process.env.NODE_ENV === "production",
     prerender: {
       ignore: ["/"],
       crawlLinks: false,
       routes: [],
     },
+    // Configuration pour Vercel
+    preset: "vercel",
   },
   devServer: {
     port: 3000,

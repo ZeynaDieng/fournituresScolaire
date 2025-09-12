@@ -261,7 +261,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import KPICard from "~/components/admin/KPICard.vue";
+import KPICard from "~/components/admin/KpiCard.vue";
 import RevenueChart from "~/components/admin/RevenueChart.vue";
 import OrdersChart from "~/components/admin/OrdersChart.vue";
 import TopProductsChart from "~/components/admin/TopProductsChart.vue";

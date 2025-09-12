@@ -1,7 +1,7 @@
 // server/api/airtable/orders/create.post.ts
 
 import { readBody, getHeader } from "h3";
-import { addOrderToGoogleSheets } from "../../../utils/google-sheets";
+// Google Sheets supprimé
 import { saveOrder } from "../../../utils/local-storage";
 import { sendOrderNotification } from "../../../utils/email-notifications";
 import { addOrderToMasterExcel } from "../../../utils/excel-master";
@@ -143,11 +143,11 @@ export default defineEventHandler(async (event) => {
         amounts: orderData.amounts,
       };
 
-      const sheetResult = await addOrderToGoogleSheets(orderDataForSheet);
-      console.log("✅ Commande ajoutée à Google Sheets:", sheetResult.orderRef);
+      // Google Sheets supprimé - plus nécessaire
+      console.log("✅ Commande sauvegardée localement et dans Excel");
     } catch (sheetError) {
       console.warn(
-        "⚠️ Erreur Google Sheets (la commande continue):",
+        "⚠️ Erreur sauvegarde (la commande continue):",
         sheetError instanceof Error ? sheetError.message : sheetError
       );
     }
