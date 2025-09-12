@@ -385,17 +385,9 @@ const downloadExcel = async () => {
 const syncGoogleSheets = async () => {
   try {
     loading.value = true;
-    showMessage("🔄 Synchronisation avec Google Sheets...", "success");
+    showMessage("🔄 Google Sheets supprimé - synchronisation non disponible", "info");
 
-    const response = await $fetch("/api/admin/sync-google-sheets", {
-      method: "POST",
-    });
-
-    if (response.success) {
-      showMessage(`✅ ${response.message}`, "success");
-    } else {
-      showMessage(`❌ ${response.message}`, "error");
-    }
+    // Google Sheets supprimé
   } catch (error) {
     console.error("Erreur synchronisation:", error);
     showMessage("Erreur lors de la synchronisation", "error");

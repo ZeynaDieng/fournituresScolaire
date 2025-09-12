@@ -1,9 +1,4 @@
 // /server/api/admin/system-status.get.ts
-import {
-  isGoogleSheetsConfigured,
-  getConfigErrors,
-  getConfigHelpMessage,
-} from "../../../utils/google-sheets-config";
 import { getAllOrders } from "../../../utils/local-storage";
 import { getMasterExcelPath } from "../../../utils/excel-master";
 import { promises as fs } from "fs";
@@ -44,14 +39,6 @@ export default defineEventHandler(async (event) => {
           status: excelExists ? "operational" : "missing",
           filePath: getMasterExcelPath(),
         },
-        googleSheets: {
-          configured: isGoogleSheetsConfigured(),
-          status: isGoogleSheetsConfigured() ? "configured" : "not_configured",
-          errors: getConfigErrors(),
-          helpMessage: isGoogleSheetsConfigured()
-            ? null
-            : getConfigHelpMessage(),
-        },
       },
       stats,
       timestamp: new Date().toISOString(),
@@ -65,7 +52,6 @@ export default defineEventHandler(async (event) => {
       system: {
         localStorage: { configured: false, status: "error" },
         excel: { configured: false, status: "error" },
-        googleSheets: { configured: false, status: "error" },
       },
       stats: { total: 0, pending: 0, confirmed: 0, delivered: 0, paid: 0 },
     };

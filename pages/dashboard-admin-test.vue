@@ -291,7 +291,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import KPICard from "~/components/admin/KPICard.vue";
+import KPICard from "~/components/admin/KpiCard.vue";
 import TopProductsChart from "~/components/admin/TopProductsChart.vue";
 import ConversionFunnel from "~/components/admin/ConversionFunnel.vue";
 import PaymentMethodsChart from "~/components/admin/PaymentMethodsChart.vue";

@@ -1,7 +1,6 @@
 // /server/api/admin/orders-airtable/update-status.post.ts
-import { updateOrderStatus as updateGoogleSheets } from "../../../../utils/google-sheets";
 import {
-  updateOrderStatus as updateLocalStorage,
+  updateLocalOrderStatus as updateLocalStorage,
   getAllOrders,
 } from "../../../../utils/local-storage";
 import { addOrderToMasterExcel } from "../../../../utils/excel-master";
@@ -69,16 +68,7 @@ export default defineEventHandler(async (event) => {
       console.warn("⚠️ Erreur régénération Excel:", error.message);
     }
 
-    // 3. Essayer de mettre à jour Google Sheets (optionnel)
-    try {
-      await updateGoogleSheets(orderRef, statusUpdates);
-      console.log(`✅ Statut mis à jour dans Google Sheets pour ${orderRef}`);
-    } catch (error) {
-      console.warn(
-        "⚠️ Erreur Google Sheets (la commande continue):",
-        error.message
-      );
-    }
+    // 3. Google Sheets supprimé - plus nécessaire
 
     // 4. Envoyer notification si statut important changé
     if (
@@ -100,11 +90,10 @@ export default defineEventHandler(async (event) => {
     return {
       success: true,
       message: "Statut mis à jour avec succès",
-      data: {
+        data: {
         orderRef,
         updates: statusUpdates,
         local: localResult ? true : false,
-        googleSheets: "attempted",
       },
     };
   } catch (error: any) {
