@@ -91,7 +91,7 @@
 
         <!-- Gestion des commandes -->
         <NuxtLink
-          to="/admin/orders"
+          to="/admin/orders-airtable"
           class="group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 p-6 border border-gray-200"
         >
           <div class="flex items-center justify-between mb-4">
@@ -183,7 +183,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
             <div class="text-3xl font-bold text-emerald-600">
-              {{ formatCurrency(adminStats.monthlyRevenue) || "€0" }}
+              {{ formatCurrency(adminStats.monthlyRevenue) || "FCFA0" }}
             </div>
             <div class="text-gray-600">Revenus du mois</div>
           </div>
@@ -212,18 +212,13 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ layout: "admin", middleware: "admin" });
 import { ref, inject } from "vue";
 import ProductIcon from "../../components/icons/ProductIcon.vue";
 import PackageIcon from "../../components/icons/PackageIcon.vue";
 import PromoIcon from "../../components/icons/PromoIcon.vue";
 import OrderIcon from "../../components/icons/OrderIcon.vue";
 import UserIcon from "../../components/icons/UserIcon.vue";
-
-// Protection par middleware - utilise le layout admin
-definePageMeta({
-  middleware: "admin",
-  layout: "admin",
-});
 
 // Injecter les stats depuis le layout
 const adminStats = inject(

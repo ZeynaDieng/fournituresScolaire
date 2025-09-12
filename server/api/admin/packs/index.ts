@@ -1,13 +1,20 @@
 // server/api/admin/packs/index.ts
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+import { getAirtableBase } from "~/utils/airtable-base";
+import { defineEventHandler, readBody } from "h3";
 
 export default defineEventHandler(async (event) => {
-  if (event.method === 'GET') {
-    return await prisma.pack.findMany()
+  const base = getAirtableBase();
+  if (event.method === "GET") {
+    const records = await base(process.env.AIRTABLE_PACKS_TABLE!)
+      .select()
+      .all();
+    return records.map((r) => ({ id: r.id, ...r.fields }));
   }
-  if (event.method === 'POST') {
-    const body = await readBody(event)
-    return await prisma.pack.create({ data: body })
+  if (event.method === "POST") {
+    const body = await readBody(event);
+    const created = await base(process.env.AIRTABLE_PACKS_TABLE!).create([
+      { fields: body },
+    ]);
+    return { id: created[0].id, ...created[0].fields };
   }
-})
+});

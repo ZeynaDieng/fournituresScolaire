@@ -9,7 +9,7 @@
 - Endpoint de test PayTech : `/api/paytech/test-initiate`
 - Enregistrement automatique des commandes PayTech dans Airtable (statut "Pending")
 - Mise à jour automatique du statut vers "Paid" lors de la confirmation webhook
-- Interface admin pour visualiser les commandes Airtable : `/admin/orders-airtable`
+- Interface admin pour visualiser les commandes Airtable : `/admin/orders-airtable-airtable`
 
 ## 🌍 Environnements de Test Disponibles
 
@@ -95,7 +95,7 @@ curl -X POST http://localhost:3003/api/paytech/initiate \
 
 ### Via l'Interface Admin
 
-1. Aller sur `http://localhost:3003/admin/orders-airtable`
+1. Aller sur `http://localhost:3003/admin/orders-airtable-airtable`
 2. Voir toutes les commandes synchronisées depuis Airtable
 3. Vérifier les statuts : "Pending" → "Paid"
 

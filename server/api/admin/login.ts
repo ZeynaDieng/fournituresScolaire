@@ -1,12 +1,21 @@
-// server/api/admin/login.ts
-const ADMIN_USER = 'admin'
-const ADMIN_PASS = 'admin123'
-const ADMIN_TOKEN = 'supersecrettoken'
+import { findAirtableUser } from "~/utils/airtable-users";
+import { createHash } from "crypto";
+import { defineEventHandler, readBody } from "h3";
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  if (body.username === ADMIN_USER && body.password === ADMIN_PASS) {
-    return { success: true, token: ADMIN_TOKEN }
+  const body = await readBody(event);
+  console.log("LOGIN BODY:", body);
+  // Accepte username OU email
+  const email = body.email || body.username;
+  const user = await findAirtableUser(email);
+  console.log("USER FOUND:", user);
+  if (user) {
+    if (user.Password === body.password) {
+      const token = createHash("sha256")
+        .update(user.Email + Date.now())
+        .digest("hex");
+      return { success: true, token };
+    }
   }
-  return { success: false, message: 'Identifiants invalides' }
-})
+  return { success: false, message: "Identifiants invalides" };
+});

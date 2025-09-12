@@ -296,3 +296,10 @@ onMounted(() => {
   loadOrders();
 });
 </script>
+
+<style scoped>
+/* Ajout d'un peu d'espace en bas du formulaire */
+.mt-8 {
+  margin-top: 2rem !important;
+}
+</style>

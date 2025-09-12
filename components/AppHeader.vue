@@ -400,17 +400,23 @@ const handleSearchInput = useDebounceFn(() => {
 }, 300);
 
 // Close menus on escape key
+let escapeHandler: ((e: KeyboardEvent) => void) | null = null;
+
 onMounted(() => {
-  const handleEscape = (e: KeyboardEvent) => {
+  escapeHandler = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       isMobileMenuOpen.value = false;
       searchStore.isSearchOpen = false;
     }
   };
-  document.addEventListener("keydown", handleEscape);
-  onUnmounted(() => {
-    document.removeEventListener("keydown", handleEscape);
-  });
+  document.addEventListener("keydown", escapeHandler);
+});
+
+onUnmounted(() => {
+  if (escapeHandler) {
+    document.removeEventListener("keydown", escapeHandler);
+    escapeHandler = null;
+  }
 });
 </script>
 

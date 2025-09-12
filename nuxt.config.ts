@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt", "@vueuse/nuxt"],
   ssr: true,
 
-  css: ["@/assets/css/main.css"],
+  css: ["@/assets/css/main.css", "@/assets/css/animations.css"],
   typescript: {
     strict: true,
     typeCheck: true,

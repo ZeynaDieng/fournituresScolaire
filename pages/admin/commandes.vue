@@ -290,10 +290,7 @@
 </template>
 
 <script setup>
-definePageMeta({
-  layout: "admin",
-  middleware: "admin",
-});
+definePageMeta({ layout: "admin", middleware: "admin" });
 
 // État réactif
 const loading = ref(false);
@@ -375,7 +372,7 @@ const downloadExcel = async () => {
   try {
     loading.value = true;
     showMessage("📊 Téléchargement du fichier Excel...", "success");
-    window.open("/api/admin/orders/excel-master", "_blank");
+    window.open("/admin/orders-airtable/excel-master", "_blank");
   } catch (error) {
     console.error("Erreur téléchargement Excel:", error);
     showMessage("Erreur lors du téléchargement", "error");

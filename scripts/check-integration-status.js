@@ -175,11 +175,14 @@ async function checkIntegrationStatus() {
     if (checks.server) {
       try {
         // Test indirect via l'API
-        const response = await fetch(`${BASE_URL}/api/airtable/orders/create-pending`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}), // Données vides pour tester la validation
-        });
+        const response = await fetch(
+          `${BASE_URL}/api/airtable/orders/create-pending`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}), // Données vides pour tester la validation
+          }
+        );
 
         // Si on reçoit une erreur de validation (400), la DB fonctionne
         if (response.status === 400 || response.status === 422) {
@@ -219,7 +222,9 @@ async function checkIntegrationStatus() {
       console.log("   npm run test:paytech-ngrok (avec ngrok)");
       console.log("");
       console.log("🔗 Interfaces utiles:");
-      console.log(`   Admin Airtable: ${BASE_URL}/admin/orders-airtable`);
+      console.log(
+        `   Admin Airtable: ${BASE_URL}/admin/orders-airtable-airtable`
+      );
       console.log(`   Admin classique: ${BASE_URL}/admin`);
     } else if (totalChecks >= 3) {
       console.log("⚠️  INTÉGRATION PARTIELLEMENT FONCTIONNELLE");

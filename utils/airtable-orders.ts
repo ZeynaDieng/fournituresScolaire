@@ -54,7 +54,7 @@ export async function addOrderToAirtable(orderData: OrderData) {
         "Total Amount": orderData.amounts.total,
         // "Created Date": new Date().toISOString().split('T')[0], // Désactivé temporairement
         Items: orderData.items
-          .map((item) => `${item.name} (x${item.quantity}) - ${item.price}€`)
+          .map((item) => `${item.name} (x${item.quantity}) - ${item.price}FCFA`)
           .join("\n"),
         "Shipping Address": fullAddress,
         // Le champ Status sera ajouté quand il sera créé dans Airtable

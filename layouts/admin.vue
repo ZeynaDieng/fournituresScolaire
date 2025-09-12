@@ -115,6 +115,9 @@ const adminStats = ref({
   lastUpdated: new Date(),
 });
 
+// Injection globale des stats pour toutes les pages enfants
+provide("adminStats", adminStats);
+
 // Titre de la page basé sur la route
 const pageTitle = computed(() => {
   const titles: Record<string, string> = {
@@ -124,9 +127,8 @@ const pageTitle = computed(() => {
     "/admin/products": "Gestion des produits",
     "/admin/packs": "Gestion des packs",
     "/admin/promotions": "Gestion des promotions",
-    "/admin/orders": "Gestion des commandes",
+    "/admin/orders-airtable": "Gestion des commandes",
     "/admin/users": "Gestion des utilisateurs",
-    "/admin/test": "Page de test",
   };
   return titles[route.path] || "Administration";
 });
@@ -196,17 +198,23 @@ const fetchAdminStats = async () => {
   }
 };
 
+// Variable pour stocker l'intervalle
+let statsInterval: NodeJS.Timeout | null = null;
+
 // Charger les stats au montage et les actualiser périodiquement
 onMounted(() => {
   fetchAdminStats();
 
   // Actualiser toutes les 5 minutes
-  const interval = setInterval(fetchAdminStats, 5 * 60 * 1000);
+  statsInterval = setInterval(fetchAdminStats, 5 * 60 * 1000);
+});
 
-  // Nettoyer l'intervalle au démontage
-  onUnmounted(() => {
-    clearInterval(interval);
-  });
+// Nettoyer l'intervalle au démontage
+onUnmounted(() => {
+  if (statsInterval) {
+    clearInterval(statsInterval);
+    statsInterval = null;
+  }
 });
 
 // Actualiser les stats quand la route change

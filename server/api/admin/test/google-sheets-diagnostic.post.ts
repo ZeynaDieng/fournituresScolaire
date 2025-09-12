@@ -1,5 +1,5 @@
 // /server/api/admin/test/google-sheets-diagnostic.post.ts
-import { GOOGLE_SHEETS_CONFIG } from "../../../../utils/google-sheets";
+import { GOOGLE_SHEETS_CONFIG } from "../../../../utils/google-sheets-config";
 
 export default defineEventHandler(async (event) => {
   try {

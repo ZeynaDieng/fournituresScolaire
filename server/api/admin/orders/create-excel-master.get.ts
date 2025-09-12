@@ -1,4 +1,4 @@
-// /server/api/admin/orders/create-excel-master.get.ts
+// /server/api/admin/orders-airtable/create-excel-master.get.ts
 import { createMasterExcel } from "../../../../utils/excel-master";
 import { getAllOrders } from "../../../../utils/local-storage";
 

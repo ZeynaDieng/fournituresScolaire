@@ -217,7 +217,9 @@ async function testCompletePaytechFlow() {
     console.log("\n🎉 Test complet terminé avec succès !");
     console.log("\n💡 Prochaines étapes:");
     console.log(
-      "   1. Consulter linterface admin: " + BASE_URL + "/admin/orders-airtable"
+      "   1. Consulter linterface admin: " +
+        BASE_URL +
+        "/admin/orders-airtable-airtable"
     );
     console.log("   2. Vérifier directement dans Airtable");
     console.log(

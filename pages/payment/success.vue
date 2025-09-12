@@ -61,29 +61,6 @@
         </div>
       </div>
 
-      <div
-        v-else-if="error"
-        class="bg-red-50 border border-red-200 rounded-lg p-4"
-      >
-        <div class="flex">
-          <svg
-            class="h-5 w-5 text-red-400 mt-0.5 mr-2"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <div>
-            <h3 class="text-sm font-medium text-red-900">Erreur</h3>
-            <p class="mt-1 text-sm text-red-700">{{ error }}</p>
-          </div>
-        </div>
-      </div>
-
       <div v-else class="bg-white shadow rounded-lg p-6">
         <div class="border-b border-gray-200 pb-4 mb-4">
           <h2 class="text-lg font-medium text-gray-900">
@@ -191,47 +168,94 @@
 
       <!-- Actions -->
       <div class="space-y-3">
-        <button
-          @click="downloadInvoice"
-          :disabled="isDownloading"
-          class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green"
-        >
-          <svg
-            v-if="!isDownloading"
-            class="h-4 w-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <!-- Boutons de téléchargement -->
+        <div class="space-y-2">
+          <button
+            @click="downloadInvoice"
+            :disabled="isDownloading || !orderRef || orderRef === 'N/A'"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <svg
-            v-else
-            class="animate-spin h-4 w-4 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
+            <svg
+              v-if="isDownloading"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <svg
+              v-else
+              class="-ml-1 mr-3 h-5 w-5"
+              fill="none"
               stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          {{ isDownloading ? "Génération..." : "Télécharger la facture" }}
-        </button>
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            {{ isDownloading ? "Génération..." : "Télécharger HTML" }}
+          </button>
+
+          <button
+            @click="downloadInvoicePDF"
+            :disabled="isDownloadingPDF || !orderRef || orderRef === 'N/A'"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg
+              v-if="isDownloadingPDF"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <svg
+              v-else
+              class="-ml-1 mr-3 h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+              ></path>
+            </svg>
+            {{ isDownloadingPDF ? "Génération..." : "Télécharger PDF (HTML)" }}
+          </button>
+        </div>
 
         <NuxtLink
           to="/"
@@ -241,8 +265,8 @@
         </NuxtLink>
 
         <NuxtLink
-          to="/orders"
-          class="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green"
+          to="/admin/orders-airtable"
+          class="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
         >
           Voir mes commandes
         </NuxtLink>
@@ -308,6 +332,7 @@ useHead({
 
 // States
 const isDownloading = ref(false);
+const isDownloadingPDF = ref(false);
 const isLoading = ref(true);
 const orderData = ref<OrderData | null>(null);
 const error = ref<string | null>(null);
@@ -326,18 +351,21 @@ const fetchOrderData = async () => {
   }
 
   try {
-    const response = await $fetch<ApiResponse>(
-      `/api/airtable/orders/${orderRef.value}`,
-      {
-        method: "GET",
-      }
-    );
+    const response = await fetch(`/api/airtable/orders/${orderRef.value}`, {
+      method: "GET",
+    });
 
-    if (response.success && response.order) {
-      orderData.value = response.order;
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
+    const data: ApiResponse = await response.json();
+
+    if (data.success && data.order) {
+      orderData.value = data.order;
       // Mettre à jour les données avec les vraies valeurs
-      orderAmount.value = response.order.amount;
-      paymentMethod.value = response.order.paymentMethod || "PayTech";
+      orderAmount.value = data.order.amount;
+      paymentMethod.value = data.order.paymentMethod || "PayTech";
     } else {
       throw new Error("Commande non trouvée");
     }
@@ -409,6 +437,35 @@ const downloadInvoice = async () => {
   }
 };
 
+const downloadInvoicePDF = async () => {
+  if (!orderRef.value || orderRef.value === "N/A") {
+    return;
+  }
+
+  isDownloadingPDF.value = true;
+
+  try {
+    // Télécharger directement le PDF
+    const pdfUrl = `/api/airtable/orders/${orderRef.value}/invoice-pdf`;
+
+    // Créer un lien de téléchargement temporaire
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = `facture-${orderRef.value}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    console.log(`PDF téléchargé pour la commande ${orderRef.value}`);
+  } catch (error: any) {
+    console.error("Erreur lors du téléchargement du PDF:", error);
+    // Essayer la navigation directe en cas d'erreur
+    window.location.href = `/api/airtable/orders/${orderRef.value}/invoice-pdf`;
+  } finally {
+    isDownloadingPDF.value = false;
+  }
+};
+
 // Charger les données au montage
 onMounted(async () => {
   await fetchOrderData();
@@ -424,4 +481,25 @@ onMounted(async () => {
     }
   }
 });
+
+// Utiliser useFetch pour charger les données côté serveur
+const {
+  data: orderResponse,
+  error: fetchError,
+  pending,
+} = await useFetch<ApiResponse>(`/api/airtable/orders/${orderRef.value}`, {
+  server: true,
+  default: () => ({ success: false, order: null }),
+});
+
+// Mettre à jour les données si disponibles
+if (orderResponse.value?.success && orderResponse.value?.order) {
+  orderData.value = orderResponse.value.order;
+  orderAmount.value = orderResponse.value.order.amount;
+  paymentMethod.value = orderResponse.value.order.paymentMethod || "PayTech";
+  isLoading.value = false;
+} else if (fetchError.value) {
+  error.value = "Impossible de récupérer les données de la commande";
+  isLoading.value = false;
+}
 </script>

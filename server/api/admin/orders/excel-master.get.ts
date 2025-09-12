@@ -1,4 +1,4 @@
-// /server/api/admin/orders/excel-master.get.ts
+// /server/api/admin/orders-airtable/excel-master.get.ts
 import {
   getMasterExcelPath,
   createMasterExcel,

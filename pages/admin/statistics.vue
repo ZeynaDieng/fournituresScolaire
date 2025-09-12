@@ -1,14 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Sidebar -->
-    <AdminSidebar
-      :sidebar-open="sidebarOpen"
-      :pending-orders="stats.pendingOrders"
-      @toggle-sidebar="toggleSidebar"
-      @close-sidebar="closeSidebar"
-    />
-
-    <!-- Main content -->
+    <!-- Main content (sidebar gérée par le layout) -->
     <div class="lg:ml-64">
       <!-- Top header -->
       <header class="bg-white shadow-sm border-b">
@@ -81,10 +73,10 @@
                     stats.revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'
                   "
                 >
-                  <span
-                    >{{ stats.revenueGrowth >= 0 ? "+" : ""
-                    }}{{ stats.revenueGrowth }}%</span
-                  >
+                  <span>
+                    {{ stats.revenueGrowth >= 0 ? "+" : ""
+                    }}{{ stats.revenueGrowth }}%
+                  </span>
                   <span class="text-gray-500 ml-1">vs mois dernier</span>
                 </p>
               </div>
@@ -294,7 +286,7 @@
                   Commandes récentes
                 </h3>
                 <NuxtLink
-                  to="/admin/orders"
+                  to="/admin/orders-airtable"
                   class="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
                 >
                   Voir tout →
@@ -381,13 +373,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ layout: "admin", middleware: "admin" });
 import { ref, computed, onMounted } from "vue";
-
-// Protection par middleware
-definePageMeta({
-  middleware: "admin",
-  layout: "admin",
-});
 
 // State
 const sidebarOpen = ref(false);

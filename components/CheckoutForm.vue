@@ -6,7 +6,7 @@
         Finaliser ma commande
       </h1>
       <p class="text-gray-600">
-        Commande via WhatsApp - Paiement personnalisé avec la méthode de votre choix
+        Commande via WhatsApp - Seuls le nom, téléphone et adresse sont requis
       </p>
     </div>
 
@@ -92,15 +92,14 @@
               for="email"
               class="block text-sm font-medium text-gray-700 mb-1"
             >
-              Email *
+              Email (optionnel)
             </label>
             <input
               id="email"
               v-model="form.customer.email"
               type="email"
-              required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500"
-              placeholder="votre@email.com"
+              placeholder="votre@email.com (optionnel)"
             />
           </div>
 
@@ -136,7 +135,7 @@
       </div>
 
       <!-- Résumé de la commande (après les informations personnelles) -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div v-if="cartItems.length > 0" class="bg-white p-6 rounded-lg shadow-sm border">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
           Résumé de la commande
         </h3>
@@ -194,52 +193,7 @@
           </div>
         </div>
 
-        <!-- Code promo -->
-        <div class="mt-4">
-          <div class="flex">
-            <input
-              v-model="promoCode"
-              type="text"
-              placeholder="Code promo"
-              class="w-full px-4 py-3 border border-gray-300 rounded-r-none rounded-l-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500 flex-1"
-            />
-            <button
-              type="button"
-              @click="applyPromoCode"
-              :disabled="isApplyingPromo"
-              class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-r-md transition-colors"
-            >
-              Appliquer
-            </button>
-          </div>
-        </div>
-
-        <!-- Badges sécurité -->
-        <div
-          class="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500"
-        >
-          <div class="flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            SSL sécurisé
-          </div>
-          <div class="flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            PayTech certifié
-          </div>
-        </div>
-
+       
         <!-- Bouton Continuer après le résumé -->
         <div class="mt-6">
           <button
@@ -305,15 +259,14 @@
                 for="city"
                 class="block text-sm font-medium text-gray-700 mb-1"
               >
-                Ville *
+                Ville (optionnel)
               </label>
               <select
                 id="city"
                 v-model="form.shipping.city"
-                required
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900"
               >
-                <option value="">Choisir une ville</option>
+                <option value="">Choisir une ville (optionnel)</option>
                 <option value="Dakar">Dakar</option>
                 <option value="Thiès">Thiès</option>
                 <option value="Saint-Louis">Saint-Louis</option>
@@ -336,21 +289,20 @@
                 for="delivery-method"
                 class="block text-sm font-medium text-gray-700 mb-1"
               >
-                Mode de livraison *
+                Mode de livraison (optionnel)
               </label>
               <select
                 id="delivery-method"
                 v-model="form.shipping.method"
-                required
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900"
                 @change="updateShippingCost"
               >
-                <option value="">Choisir un mode</option>
+                <option value="">À définir avec vous</option>
                 <option value="standard">
-                  Standard (2-3 jours) - 2000 FCFA
+                  Livraison standard - 500 FCFA
                 </option>
-                <option value="express">Express (24h) - 5000 FCFA</option>
-                <option value="pickup">Retrait en magasin - Gratuit</option>
+                <option value="express">Livraison express - 2000 FCFA</option>
+                <option value="pickup">Retrait direct - Gratuit</option>
               </select>
             </div>
           </div>
@@ -571,13 +523,22 @@
             @click="sendToWhatsApp"
             :disabled="isProcessing"
             class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex-1 flex items-center justify-center"
+            :title="isProcessing ? 'Traitement en cours...' : 'Envoyer la commande sur WhatsApp'"
+            id="btn-whatsapp-checkout"
           >
             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path
                 d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
               />
             </svg>
-            Envoyer sur WhatsApp
+            <span v-if="isProcessing">
+              <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Envoi WhatsApp...
+            </span>
+            <span v-else>Envoyer sur WhatsApp</span>
           </button>
         </div>
       </div>
@@ -688,17 +649,12 @@ const totalAmount = computed(() => {
 const isStep1Valid = computed(() => {
   return (
     form.customer.name.trim() !== "" &&
-    form.customer.email.trim() !== "" &&
     phoneNumber.value.trim() !== ""
   );
 });
 
 const isStep2Valid = computed(() => {
-  return (
-    form.shipping.address.trim() !== "" &&
-    form.shipping.city !== "" &&
-    form.shipping.method !== ""
-  );
+  return form.shipping.address.trim() !== "";
 });
 
 const isStep3Valid = computed(() => {
@@ -789,7 +745,6 @@ const applyPromoCode = async () => {
 // Fonction pour envoyer la commande sur WhatsApp
 const sendToWhatsApp = async () => {
   console.log("🔄 Fonction sendToWhatsApp appelée");
-
   // Vérifier les éléments du panier
   console.log("🛒 Cart Items:", props.cartItems);
   console.log("🛒 Cart Items Length:", props.cartItems.length);
@@ -816,7 +771,7 @@ const sendToWhatsApp = async () => {
   if (!isStep1Valid.value || !isStep2Valid.value) {
     console.error("❌ Validation échouée - arrêt de l'envoi WhatsApp");
     alert(
-      "Veuillez remplir tous les champs requis avant d'envoyer sur WhatsApp"
+      "Veuillez remplir au minimum votre nom, téléphone et adresse avant d'envoyer sur WhatsApp"
     );
     return;
   }
@@ -846,30 +801,72 @@ const sendToWhatsApp = async () => {
 
     // Formater le message WhatsApp avec les utilitaires
     const message = formatWhatsAppOrderMessage(orderData);
+    console.log("📨 Message WhatsApp généré:", message);
 
     // Créer le lien WhatsApp
     const whatsappUrl = createWhatsAppLink(message);
+    console.log("🔗 Lien WhatsApp généré:", whatsappUrl);
 
     // Sauvegarder la commande en attente
-    await saveOrderAsPending();
+    let saveOrderResponse = null;
+    try {
+      saveOrderResponse = await saveOrderAsPending();
+      console.log("💾 Commande sauvegardée en attente", saveOrderResponse);
+    } catch (errSave) {
+      console.error("❌ Erreur lors de la sauvegarde de la commande en attente:", errSave);
+      alert("Erreur lors de la sauvegarde de la commande en attente. Veuillez réessayer ou contacter le support.");
+      return;
+    }
 
     // Vider le panier après commande WhatsApp réussie
     cartStore.clearCart();
 
     // Ouvrir WhatsApp
-    window.open(whatsappUrl, "_blank");
+    let opened = false;
+    try {
+      const win = window.open(whatsappUrl, "_blank");
+      if (win) {
+        opened = true;
+        win.focus();
+        console.log("✅ Fenêtre WhatsApp ouverte avec succès");
+      } else {
+        console.warn("⚠️ window.open a retourné null (popup bloquée ?)");
+      }
+    } catch (err) {
+      console.error("❌ Erreur lors de window.open:", err);
+    }
 
-    // Notification de succès
+    // Fallback si la fenêtre n'a pas pu s'ouvrir
+    if (!opened) {
+      try {
+        window.location.href = whatsappUrl;
+        console.log("➡️ Redirection directe vers WhatsApp");
+      } catch (err2) {
+        console.error("❌ Impossible d'ouvrir WhatsApp, lien:", whatsappUrl);
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(whatsappUrl);
+          alert(
+            "Impossible d'ouvrir WhatsApp automatiquement. Le lien a été copié dans votre presse-papier :\n" +
+              whatsappUrl
+          );
+        } else {
+          alert(
+            "Impossible d'ouvrir WhatsApp automatiquement. Voici le lien à ouvrir manuellement :\n" +
+              whatsappUrl
+          );
+        }
+      }
+    }
+
+    // Notification de succès (si tout va bien)
     console.log("Commande envoyée sur WhatsApp avec succès");
-
-    // Optionnel: rediriger vers une page de confirmation après un délai
     setTimeout(() => {
       router.push("/success?mode=whatsapp");
     }, 1500);
   } catch (error) {
     console.error("Erreur lors de l'envoi WhatsApp:", error);
     alert(
-      "Erreur lors de la préparation de votre commande WhatsApp. Veuillez réessayer."
+      "Erreur lors de la préparation de votre commande WhatsApp. Détail: " + (error?.message || error)
     );
   }
 };
@@ -895,6 +892,8 @@ const saveOrderAsPending = async () => {
       createdAt: new Date().toISOString(),
     };
 
+    console.log("[DEBUG] saveOrderAsPending - orderData:", JSON.stringify(orderData, null, 2));
+
     const response = (await $fetch("/api/airtable/orders/create-pending", {
       method: "POST",
       body: orderData,
@@ -914,7 +913,10 @@ const saveOrderAsPending = async () => {
 
     return response;
   } catch (error) {
-    console.error("❌ Erreur lors de la sauvegarde:", error);
+    console.error("❌ Erreur lors de la sauvegarde (détail):", error, error?.response);
+    if (error?.response) {
+      alert("Erreur API: " + JSON.stringify(error.response, null, 2));
+    }
     throw error;
   }
 };

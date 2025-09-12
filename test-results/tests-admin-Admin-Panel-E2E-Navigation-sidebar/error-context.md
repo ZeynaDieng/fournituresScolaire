@@ -1,0 +1,119 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+    - banner [ref=e3]:
+        - generic [ref=e5]:
+            - checkbox [ref=e6]
+            - img [ref=e9] [cursor=pointer]
+    - generic [ref=e13]:
+        - heading "Error" [level=4] [ref=e14]
+        - heading "An error has occurred" [level=1] [ref=e15]
+    - 'heading "Could not load /Users/mac/fournituresScolaire//utils/airtable-admin (imported by server/api//admin/orders-airtables-airtable.ts): ENOENT: no such file or directory, open ''/Users/mac/fournituresScolaire//utils/airtable-admin''" [level=2] [ref=e19]':
+        - img [ref=e21]
+        - generic [ref=e23]: "Could not load /Users/mac/fournituresScolaire//utils/airtable-admin (imported by server/api//admin/orders-airtables-airtable.ts): ENOENT: no such file or directory, open '/Users/mac/fournituresScolaire//utils/airtable-admin'"
+    - generic [ref=e25]:
+        - heading "Stack Trace" [level=3] [ref=e28]
+        - generic [ref=e30]:
+            - generic [ref=e31]:
+                - generic [ref=e33]:
+                    - checkbox "View All Frames" [ref=e34]
+                    - generic [ref=e35]: View All Frames
+                - generic [ref=e37]:
+                    - button "Pretty" [ref=e38]
+                    - button "Raw" [ref=e39]
+            - list [ref=e42]:
+                - listitem [ref=e43]:
+                    - generic [ref=e45]:
+                        - link "async file://node_modules/rollup/dist/es/shared/node-entry.js" [ref=e46] [cursor=pointer]:
+                            - /url: vscode://file/async file:///Users/mac/fournituresScolaire/node_modules/rollup/dist/es/shared/node-entry.js:21281
+                        - generic [ref=e47]:
+                            - text: at line
+                            - code [ref=e48]: 21281:25
+                - listitem [ref=e49]:
+                    - generic [ref=e50]:
+                        - button "node_modules/rollup/dist/es/shared/node-entry.js in async Queue.work at line 22505:32" [ref=e51]:
+                            - link "node_modules/rollup/dist/es/shared/node-entry.js" [ref=e52] [cursor=pointer]:
+                                - /url: vscode://file//Users/mac/fournituresScolaire/node_modules/rollup/dist/es/shared/node-entry.js:22505
+                            - generic [ref=e53]:
+                                - text: in
+                                - code [ref=e54]: async Queue.work
+                            - generic [ref=e55]:
+                                - text: at line
+                                - code [ref=e56]: 22505:32
+                        - button [ref=e58]:
+                            - img [ref=e59]
+    - generic [ref=e62]:
+        - heading "Error Cause" [level=3] [ref=e65]
+        - code [ref=e70]:
+            - generic [ref=e71]:
+                - generic [ref=e72]: Error
+                - generic [ref=e73]: "{"
+                - button "▼" [ref=e74]:
+                    - generic [ref=e75]: ▼
+                - generic [ref=e76]: "}"
+    - generic [ref=e78]:
+        - heading "Request" [level=3] [ref=e80]
+        - generic [ref=e81]:
+            - generic [ref=e82]:
+                - heading "url" [level=4] [ref=e83]
+                - generic [ref=e84]: http://localhost:3000/admin/login
+            - generic [ref=e85]:
+                - heading "method" [level=4] [ref=e86]
+                - generic [ref=e87]: GET
+            - generic [ref=e88]:
+                - heading "headers" [level=4] [ref=e89]
+                - table [ref=e90]:
+                    - rowgroup [ref=e91]:
+                        - row "host localhost:3000" [ref=e92]:
+                            - cell "host" [ref=e93]
+                            - cell "localhost:3000" [ref=e94]
+                        - row "connection close" [ref=e95]:
+                            - cell "connection" [ref=e96]
+                            - cell "close" [ref=e97]
+                        - row "sec-ch-ua \"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"" [ref=e98]:
+                            - cell "sec-ch-ua" [ref=e99]
+                            - cell "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"" [ref=e100]
+                        - row "sec-ch-ua-mobile ?0" [ref=e101]:
+                            - cell "sec-ch-ua-mobile" [ref=e102]
+                            - cell "?0" [ref=e103]
+                        - row "sec-ch-ua-platform \"macOS\"" [ref=e104]:
+                            - cell "sec-ch-ua-platform" [ref=e105]
+                            - cell "\"macOS\"" [ref=e106]
+                        - row "upgrade-insecure-requests 1" [ref=e107]:
+                            - cell "upgrade-insecure-requests" [ref=e108]
+                            - cell "1" [ref=e109]
+                        - row "user-agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.7339.16 Safari/537.36" [ref=e110]:
+                            - cell "user-agent" [ref=e111]
+                            - cell "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.7339.16 Safari/537.36" [ref=e112]
+                        - row "accept-language en-US" [ref=e113]:
+                            - cell "accept-language" [ref=e114]
+                            - cell "en-US" [ref=e115]
+                        - row "accept text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" [ref=e116]:
+                            - cell "accept" [ref=e117]
+                            - cell "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" [ref=e118]
+                        - row "sec-fetch-site none" [ref=e119]:
+                            - cell "sec-fetch-site" [ref=e120]
+                            - cell "none" [ref=e121]
+                        - row "sec-fetch-mode navigate" [ref=e122]:
+                            - cell "sec-fetch-mode" [ref=e123]
+                            - cell "navigate" [ref=e124]
+                        - row "sec-fetch-user ?1" [ref=e125]:
+                            - cell "sec-fetch-user" [ref=e126]
+                            - cell "?1" [ref=e127]
+                        - row "sec-fetch-dest document" [ref=e128]:
+                            - cell "sec-fetch-dest" [ref=e129]
+                            - cell "document" [ref=e130]
+                        - row "accept-encoding gzip, deflate, br, zstd" [ref=e131]:
+                            - cell "accept-encoding" [ref=e132]
+                            - cell "gzip, deflate, br, zstd" [ref=e133]
+                        - row "x-forwarded-for 127.0.0.1" [ref=e134]:
+                            - cell "x-forwarded-for" [ref=e135]
+                            - cell "127.0.0.1" [ref=e136]
+                        - row "x-forwarded-port 3000" [ref=e137]:
+                            - cell "x-forwarded-port" [ref=e138]
+                            - cell "3000" [ref=e139]
+                        - row "x-forwarded-proto http" [ref=e140]:
+                            - cell "x-forwarded-proto" [ref=e141]
+                            - cell "http" [ref=e142]
+```

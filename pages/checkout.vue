@@ -82,51 +82,19 @@ const cartStore = useCartStore?.() || {
   clearCart: () => {},
 };
 
-// Données de test pour le développement
-const testCartItems = [
-  {
-    id: "test-1",
-    name: "Cahier Spiral A4",
-    price: 2500,
-    quantity: 2,
-    image: "/images/products/cahier-spiral.jpg",
-    type: "product" as const,
-    category: "Cahiers",
-  },
-  {
-    id: "test-2",
-    name: "Pack CP Complet",
-    price: 15000,
-    quantity: 1,
-    image: "/images/products/pack-cp.jpg",
-    type: "pack" as const,
-    category: "Packs",
-  },
-];
-
 const notifications = useNotifications?.() || {
   paymentSuccess: () => {},
   paymentError: () => {},
   paymentCanceled: () => {},
 };
 
-// États avec fallbacks sécurisés - utiliser données de test si panier vide
+// États avec fallbacks sécurisés - laisser vide si panier vide
 const cartItems = computed(() => {
   const storeItems = cartStore?.items || [];
-  // Pour le développement, utiliser les données de test si le panier est vide
-  if (storeItems.length === 0 && process.dev) {
-    console.log("🧪 Utilisation des données de test pour le checkout");
-    return testCartItems;
-  }
+  // Retourner le panier réel, même s'il est vide
   return storeItems;
 });
 const subtotal = computed(() => {
-  if (cartItems.value === testCartItems) {
-    return testCartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-  }
   return cartStore?.subtotal || 0;
 });
 const shippingCost = computed(() => 2000); // Frais de livraison

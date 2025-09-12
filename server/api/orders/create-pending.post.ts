@@ -84,6 +84,7 @@ export default defineEventHandler(async (event) => {
         discount: body.amounts.discount || 0,
         total: body.amounts.total,
       },
+      status: "pending", // Ajouter le statut par défaut
       source: "whatsapp" as const,
       createdAt: new Date().toISOString(),
     };

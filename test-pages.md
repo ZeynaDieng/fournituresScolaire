@@ -11,7 +11,7 @@
 
 🔄 `/admin/packs.vue` - Gestion des packs
 🔄 `/admin/promotions.vue` - Gestion des promotions  
-🔄 `/admin/orders.vue` - Gestion des commandes
+🔄 `/admin/orders-airtable.vue` - Gestion des commandes
 🔄 `/admin/users.vue` - Gestion des utilisateurs
 
 ## Fonctionnalités de la sidebar AdminSidebar.vue :
@@ -32,6 +32,6 @@ La sidebar contient les liens vers :
 - 📦 Produits → `/admin/products`
 - 📋 Packs → `/admin/packs`
 - 🏷️ Promotions → `/admin/promotions`
-- 📝 Commandes → `/admin/orders`
+- 📝 Commandes → `/admin/orders-airtable`
 - 👥 Utilisateurs → `/admin/users`
 - ← Retour au site → `/`

@@ -1,4 +1,4 @@
-// /server/api/admin/orders/list.get.ts
+// /server/api/admin/orders-airtable/list.get.ts
 import { getAllOrders, getOrdersStats } from "../../../../utils/local-storage";
 
 export default defineEventHandler(async (event) => {
