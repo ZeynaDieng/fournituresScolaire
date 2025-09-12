@@ -13,7 +13,7 @@ async function testWebhook() {
     ref_command: "TEST123456",
     item_price: 5000,
     final_item_price: 5000,
-    client_phone: "221777780456",
+    client_phone: "221782911844",
     payment_method: "PayTech",
   };
 

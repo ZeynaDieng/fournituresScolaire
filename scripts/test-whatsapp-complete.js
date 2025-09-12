@@ -86,7 +86,7 @@ try {
     console.log("❌ Structure du lien incorrecte");
   }
 
-  if (whatsappLink.includes("221777780456")) {
+  if (whatsappLink.includes("221782911844")) {
     console.log("✅ Numéro WhatsApp Business correct");
   } else {
     console.log("❌ Numéro WhatsApp Business manquant ou incorrect");

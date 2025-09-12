@@ -44,7 +44,7 @@ const postDeploymentChecks = [
       "□ Bouton 'Envoyer sur WhatsApp' présent",
       "□ Clic sur le bouton génère le lien WhatsApp",
       "□ Message WhatsApp bien formaté",
-      "□ Numéro +221777780456 correct dans l'URL",
+      "□ Numéro +221782911844 correct dans l'URL",
       "□ Redirection vers page de succès",
     ],
   },
@@ -86,7 +86,7 @@ console.log("   • Téléphone: +221 70 123 45 67");
 console.log("   • Adresse: Test Address, Dakar");
 console.log("3. Cliquer 'Envoyer sur WhatsApp'");
 console.log("4. Vérifier que le lien commence par:");
-console.log("   https://wa.me/221777780456?text=...");
+console.log("   https://wa.me/221782911844?text=...");
 console.log("5. Vérifier le contenu du message\n");
 
 console.log("🔧 Si des problèmes surviennent:");

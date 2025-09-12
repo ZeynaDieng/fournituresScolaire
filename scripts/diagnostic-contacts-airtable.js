@@ -114,7 +114,7 @@ async function testContactInsertion() {
         fields: {
           Name: "Test Diagnostic",
           Email: "test@diagnostic.com",
-          Phone: "221777780456",
+          Phone: "221782911844",
           Subject: "Test de diagnostic",
           Message: "Message de test pour vérifier l'insertion dans Airtable",
         },
@@ -172,7 +172,7 @@ async function testContactAPI() {
   const testData = {
     name: "Test API Diagnostic",
     email: "testapi@diagnostic.com",
-    phone: "221777780456",
+    phone: "221782911844",
     subject: "Test API Contact",
     message: "Test pour diagnostiquer l'API de contact",
   };

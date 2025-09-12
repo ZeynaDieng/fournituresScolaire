@@ -9,7 +9,7 @@ process.env.NOTIFICATION_EMAIL_USER = "zeynash1@gmail.com";
 process.env.NOTIFICATION_EMAIL_PASSWORD = "zmruomypjxrjxfto";
 process.env.ADMIN_EMAIL = "zeynash1@gmail.com";
 process.env.FROM_NAME = "Fournitures Scolaires";
-process.env.WHATSAPP_BUSINESS_NUMBER = "221777780456";
+process.env.WHATSAPP_BUSINESS_NUMBER = "221782911844";
 
 const BASE_URL = "https://fournitures-scolaire.vercel.app";
 
@@ -26,12 +26,12 @@ async function testNotificationService() {
       recipient: {
         name: "Test Client Direct",
         email: "zeynash1@gmail.com",
-        phone: "221777780456",
+        phone: "221782911844",
       },
       admin: {
         name: "Admin Test",
         email: "zeynash1@gmail.com",
-        phone: "221777780456",
+        phone: "221782911844",
       },
       data: {
         subject: "Test direct des notifications",

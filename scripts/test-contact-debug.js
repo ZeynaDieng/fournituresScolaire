@@ -139,7 +139,7 @@ async function testLocalEndpoint() {
         fields: {
           Name: "Test Local Direct",
           Email: "test.local@debug.com",
-          Phone: "221777780456",
+          Phone: "221782911844",
           Subject: "Test insertion directe",
           Message: "Test pour comparer avec l'API du site",
         },

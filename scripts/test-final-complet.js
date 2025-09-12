@@ -45,7 +45,7 @@ const ENDPOINTS = [
     body: {
       name: "Test WhatsApp",
       email: "test@wa.com",
-      phone: "221777780456",
+      phone: "221782911844",
       items: ["Test item"],
       total: 1000,
     },
@@ -58,7 +58,7 @@ const ENDPOINTS = [
       type_event: "sale_complete",
       ref_command: "TEST123",
       item_price: 5000,
-      client_phone: "221777780456",
+      client_phone: "221782911844",
     },
   },
 ];

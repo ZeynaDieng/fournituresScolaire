@@ -32,8 +32,8 @@ BASE_URL=https://fournitures-scolaire.vercel.app
 NUXT_PUBLIC_BASE_URL=https://fournitures-scolaire.vercel.app
 NUXT_PUBLIC_SITE_URL=https://fournitures-scolaire.vercel.app
 NUXT_PUBLIC_API_BASE=/api
-NUXT_PUBLIC_WHATSAPP_NUMBER=221777780456
-WHATSAPP_BUSINESS_NUMBER=221777780456
+NUXT_PUBLIC_WHATSAPP_NUMBER=221782911844
+WHATSAPP_BUSINESS_NUMBER=221782911844
 ```
 
 ### 📧 4. EMAIL (Notifications)

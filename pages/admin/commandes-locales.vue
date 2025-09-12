@@ -333,7 +333,7 @@ ${order.items
 ---
 ✅ Commande prête pour validation et paiement Wave`;
 
-  const whatsappUrl = `https://wa.me/221777780456?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/221782911844?text=${encodeURIComponent(
     message
   )}`;
   window.open(whatsappUrl, "_blank");

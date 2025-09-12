@@ -406,7 +406,7 @@ const canSendWhatsApp = computed(() => {
 });
 
 // Configuration WhatsApp
-const WHATSAPP_BUSINESS_NUMBER = "221777780456";
+const WHATSAPP_BUSINESS_NUMBER = "221782911844";
 
 // FAQ data
 const faqs = ref([
@@ -563,7 +563,7 @@ function toggleFaq(index: number) {
 
 // Fonction de test simple pour WhatsApp
 function testWhatsApp() {
-  const testUrl = `https://wa.me/221777780456?text=Test depuis EduShop`;
+  const testUrl = `https://wa.me/221782911844?text=Test depuis EduShop`;
   console.log("Test WhatsApp URL:", testUrl);
   window.open(testUrl, "_blank");
 }

@@ -16,7 +16,7 @@ async function testContactReal() {
   const testData = {
     name: "Test User",
     email: "zeynash1@gmail.com", // Votre email pour recevoir la notification
-    phone: "221777780456",
+    phone: "221782911844",
     subject: "Test depuis le script automatique",
     message:
       "Ceci est un test automatique du formulaire de contact pour vérifier que les notifications fonctionnent correctement.",
@@ -63,7 +63,7 @@ async function testWebhookReal() {
     item_price: 25000,
     final_item_price: 25000,
     payment_method: "paytech",
-    client_phone: "221777780456",
+    client_phone: "221782911844",
     custom_field: JSON.stringify({
       customer_name: "Test Customer",
       customer_email: "zeynash1@gmail.com",

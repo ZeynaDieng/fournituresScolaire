@@ -22,7 +22,7 @@ async function testRealNotifications() {
       body: JSON.stringify({
         name: "Test Utilisateur Real",
         email: "zeynash1@gmail.com", // Votre email pour recevoir
-        phone: "221777780456",
+        phone: "221782911844",
         subject: "Test notification réelle depuis script",
         message:
           "Ceci est un test pour vérifier que les notifications fonctionnent vraiment quand un utilisateur envoie le formulaire.",
@@ -44,7 +44,7 @@ async function testRealNotifications() {
         body: JSON.stringify({
           customerName: "Test Client Real",
           customerEmail: "zeynash1@gmail.com", // Votre email
-          customerPhone: "221777780456", // Votre WhatsApp
+          customerPhone: "221782911844", // Votre WhatsApp
           items: [
             {
               id: "test-1",
@@ -75,7 +75,7 @@ async function testRealNotifications() {
         item_price: 1000,
         final_item_price: 1000,
         payment_method: "wave",
-        client_phone: "221777780456",
+        client_phone: "221782911844",
         custom_field: "test",
       }),
     });
@@ -97,7 +97,7 @@ async function testRealNotifications() {
 
 console.log("\n⚠️  ATTENTION: Ce test va envoyer de vrais emails et WhatsApp!");
 console.log("📧 Email de test: zeynash1@gmail.com");
-console.log("📱 WhatsApp de test: 221777780456");
+console.log("📱 WhatsApp de test: 221782911844");
 console.log("\nExécution dans 3 secondes...");
 
 setTimeout(async () => {
@@ -106,6 +106,6 @@ setTimeout(async () => {
   console.log("\n" + "=".repeat(60));
   console.log("✅ Test terminé! Vérifiez:");
   console.log("1. Votre email zeynash1@gmail.com");
-  console.log("2. Votre WhatsApp 221777780456");
+  console.log("2. Votre WhatsApp 221782911844");
   console.log("3. Les logs dans Vercel");
 }, 3000);

@@ -38,7 +38,7 @@ async function testEndpoints() {
         item_price: 10000,
         final_item_price: 10000,
         payment_method: "orange_money_sn",
-        client_phone: "221777780456",
+        client_phone: "221782911844",
       },
     },
     {
@@ -48,7 +48,7 @@ async function testEndpoints() {
       body: {
         name: "Test User",
         email: "test@example.com",
-        phone: "221777780456",
+        phone: "221782911844",
         subject: "Test des notifications",
         message:
           "Ceci est un test pour vérifier que les notifications fonctionnent même en mode fallback.",

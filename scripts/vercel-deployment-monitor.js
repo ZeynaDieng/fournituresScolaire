@@ -107,7 +107,7 @@ console.log("   AIRTABLE_PACKS_TABLE=tbl4JVykOdi6YFvfd");
 console.log("   AIRTABLE_ORDERS_TABLE=tblIx2zvrcz1VY7xb");
 console.log("   AIRTABLE_PROMOTIONS_TABLE=tblrUYgl2PgYIEMY5");
 console.log("   AIRTABLE_TESTIMONIALS_TABLE=tblYjfi1FFk1CCH46");
-console.log("   WHATSAPP_BUSINESS_NUMBER=221777780456");
+console.log("   WHATSAPP_BUSINESS_NUMBER=221782911844");
 console.log("   NUXT_PUBLIC_SITE_URL=https://votre-domaine.vercel.app");
 
 console.log("\n2. Tests à effectuer après déploiement:");
