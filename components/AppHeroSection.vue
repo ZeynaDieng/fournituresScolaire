@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative mt-20 flex items-center justify-center min-h-[600px] bg-gradient-to-br from-primary-600/10 to-accent-400/10 overflow-hidden"
+    class="relative flex items-center justify-center min-h-[600px] bg-gradient-to-br from-primary-600/10 to-accent-400/10 overflow-hidden"
   >
     <!-- Background with overlay -->
     <div class="absolute inset-0">
