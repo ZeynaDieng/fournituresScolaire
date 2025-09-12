@@ -7,7 +7,7 @@
 console.log("📱 TEST DE LA FONCTIONNALITÉ WHATSAPP\n");
 
 // Configuration depuis .env
-const WHATSAPP_NUMBER = "221777780456";
+const WHATSAPP_NUMBER = "221782911844";
 
 console.log("🔍 VÉRIFICATION DE LA CONFIGURATION:");
 console.log("====================================");
@@ -148,7 +148,7 @@ console.log("");
 
 console.log("🔧 VÉRIFICATIONS TECHNIQUES:");
 console.log("=============================");
-console.log("• Le numéro +221777780456 est-il actif sur WhatsApp? ❓");
+console.log("• Le numéro +221782911844 est-il actif sur WhatsApp? ❓");
 console.log("• L'application WhatsApp est-elle installée? ❓");
 console.log("• Le navigateur peut-il ouvrir les liens wa.me? ❓");
 console.log("• Les caractères spéciaux sont-ils bien encodés? ✅");
@@ -178,7 +178,7 @@ console.log("==============");
 console.log("✅ La configuration WhatsApp est COMPLÈTE et FONCTIONNELLE");
 console.log("🧪 Testez avec la page /test-whatsapp pour vérifier");
 console.log(
-  "📱 Le numéro +221777780456 doit être actif pour recevoir les messages"
+  "📱 Le numéro +221782911844 doit être actif pour recevoir les messages"
 );
 console.log("");
 

@@ -76,7 +76,7 @@ const testSteps = [
       "  ✅ Footer de confirmation",
       "",
       "Le lien doit:",
-      "  ✅ Commencer par https://wa.me/221777780456",
+      "  ✅ Commencer par https://wa.me/221782911844",
       "  ✅ Contenir le message encodé correctement",
     ],
   },

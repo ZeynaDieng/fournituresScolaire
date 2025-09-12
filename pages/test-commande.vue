@@ -244,7 +244,7 @@ const passerCommande = async () => {
 ---
 ✅ Commande prête pour validation et paiement Wave`;
 
-      whatsappLink.value = `https://wa.me/221777780456?text=${encodeURIComponent(
+      whatsappLink.value = `https://wa.me/221782911844?text=${encodeURIComponent(
         message
       )}`;
     }

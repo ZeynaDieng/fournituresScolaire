@@ -31,8 +31,10 @@ const envVars = {
 
   // URLs de production (CRITIQUE pour résoudre erreur 403)
   BASE_URL: "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
-  NUXT_PUBLIC_BASE_URL: "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
-  NUXT_PUBLIC_SITE_URL: "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
+  NUXT_PUBLIC_BASE_URL:
+    "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
+  NUXT_PUBLIC_SITE_URL:
+    "https://fournitures-scolaire-8nq2b3vtb-nabous-projects.vercel.app",
   NUXT_PUBLIC_API_BASE: "/api",
 
   // PayTech publiques
@@ -43,8 +45,8 @@ const envVars = {
   NUXT_PUBLIC_PAYTECH_MERCHANT_ID: "VotreMerchantId",
 
   // WhatsApp & Communication
-  WHATSAPP_BUSINESS_NUMBER: "221777780456",
-  NUXT_PUBLIC_WHATSAPP_NUMBER: "221777780456",
+  WHATSAPP_BUSINESS_NUMBER: "221782911844",
+  NUXT_PUBLIC_WHATSAPP_NUMBER: "221782911844",
 
   // Google Sheets (optionnel)
   GOOGLE_SHEET_ID: "1H5QEGhyaXB5A3ZBz9xqRqGp0CM508k4YyMZUtygTjl0",

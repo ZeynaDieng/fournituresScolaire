@@ -169,7 +169,7 @@ async function diagnosticComplet() {
 
   log("   Variables d'environnement dans Vercel:");
   log("   📧 Email configuré: zeynash1@gmail.com", "blue");
-  log("   📱 WhatsApp: 221777780456", "blue");
+  log("   📱 WhatsApp: 221782911844", "blue");
   log("   🗄️  Airtable: Base configurée", "blue");
 
   log("");

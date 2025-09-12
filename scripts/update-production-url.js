@@ -109,7 +109,7 @@ const envVars = {
   NUXT_PUBLIC_PAYTECH_MERCHANT_ID: "VotreMerchantId",
 
   // WhatsApp & Communication
-  WHATSAPP_BUSINESS_NUMBER: "221777780456",
+  WHATSAPP_BUSINESS_NUMBER: "221782911844",
 };
 
 const criticalVars = [

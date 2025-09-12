@@ -92,7 +92,7 @@ const requiredVars = [
     value: "https://votre-app.vercel.app",
     critical: true,
   },
-  { name: "WHATSAPP_BUSINESS_NUMBER", value: "221777780456", critical: false },
+  { name: "WHATSAPP_BUSINESS_NUMBER", value: "221782911844", critical: false },
   {
     name: "DATABASE_URL",
     value: "mysql://root:root@127.0.0.1:8889/fourniturescolaire",

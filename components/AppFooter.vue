@@ -215,7 +215,7 @@
                 />
               </svg>
               <a
-                href="tel:+221777780456"
+                href="tel:+221782911844"
                 class="text-sm text-gray-300 hover:text-white transition-colors"
                 >+221 77 778 04 56</a
               >

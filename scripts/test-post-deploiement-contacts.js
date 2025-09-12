@@ -13,7 +13,7 @@ async function testContactAPI() {
   const testData = {
     name: `Test Post-Déploiement ${Date.now()}`,
     email: `test-${Date.now()}@postdeploy.com`,
-    phone: "221777780456",
+    phone: "221782911844",
     subject: "Test après déploiement",
     message:
       "Test pour vérifier que les contacts s'enregistrent maintenant directement dans Airtable sans fallback",

@@ -35,7 +35,7 @@ const orderNotificationData = {
   recipient: {
     name: "Test Client",
     email: "test.client@example.com",
-    phone: "221777780456", // Votre numéro pour le test
+    phone: "221782911844", // Votre numéro pour le test
   },
   admin: {
     name: process.env.FROM_NAME || "Admin",
@@ -63,7 +63,7 @@ const contactNotificationData = {
   recipient: {
     name: "Test Contact",
     email: "test.contact@example.com",
-    phone: "221777780456", // Votre numéro pour le test
+    phone: "221782911844", // Votre numéro pour le test
   },
   admin: {
     name: process.env.FROM_NAME || "Admin",

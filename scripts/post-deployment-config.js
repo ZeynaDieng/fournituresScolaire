@@ -29,7 +29,7 @@ const envVars = [
   "AIRTABLE_ORDERS_TABLE=tblIx2zvrcz1VY7xb",
   "AIRTABLE_PROMOTIONS_TABLE=tblrUYgl2PgYIEMY5",
   "AIRTABLE_TESTIMONIALS_TABLE=tblYjfi1FFk1CCH46",
-  "WHATSAPP_BUSINESS_NUMBER=221777780456",
+  "WHATSAPP_BUSINESS_NUMBER=221782911844",
   "NUXT_PUBLIC_SITE_URL=https://fournitures-scolaire.vercel.app",
   "BASE_URL=https://fournitures-scolaire.vercel.app",
 ];
@@ -47,7 +47,7 @@ console.log("\n3. 📱 Tester WhatsApp:");
 console.log("   → URL: https://fournitures-scolaire.vercel.app/checkout");
 console.log("   → Remplir le formulaire");
 console.log("   → Tester 'Envoyer sur WhatsApp'");
-console.log("   → Vérifier le lien: https://wa.me/221777780456?text=...");
+console.log("   → Vérifier le lien: https://wa.me/221782911844?text=...");
 
 console.log("\n🧪 TESTS PRIORITAIRES:");
 console.log("======================");

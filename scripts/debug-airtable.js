@@ -54,7 +54,7 @@ async function debugAirtableConnection() {
     const testContactData = {
       name: "Debug Test User",
       email: "zeynash1@gmail.com",
-      phone: "221777780456",
+      phone: "221782911844",
       subject: "Test debug Airtable",
       message: "Ce test vérifie si l'erreur Airtable est résolue.",
     };

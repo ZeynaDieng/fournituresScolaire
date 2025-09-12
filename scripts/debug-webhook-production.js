@@ -82,7 +82,7 @@ async function debugWebhook() {
                 item_price: 1000,
                 final_item_price: 1000,
                 payment_method: "test",
-                client_phone: "221777780456",
+                client_phone: "221782911844",
               }),
             }
           );

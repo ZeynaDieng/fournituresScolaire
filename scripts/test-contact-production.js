@@ -15,7 +15,7 @@ async function testContactAPI() {
   const testData = {
     name: "Test Production Debug",
     email: "test.production@debug.com",
-    phone: "221777780456",
+    phone: "221782911844",
     subject: "Test Production Debug",
     message: "Test détaillé pour diagnostiquer le problème de production",
   };
@@ -115,7 +115,7 @@ async function testDirectAirtable() {
         fields: {
           Name: "Test Direct Airtable",
           Email: "test.direct@airtable.com",
-          Phone: "221777780456",
+          Phone: "221782911844",
           Subject: "Test Direct Airtable",
           Message: "Test pour comparer avec l'API du site",
         },

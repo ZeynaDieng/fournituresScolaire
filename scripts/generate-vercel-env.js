@@ -30,7 +30,7 @@ function generateVercelVars() {
     "GOOGLE_SHEETS_API_KEY=AIzaSyAc7pdCISf_pyi65pmnVU-RTc6KMFcORis",
 
     // WhatsApp
-    "WHATSAPP_BUSINESS_NUMBER=221777780456",
+    "WHATSAPP_BUSINESS_NUMBER=221782911844",
 
     // Email
     "NOTIFICATION_EMAIL_USER=zeynash1@gmail.com",
