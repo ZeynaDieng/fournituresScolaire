@@ -217,7 +217,7 @@
               <a
                 href="tel:+221782911844"
                 class="text-sm text-gray-300 hover:text-white transition-colors"
-                >+221 77 778 04 56</a
+                >+221 78 291 18 44</a
               >
             </div>
             <div class="flex items-center">

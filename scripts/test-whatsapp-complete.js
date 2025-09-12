@@ -163,7 +163,7 @@ console.log("\n");
 console.log("📊 Résumé des Tests");
 console.log("==================");
 console.log("✅ Fonctionnalité WhatsApp opérationnelle");
-console.log("📱 Numéro configuré: +221 77 778 04 56");
+console.log("📱 Numéro configuré: +221 78 291 18 44");
 console.log("🔗 Liens générés correctement");
 console.log("📝 Messages formatés avec succès");
 console.log("\n");

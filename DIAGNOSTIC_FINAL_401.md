@@ -94,7 +94,7 @@ node scripts/monitor-fix-progress.js
 - 💳 **PayTech fonctionnel** sans erreur 500
 - 📊 **APIs Airtable** opérationnelles
 - 🛒 **E-commerce complet** avec WhatsApp
-- 📱 **Commandes** : +221 77 778 04 56
+- 📱 **Commandes** : +221 78 291 18 44
 
 ---
 

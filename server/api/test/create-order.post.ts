@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
       customer: {
         name: "Seynabou Dieng",
         email: "zeynash1@gmail.com",
-        phone: "+221 77 778 04 56",
+        phone: "+221 78 291 18 44",
       },
       shipping: {
         address: "Parcelle, Thiès",

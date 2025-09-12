@@ -96,7 +96,7 @@ NUXT_PUBLIC_SITE_URL=https://fournitures-scolaire.vercel.app
 
 - 🏠 **Site e-commerce** totalement dynamique avec Airtable
 - 💳 **Paiement PayTech** sans erreur 500
-- 📱 **Commandes WhatsApp** (+221 77 778 04 56)
+- 📱 **Commandes WhatsApp** (+221 78 291 18 44)
 - 🛍️ **Catalogue** : produits, packs, promotions
 - 🎨 **Design moderne** responsive
 - ⚡ **Performance optimisée**

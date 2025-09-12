@@ -157,7 +157,7 @@ function generateInvoiceHtml(orderData: any, orderRef: string): string {
         <div class="company-info">
             <h2>EduShop - Fournitures Scolaires</h2>
             <p>Ouakam Cité Avion, Dakar, Sénégal</p>
-            <p>Email: contact@edushop.sn | Tél: +221 77 778 04 56</p>
+            <p>Email: contact@edushop.sn | Tél: +221 78 291 18 44</p>
         </div>
     </div>
 

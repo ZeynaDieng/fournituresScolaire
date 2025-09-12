@@ -145,7 +145,7 @@ async function generateInvoiceHTML(orderDetails: any) {
     <div class="company-info">
         <strong>Fournitures Scolaires SARL</strong><br>
         📍 Dakar, Sénégal<br>
-        📞 +221 77 778 04 56<br>
+        📞 +221 78 291 18 44<br>
         ✉️ contact@fournitures-scolaire.com
     </div>
 

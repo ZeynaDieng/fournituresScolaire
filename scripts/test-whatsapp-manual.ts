@@ -103,7 +103,7 @@ console.log("□ La validation des champs fonctionne");
 console.log("□ Le bouton s'active/désactive selon la validation");
 console.log("□ Le lien WhatsApp est généré correctement");
 console.log("□ Le message contient toutes les informations requises");
-console.log("□ Le numéro WhatsApp business est correct (+221 77 778 04 56)");
+console.log("□ Le numéro WhatsApp business est correct (+221 78 291 18 44)");
 console.log("□ La redirection vers la page de succès fonctionne");
 
 console.log("\n");
@@ -119,7 +119,7 @@ console.log("\n");
 console.log("📊 Résultats attendus:");
 console.log("=====================");
 console.log("✅ Message WhatsApp bien formaté avec émojis");
-console.log("✅ Lien vers WhatsApp Business (+221 77 778 04 56)");
+console.log("✅ Lien vers WhatsApp Business (+221 78 291 18 44)");
 console.log("✅ Redirection automatique vers /success?mode=whatsapp");
 console.log("✅ Panier vidé après envoi réussi");
 console.log("✅ Commande sauvegardée avec statut 'pending_whatsapp'");
