@@ -150,6 +150,7 @@
 
             <!-- Product Features -->
             <div
+              v-if="productFeatures.length > 0"
               class="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 p-6 shadow-lg"
             >
               <h3
@@ -275,7 +276,7 @@
                 <div class="flex items-end gap-4">
                   <div class="flex items-baseline gap-3">
                     <span class="text-4xl font-bold text-slate-900">
-                      {{ formatPrice(product.price) }}
+                      {{ formatPrice(product?.price) }}
                     </span>
                     <span class="text-lg text-slate-500">TTC</span>
                   </div>
@@ -284,11 +285,15 @@
                     class="flex flex-col items-end"
                   >
                     <span class="text-lg text-slate-400 line-through">
-                      {{ formatPrice(product.originalPrice) }}
+                      {{ formatPrice(product?.originalPrice) }}
                     </span>
                     <span class="text-sm font-semibold text-red-600">
                       Économie:
-                      {{ formatPrice(product.originalPrice - product.price) }}
+                      {{
+                        formatPrice(
+                          (product?.originalPrice || 0) - (product?.price || 0)
+                        )
+                      }}
                     </span>
                   </div>
                 </div>
@@ -306,7 +311,7 @@
                         clip-rule="evenodd"
                       />
                     </svg>
-                    <span>Livraison gratuite dès 50€</span>
+                    <span>Livraison gratuite dès 50FCFA</span>
                   </div>
                   <div
                     class="flex items-center gap-2"
@@ -499,7 +504,7 @@
                       {{ option.quantity }}x
                     </div>
                     <div class="text-lg font-semibold text-emerald-600 mb-1">
-                      {{ formatPrice(option.unitPrice) }}
+                      {{ formatPrice(option?.unitPrice) }}
                     </div>
                     <div class="text-sm text-slate-500">
                       {{ option.discount }}% de remise
@@ -753,12 +758,11 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useProductsStore } from "~/stores/products";
+import axios from "axios";
 import CartIcon from "~/components/icons/CartIcon.vue";
 
 const route = useRoute();
 const router = useRouter();
-const productsStore = useProductsStore();
 
 const pending = ref(true);
 const product = ref(null);
@@ -790,7 +794,19 @@ const discountPercentage = computed(() => {
 });
 
 function formatPrice(price) {
-  return price.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+  if (!price || isNaN(price)) {
+    return "0 FCFA";
+  }
+  // Utiliser XOF (code ISO pour le franc CFA) ou formatage personnalisé
+  try {
+    return price.toLocaleString("fr-FR", {
+      style: "currency",
+      currency: "XOF",
+    });
+  } catch (error) {
+    // Fallback: formatage manuel si XOF n'est pas supporté
+    return new Intl.NumberFormat("fr-FR").format(price) + " FCFA";
+  }
 }
 
 function increaseQuantity() {
@@ -834,59 +850,153 @@ function getRatingCount(star) {
   return productReviews.value.filter((r) => r.rating === star).length;
 }
 
+function transformFeatures(features) {
+  if (!features) return [];
+
+  if (typeof features === "string") {
+    // Essayer de parser comme JSON d'abord
+    try {
+      const parsed = JSON.parse(features);
+      return Array.isArray(parsed) ? parsed : features.split(", ");
+    } catch {
+      // Si ce n'est pas du JSON, traiter comme une chaîne simple
+      return features.split(", ");
+    }
+  }
+
+  return features;
+}
+
+async function fetchProductFromAPI(productId) {
+  try {
+    // Utiliser l'API interne au lieu d'appeler directement Airtable
+    const response = await $fetch(`/api/admin/products/${productId}`);
+
+    // Transformer les données d'Airtable au format attendu par le composant
+    return {
+      id: response.id,
+      name: response.Name,
+      category: response.Category,
+      price: response.Price,
+      originalPrice: response["Original Price"] || null,
+      description: response.Description,
+      features: transformFeatures(response.Features),
+      specs: response.Specs
+        ? typeof response.Specs === "string"
+          ? response.Specs.split(", ")
+          : response.Specs
+        : [],
+      inStock: response["In Stock"],
+      stockAlert: response["Stock Alert"],
+      image: response["Image URL"] || response.image,
+      images: response.images || [response["Image URL"]],
+      isPromotion:
+        response["Original Price"] &&
+        response["Original Price"] > response.Price,
+      discountPercent: response["Original Price"]
+        ? Math.round(
+            ((response["Original Price"] - response.Price) /
+              response["Original Price"]) *
+              100
+          )
+        : 0,
+    };
+  } catch (error) {
+    console.error("Erreur lors de la récupération du produit:", error);
+    return null;
+  }
+}
+
 onMounted(async () => {
   try {
-    // Fetch all products if not already loaded
-    if (productsStore.products.length === 0) {
-      await productsStore.fetchProducts();
-    }
-
-    // Find the product by ID from the route
     const productId = route.params.id;
-    const foundProduct = productsStore.getProductById(productId);
-
+    // Fetch le produit depuis l'API interne
+    const foundProduct = await fetchProductFromAPI(productId);
     if (!foundProduct) {
-      // Handle case where product is not found
       router.push("/404");
       return;
     }
-
     product.value = foundProduct;
 
     // Set up product images
     if (Array.isArray(product.value.images)) {
       productImages.value = product.value.images;
+    } else if (product.value.images) {
+      productImages.value = product.value.images
+        .split(",")
+        .map((s) => s.trim());
     } else {
-      productImages.value = [product.value.images];
+      productImages.value = [product.value.image];
     }
     selectedImage.value = productImages.value[0];
 
     // Set up product features
-    if (product.value.features && product.value.features.length > 0) {
-      productFeatures.value = product.value.features;
+    if (product.value.features && Array.isArray(product.value.features)) {
+      // Transformer les chaînes en objets avec label et value
+      productFeatures.value = product.value.features.map((feature) => {
+        if (typeof feature === "string") {
+          // Si c'est une chaîne, créer un objet avec label et value
+          return {
+            label: feature,
+            value: "✓",
+          };
+        }
+        // Si c'est déjà un objet avec label et value, le retourner tel quel
+        return feature;
+      });
     } else {
-      productFeatures.value = [
-        { label: "Marque", value: "Générique" },
-        { label: "Type", value: product.value.category || "Non spécifié" },
-        {
-          label: "Disponibilité",
-          value: product.value.inStock ? "En stock" : "Rupture de stock",
-        },
-      ];
+      productFeatures.value = [];
+    }
+
+    // Test temporaire pour forcer l'affichage
+    if (productFeatures.value.length === 0) {
+      productFeatures.value = [{ label: "Test caractéristique", value: "✓" }];
     }
 
     // Set up bulk options if available
-    if (product.value.bulkOptions && product.value.bulkOptions.length > 0) {
-      bulkOptions.value = product.value.bulkOptions;
+    if (product.value.bulkOptions) {
+      try {
+        bulkOptions.value =
+          typeof product.value.bulkOptions === "string"
+            ? JSON.parse(product.value.bulkOptions)
+            : product.value.bulkOptions;
+      } catch {
+        bulkOptions.value = [];
+      }
+    } else {
+      bulkOptions.value = [];
     }
 
     // Set up reviews if available
-    if (product.value.reviews && product.value.reviews.length > 0) {
-      productReviews.value = product.value.reviews;
+    if (product.value.reviews) {
+      try {
+        productReviews.value =
+          typeof product.value.reviews === "string"
+            ? JSON.parse(product.value.reviews)
+            : product.value.reviews;
+      } catch {
+        productReviews.value = [];
+      }
+    } else {
+      productReviews.value = [];
+    }
+
+    // Set up specs if available
+    if (product.value.specs) {
+      try {
+        productSpecs.value =
+          typeof product.value.specs === "string"
+            ? JSON.parse(product.value.specs)
+            : product.value.specs;
+      } catch {
+        productSpecs.value = [];
+      }
+    } else {
+      productSpecs.value = [];
     }
   } catch (error) {
     console.error("Error loading product:", error);
-    router.push("/error");
+    router.push("/404");
   } finally {
     pending.value = false;
   }

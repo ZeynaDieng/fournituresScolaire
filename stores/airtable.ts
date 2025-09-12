@@ -133,8 +133,13 @@ export const useAirtableStore = defineStore("airtable", {
       }
     },
 
-    // Récupérer tous les packs depuis Airtable
+    // Récupérer tous les packs depuis Airtable - Optimisé
     async fetchPacks() {
+      // Éviter les appels redondants
+      if (this.packs.length > 0 && !this.loading) {
+        return;
+      }
+
       this.loading = true;
       this.error = null;
 

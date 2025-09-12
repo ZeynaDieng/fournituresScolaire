@@ -1,0 +1,16 @@
+{
+  "error": true,
+  "url": "https://eccbed607200.ngrok-free.app/api/airtable/orders/CMD_1757617791261_1sz3ogurm/invoice-pdf",
+  "statusCode": 500,
+  "statusMessage": "Erreur lors de la génération de la facture PDF",
+  "message": "Erreur lors de la génération de la facture PDF",
+  "stack": [
+    "Erreur lors de la génération de la facture PDF",
+    "at createError (/Users/mac/fournituresScolaire/node_modules/h3/dist/index.mjs:71:15)",
+    "at Object.handler (/Users/mac/fournituresScolaire/.nuxt/dev/index.mjs:28566:11)",
+    "at process.processTicksAndRejections (node:internal/process/task_queues:105:5)",
+    "at async file:///Users/mac/fournituresScolaire/node_modules/h3/dist/index.mjs:2004:19)",
+    "at async Object.callAsync (/Users/mac/fournituresScolaire/node_modules/unctx/dist/index.mjs:72:16)",
+    "at async Server.toNodeHandle (/Users/mac/fournituresScolaire/node_modules/h3/dist/index.mjs:2296:7)"
+  ]
+}

@@ -180,9 +180,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: "admin",
-});
+definePageMeta({ layout: "admin", middleware: "admin" });
 
 // Données de test
 const testData = ref({

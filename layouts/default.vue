@@ -28,7 +28,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useCartStore, useCartAutoSave } from "~/stores/cart";
-import { useProductsStore } from "~/stores/products";
 import { useRoute, navigateTo, useHead, createError } from "nuxt/app";
 
 // Protection : empêcher l'utilisation du layout par défaut sur les routes admin (sauf login)
@@ -47,17 +46,11 @@ if (route.path.startsWith("/admin") && route.path !== "/admin/login") {
 
 // Initialisation des stores
 const cartStore = useCartStore();
-const productsStore = useProductsStore();
 
 // Charger les données au montage
 onMounted(async () => {
   // Charger le panier depuis localStorage
   // cartStore.loadFromStorage() // Assuming this method exists
-
-  // Charger les produits
-  if (productsStore.products.length === 0) {
-    await productsStore.fetchProducts();
-  }
 });
 
 // Meta tags génériques

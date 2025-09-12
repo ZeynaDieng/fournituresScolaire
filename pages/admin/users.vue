@@ -7,6 +7,25 @@
       </h2>
       <div class="flex space-x-3">
         <button
+          @click="showAdd = true"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          <span>Ajouter</span>
+        </button>
+        <button
           @click="refreshUsers"
           class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
         >
@@ -27,6 +46,45 @@
         </button>
       </div>
     </div>
+
+    <!-- Drawer Ajout -->
+    <Transition name="drawer-slide" appear>
+      <div v-if="showAdd" class="fixed inset-0 z-40 flex">
+        <div
+          class="fixed inset-0 bg-black bg-opacity-40 transition-opacity duration-300"
+          @click="showAdd = false"
+        ></div>
+        <div
+          class="ml-auto w-full max-w-md h-full bg-white shadow-xl relative z-50 transition-transform duration-300"
+        >
+          <AddDrawer @close="showAdd = false" @refresh="fetchUsers" />
+        </div>
+      </div>
+    </Transition>
+    <!-- Drawer Edition -->
+    <Transition name="drawer-slide" appear>
+      <div v-if="showEdit" class="fixed inset-0 z-40 flex">
+        <div
+          class="fixed inset-0 bg-black bg-opacity-40 transition-opacity duration-300"
+          @click="showEdit = false"
+        ></div>
+        <div
+          class="ml-auto w-full max-w-md h-full bg-white shadow-xl relative z-50 transition-transform duration-300"
+        >
+          <EditDrawer
+            :user="editUser"
+            @close="showEdit = false"
+            @refresh="fetchUsers"
+          />
+        </div>
+      </div>
+    </Transition>
+    <!-- Overlay Détail -->
+    <UserDetail
+      v-if="showDetail"
+      :user="detailUser"
+      @close="showDetail = false"
+    />
 
     <!-- Statistiques rapides -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -50,74 +108,14 @@
       </div>
     </div>
 
-    <!-- Formulaire de modification -->
-    <div v-if="showEdit" class="mb-6 bg-white rounded-lg shadow-sm border p-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">
-        Modifier l'utilisateur
-      </h3>
-      <form @submit.prevent="updateUser" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Nom complet</label
-            >
-            <input
-              v-model="editUser.name"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Email</label
-            >
-            <input
-              v-model="editUser.email"
-              type="email"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              required
-            />
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Téléphone</label
-            >
-            <input
-              v-model="editUser.phone"
-              type="tel"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Adresse</label
-            >
-            <input
-              v-model="editUser.address"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            />
-          </div>
-        </div>
-        <div class="flex justify-end space-x-3">
-          <button
-            type="button"
-            @click="cancelEdit"
-            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors"
-          >
-            Mettre à jour
-          </button>
-        </div>
-      </form>
+    <!-- Barre de recherche -->
+    <div class="mb-4">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Rechercher par nom, email..."
+        class="w-full md:w-80 border rounded px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+      />
     </div>
 
     <!-- Tableau des utilisateurs -->
@@ -139,22 +137,22 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Contact
+                Email
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Adresse
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Date d'inscription
+                Rôle
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Statut
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Inscription
               </th>
               <th
                 class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -164,239 +162,201 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
+            <tr
+              v-for="user in filteredUsers"
+              :key="user.id"
+              class="hover:bg-gray-50"
+            >
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="flex-shrink-0 h-10 w-10">
                     <div
                       class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center"
                     >
-                      <svg
-                        class="w-6 h-6 text-emerald-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
+                      <span class="text-emerald-600 font-bold text-sm">
+                        {{ user.Name?.charAt(0)?.toUpperCase() || "U" }}
+                      </span>
                     </div>
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">
-                      {{ user.name || "Nom non renseigné" }}
+                      {{ user.Name }}
                     </div>
-                    <div class="text-sm text-gray-500">{{ user.email }}</div>
+                    <div class="text-xs text-gray-500">
+                      {{ user.Phone || "Pas de téléphone" }}
+                    </div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ user.phone || "-" }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 max-w-xs truncate">
-                  {{ user.address || "-" }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ formatDate(user.createdAt) }}
-                </div>
+                <div class="text-sm text-gray-900">{{ user.Email }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+                  class="px-3 py-1 text-sm font-medium rounded-full"
+                  :class="getRoleClass(user.Role)"
+                  >{{ user.Role }}</span
                 >
-                  Actif
-                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  v-if="user.Active"
+                  class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
+                  >Actif</span
+                >
+                <span
+                  v-else
+                  class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full"
+                  >Inactif</span
+                >
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">
+                  {{ formatDate(user["Created At"]) }}
+                </div>
               </td>
               <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-2"
               >
                 <button
+                  @click="showUserDetail(user)"
+                  class="text-blue-600 hover:text-blue-900 font-medium"
+                >
+                  Voir
+                </button>
+                <button
                   @click="edit(user)"
-                  class="text-emerald-600 hover:text-emerald-900 mr-3 transition-colors"
+                  class="text-emerald-600 hover:text-emerald-900 font-medium"
                 >
                   Modifier
                 </button>
                 <button
-                  @click="deleteUser(user.id)"
-                  class="text-red-600 hover:text-red-900 transition-colors"
+                  @click="toggleUserStatus(user)"
+                  class="text-orange-600 hover:text-orange-900 font-medium"
                 >
-                  Supprimer
+                  {{ user.Active ? "Désactiver" : "Activer" }}
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-
-        <!-- Message si aucun utilisateur -->
-        <div v-if="users.length === 0" class="text-center py-12">
-          <svg
-            class="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-            />
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">
-            Aucun utilisateur
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Aucun utilisateur n'est encore inscrit.
-          </p>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+definePageMeta({ layout: "admin", middleware: "admin" });
 
-// Protection par middleware
-definePageMeta({
-  middleware: "admin",
-  layout: "admin",
-});
+import { ref, computed, onMounted } from "vue";
+import AddDrawer from "./users/add.vue";
+import EditDrawer from "./users/edit.vue";
+import UserDetail from "./users/[id].vue";
 
-// Typage des données
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  createdAt: string;
-}
-
-// Reactive state
-const users = ref<User[]>([]);
+// Reactive state pour les utilisateurs
+const users = ref<any[]>([]);
+const showAdd = ref(false);
 const showEdit = ref(false);
-const editUser = ref<{
-  id: number | null;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-}>({
-  id: null,
-  name: "",
-  email: "",
-  phone: "",
-  address: "",
-});
+const showDetail = ref(false);
+const editUser = ref(null);
+const detailUser = ref(null);
+const searchQuery = ref("");
 
-// Fonctions utilitaires pour le formatage
+// Fonction utilitaire pour formater la date
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("fr-FR");
 };
 
-// Fonctions de statistiques
-const getNewUsersThisMonth = () => {
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  return users.value.filter((user) => {
-    const userDate = new Date(user.createdAt);
-    return (
-      userDate.getMonth() === currentMonth &&
-      userDate.getFullYear() === currentYear
-    );
-  }).length;
-};
-
-const getActiveUsersCount = () => {
-  // Pour l'instant, on considère tous les utilisateurs comme actifs
-  // Dans une vraie application, on aurait une logique basée sur la dernière connexion
-  return users.value.length;
+// Fonction pour obtenir la classe CSS du rôle
+const getRoleClass = (role: string) => {
+  const classes = {
+    admin: "bg-red-100 text-red-800",
+    moderator: "bg-blue-100 text-blue-800",
+    customer: "bg-green-100 text-green-800",
+  };
+  return classes[role] || "bg-gray-100 text-gray-800";
 };
 
 // Fonctions de gestion des utilisateurs
 async function fetchUsers() {
   try {
-    users.value = await $fetch<User[]>("/api/admin/users");
+    users.value = await $fetch("/api/admin/users");
   } catch (error) {
     console.error("Erreur lors du chargement des utilisateurs:", error);
   }
 }
 
-// Fonction pour actualiser les utilisateurs
-const refreshUsers = async () => {
-  await fetchUsers();
-};
+const filteredUsers = computed(() => {
+  if (!searchQuery.value) return users.value;
+  const q = searchQuery.value.toLowerCase();
+  return users.value.filter(
+    (u) =>
+      (u.Name && u.Name.toLowerCase().includes(q)) ||
+      (u.Email && u.Email.toLowerCase().includes(q))
+  );
+});
 
-function edit(user: User) {
-  editUser.value = {
-    id: user.id,
-    name: user.name || "",
-    email: user.email,
-    phone: user.phone || "",
-    address: user.address || "",
-  };
+function edit(user: any) {
+  editUser.value = { ...user };
   showEdit.value = true;
 }
 
-async function updateUser() {
-  if (!editUser.value.id) return;
+function showUserDetail(user: any) {
+  detailUser.value = user;
+  showDetail.value = true;
+}
 
+async function toggleUserStatus(user: any) {
   try {
-    await $fetch(`/api/admin/users/${editUser.value.id}`, {
+    await $fetch(`/api/admin/users/${user.id}`, {
       method: "PUT",
-      body: editUser.value,
+      body: { ...user, Active: !user.Active },
     });
-
-    showEdit.value = false;
-    editUser.value = {
-      id: null,
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-    };
-
     await fetchUsers();
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
+    console.error("Erreur lors de la modification du statut:", error);
   }
 }
 
-function cancelEdit() {
-  showEdit.value = false;
-  editUser.value = {
-    id: null,
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-  };
+function refreshUsers() {
+  fetchUsers();
 }
 
-async function deleteUser(id: number) {
-  if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
-    try {
-      await $fetch(`/api/admin/users/${id}`, { method: "DELETE" });
-      await fetchUsers();
-    } catch (error) {
-      console.error("Erreur lors de la suppression de l'utilisateur:", error);
-    }
-  }
+// Statistiques
+function getNewUsersThisMonth() {
+  const thisMonth = new Date().getMonth();
+  const thisYear = new Date().getFullYear();
+  return users.value.filter((user) => {
+    const userDate = new Date(user["Created At"]);
+    return (
+      userDate.getMonth() === thisMonth && userDate.getFullYear() === thisYear
+    );
+  }).length;
+}
+
+function getActiveUsersCount() {
+  return users.value.filter((user) => user.Active).length;
 }
 
 // Charger les utilisateurs au montage
 onMounted(fetchUsers);
 </script>
+
+<style scoped>
+.drawer-slide-enter-active,
+.drawer-slide-leave-active {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.drawer-slide-enter-from,
+.drawer-slide-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.drawer-slide-enter-to,
+.drawer-slide-leave-from {
+  transform: translateX(0);
+  opacity: 1;
+}
+</style>

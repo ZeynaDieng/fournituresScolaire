@@ -92,6 +92,35 @@
       </form>
     </div>
 
+    <!-- Barre de recherche et pagination -->
+    <div
+      class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"
+    >
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Rechercher par référence, email, statut..."
+        class="w-full md:w-80 border rounded px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+      />
+      <div class="flex items-center gap-2">
+        <button
+          @click="prevPage"
+          :disabled="page === 1"
+          class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+        >
+          Précédent
+        </button>
+        <span class="text-sm">Page {{ page }} / {{ totalPages }}</span>
+        <button
+          @click="nextPage"
+          :disabled="page === totalPages"
+          class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+        >
+          Suivant
+        </button>
+      </div>
+    </div>
+
     <!-- Tableau des commandes -->
     <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
       <div class="px-6 py-4 border-b border-gray-200">
@@ -135,7 +164,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr
-              v-for="order in orders"
+              v-for="order in paginatedOrders"
               :key="order.id"
               class="hover:bg-gray-50"
             >
@@ -191,6 +220,12 @@
                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
               >
                 <button
+                  @click="showOrderDetail(order)"
+                  class="text-blue-600 hover:text-blue-900 mr-3 transition-colors"
+                >
+                  Voir
+                </button>
+                <button
                   @click="edit(order)"
                   class="text-emerald-600 hover:text-emerald-900 mr-3 transition-colors"
                 >
@@ -231,17 +266,125 @@
         </div>
       </div>
     </div>
+
+    <!-- Overlay fiche détail commande -->
+    <div
+      v-if="showDetail"
+      class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
+    >
+      <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative">
+        <button
+          @click="showDetail = false"
+          class="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <h2 class="text-2xl font-bold mb-4">Détail de la commande</h2>
+        <div v-if="detailOrder">
+          <div class="mb-4 flex flex-wrap gap-4">
+            <div class="flex-1">
+              <div class="text-sm text-gray-500">Référence</div>
+              <div class="text-lg font-semibold text-gray-900">
+                #{{ detailOrder.ref }}
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="text-sm text-gray-500">Client</div>
+              <div class="text-lg font-semibold text-gray-900">
+                {{ detailOrder.user?.email || "Client anonyme" }}
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="text-sm text-gray-500">Statut</div>
+              <span :class="getStatusBadgeClass(detailOrder.status)">{{
+                getStatusLabel(detailOrder.status)
+              }}</span>
+            </div>
+            <div class="flex-1">
+              <div class="text-sm text-gray-500">Total</div>
+              <div class="text-lg font-semibold text-emerald-700">
+                {{ formatCurrency(detailOrder.total) }}
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="text-sm text-gray-500">Date de création</div>
+            <div class="text-base text-gray-900">
+              {{ formatDate(detailOrder.createdAt) }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="text-sm text-gray-500">Produits</div>
+            <ul class="list-disc list-inside text-gray-700">
+              <li v-for="item in detailOrder.items || []" :key="item.id">
+                {{ item.name }}
+                <span class="text-xs text-gray-400">x{{ item.quantity }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="flex gap-2 mt-6">
+            <button
+              @click="copyOrderId(detailOrder.id)"
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium flex items-center gap-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8 16h8M8 12h8m-8-4h8M4 6h16M4 10h16M4 14h16M4 18h16"
+                />
+              </svg>
+              Copier l'ID
+            </button>
+            <button
+              @click="downloadOrderPDF(detailOrder)"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium flex items-center gap-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Télécharger PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+definePageMeta({ layout: "admin", middleware: "admin" });
 
-// Protection par middleware
-definePageMeta({
-  middleware: "admin",
-  layout: "admin",
-});
+import { computed, ref, onMounted, watch } from "vue";
+import { useClipboard } from "@vueuse/core";
 
 // ✅ Typage des données
 interface User {
@@ -266,6 +409,12 @@ const editOrder = ref<{ id: number | null; status: string; ref?: string }>({
   status: "",
   ref: "",
 });
+const searchQuery = ref("");
+const page = ref(1);
+const pageSize = 10;
+const totalPages = ref(1);
+const showDetail = ref(false);
+const detailOrder = ref<any>(null);
 
 // Fonctions utilitaires pour le formatage
 const formatCurrency = (amount: number) => {
@@ -388,7 +537,9 @@ function cancelEdit() {
 async function deleteOrder(id: number) {
   if (confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) {
     try {
-      await $fetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+      await $fetch(`/api/admin/orders/${id}`, {
+        method: "DELETE",
+      });
       await fetchOrders();
     } catch (error) {
       console.error("Erreur lors de la suppression de la commande:", error);
@@ -396,6 +547,44 @@ async function deleteOrder(id: number) {
   }
 }
 
+// Pagination et recherche
+const paginatedOrders = computed(() => {
+  let filtered = orders.value;
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (order) =>
+        (order.ref && order.ref.toLowerCase().includes(q)) ||
+        (order.user?.email && order.user.email.toLowerCase().includes(q)) ||
+        (order.status && getStatusLabel(order.status).toLowerCase().includes(q))
+    );
+  }
+  totalPages.value = Math.max(1, Math.ceil(filtered.length / pageSize));
+  return filtered.slice((page.value - 1) * pageSize, page.value * pageSize);
+});
+const nextPage = () => {
+  if (page.value < totalPages.value) page.value++;
+};
+const prevPage = () => {
+  if (page.value > 1) page.value--;
+};
+watch([orders, searchQuery], () => {
+  page.value = 1;
+});
+
 // Charger les commandes au montage
 onMounted(fetchOrders);
+
+// Détails de la commande
+const copyOrderId = (id: any) => {
+  useClipboard().copy(id + "");
+  alert("ID de la commande copié !");
+};
+const downloadOrderPDF = (order: any) => {
+  alert("Fonction de téléchargement PDF à implémenter.");
+};
+const showOrderDetail = (order: any) => {
+  detailOrder.value = order;
+  showDetail.value = true;
+};
 </script>

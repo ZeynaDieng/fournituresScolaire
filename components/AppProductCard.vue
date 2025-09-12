@@ -375,7 +375,7 @@ const bulkOptions = computed(() => {
   const options: { quantity: number; unitPrice: number; discount: number }[] =
     [];
 
-  switch (props.product.category.toLowerCase()) {
+  switch ((props.product.category || "").toLowerCase()) {
     case "cahiers":
       options.push(
         { quantity: 5, unitPrice: props.product.price * 0.95, discount: 5 },

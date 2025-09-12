@@ -15,7 +15,7 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-gray-600">Chiffre d'affaires</p>
-            <p class="text-3xl font-bold text-gray-900">2 847 €</p>
+            <p class="text-3xl font-bold text-gray-900">2 847FCFA</p>
             <p class="text-sm text-green-600">
               <span>+12.5%</span>
               <span class="text-gray-500 ml-1">vs mois dernier</span>
@@ -174,7 +174,7 @@
                 <p class="text-xs text-gray-500">423 ventes</p>
               </div>
             </div>
-            <span class="text-sm font-semibold text-gray-900">€8,460</span>
+            <span class="text-sm font-semibold text-gray-900">FCFA8,460</span>
           </div>
 
           <div class="flex items-center justify-between">
@@ -191,7 +191,7 @@
                 <p class="text-xs text-gray-500">387 ventes</p>
               </div>
             </div>
-            <span class="text-sm font-semibold text-gray-900">€1,935</span>
+            <span class="text-sm font-semibold text-gray-900">FCFA1,935</span>
           </div>
 
           <div class="flex items-center justify-between">
@@ -208,7 +208,7 @@
                 <p class="text-xs text-gray-500">156 ventes</p>
               </div>
             </div>
-            <span class="text-sm font-semibold text-gray-900">€7,800</span>
+            <span class="text-sm font-semibold text-gray-900">FCFA7,800</span>
           </div>
         </div>
       </div>
@@ -217,10 +217,9 @@
 </template>
 
 <script setup>
-// Protection par middleware et layout admin
 definePageMeta({
-  middleware: "admin",
   layout: "admin",
+  middleware: "admin",
 });
 
 import { computed } from "vue";

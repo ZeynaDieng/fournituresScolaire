@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture - CMD_1757617791261_1sz3ogurm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 28px;
+        }
+        .details, .items, .total {
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .details div, .items div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .details div:last-child, .items div:last-child {
+            border-bottom: none;
+        }
+        .total {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: #f0f9ff;
+            border: 2px solid #2563eb;
+        }
+        @media print {
+          body { margin: 0; padding: 10px; }
+          .header { page-break-after: avoid; }
+          .items { page-break-inside: avoid; }
+          .total { page-break-before: avoid; }
+        }
+        @page {
+          size: A4;
+          margin: 20mm;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FACTURE EDUSHOP</h1>
+        <p>Date: 11/09/2025</p>
+    </div>
+
+    <div class="details">
+        <h2>Détails de la commande</h2>
+        <div><span><strong>Référence:</strong></span> <span>CMD_1757617791261_1sz3ogurm</span></div>
+        <div><span><strong>Client:</strong></span> <span>Seynabou Dieng</span></div>
+        <div><span><strong>Email:</strong></span> <span>zeynash1@gmail.com</span></div>
+        <div><span><strong>Téléphone:</strong></span> <span>+221777780456</span></div>
+        <div><span><strong>Statut:</strong></span> <span>Paid</span></div>
+    </div>
+
+    <div class="items">
+        <h2>Articles commandés</h2>
+        
+                    <div>
+                        <span><strong>Stylo Bille Bleu</strong> (x1)</span> 
+                        <span>100 FCFA</span>
+                    </div>
+                    
+    </div>
+
+    <div class="total">
+        <strong>TOTAL: 100 FCFA</strong>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #666;">
+        <p><strong>Merci pour votre achat !</strong></p>
+        <p>EduShop - Votre partenaire de confiance pour toutes les fournitures scolaires.</p>
+    </div>
+</body>
+</html>
+    

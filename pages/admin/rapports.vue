@@ -171,7 +171,7 @@
             📋 Commandes récentes
           </h2>
           <NuxtLink
-            to="/admin/orders"
+            to="/admin/orders-airtable"
             class="text-green-600 hover:text-green-700 text-sm font-medium"
           >
             Voir toutes →
@@ -252,9 +252,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: "admin",
-});
+definePageMeta({ layout: "admin", middleware: "admin" });
 
 // Métriques simulées (à remplacer par de vraies données)
 const metrics = ref({

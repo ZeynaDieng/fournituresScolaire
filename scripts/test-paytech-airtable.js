@@ -107,7 +107,7 @@ async function testPayTechWithAirtable() {
         console.log("✅ Commande trouvée dans Airtable:");
         console.log(`   Référence: ${testOrderInAirtable.orderRef}`);
         console.log(`   Client: ${testOrderInAirtable.customerName}`);
-        console.log(`   Total: ${testOrderInAirtable.totalAmount}€`);
+        console.log(`   Total: ${testOrderInAirtable.totalAmount}FCFA`);
         console.log(`   Statut: ${testOrderInAirtable.status}`);
       } else {
         console.log("⚠️  Commande test non trouvée dans Airtable");

@@ -126,7 +126,7 @@ async function handleSuccessfulPayment(data: {
 
     // 1. Mettre à jour le statut dans Airtable (avec gestion d'erreur)
     try {
-      await updateOrderStatusInAirtable(data.ref_command, "paid");
+      await updateOrderStatusInAirtable(data.ref_command, "Paid");
       console.log("✅ Statut commande mis à jour dans Airtable");
     } catch (airtableError) {
       console.error(
@@ -176,7 +176,7 @@ async function handleCancelledPayment(data: {
 }) {
   try {
     console.log("❌ Paiement annulé pour:", data.ref_command);
-    await updateOrderStatusInAirtable(data.ref_command, "cancelled");
+    await updateOrderStatusInAirtable(data.ref_command, "Cancelled");
   } catch (error) {
     console.error("⚠️ Erreur traitement annulation:", error);
   }
@@ -192,7 +192,7 @@ async function handlePendingPayment(data: {
 }) {
   try {
     console.log("⏳ Paiement en attente pour:", data.ref_command);
-    await updateOrderStatusInAirtable(data.ref_command, "pending");
+    await updateOrderStatusInAirtable(data.ref_command, "Pending");
   } catch (error) {
     console.error("⚠️ Erreur traitement pending:", error);
   }
@@ -212,7 +212,7 @@ async function getOrderDetailsFromAirtable(orderRef: string) {
     }
 
     const response = await fetch(
-      `https://api.airtable.com/v0/${airtableBaseId}/${ordersTableId}?filterByFormula={Order Ref}="${orderRef}"`,
+      `https://api.airtable.com/v0/${airtableBaseId}/${ordersTableId}?filterByFormula={Order ID}="${orderRef}"`,
       {
         headers: {
           Authorization: `Bearer ${airtableApiKey}`,
@@ -258,9 +258,9 @@ async function updateOrderStatusInAirtable(orderRef: string, status: string) {
       throw new Error("Configuration Airtable manquante");
     }
 
-    // D'abord récupérer l'ID du record
+    // Récupérer tous les records et chercher par Order ID
     const searchResponse = await fetch(
-      `https://api.airtable.com/v0/${airtableBaseId}/${ordersTableId}?filterByFormula={Order Ref}="${orderRef}"`,
+      `https://api.airtable.com/v0/${airtableBaseId}/${ordersTableId}?maxRecords=500`,
       {
         headers: {
           Authorization: `Bearer ${airtableApiKey}`,
@@ -275,10 +275,19 @@ async function updateOrderStatusInAirtable(orderRef: string, status: string) {
     const searchData = await searchResponse.json();
 
     if (!searchData.records || searchData.records.length === 0) {
+      throw new Error(`Aucune commande trouvée`);
+    }
+
+    // Chercher la commande par Order ID
+    const targetRecord = searchData.records.find(
+      (record: any) => record.fields["Order ID"] === orderRef
+    );
+
+    if (!targetRecord) {
       throw new Error(`Commande ${orderRef} non trouvée`);
     }
 
-    const recordId = searchData.records[0].id;
+    const recordId = targetRecord.id;
 
     // Mettre à jour le statut
     const updateResponse = await fetch(
@@ -292,7 +301,6 @@ async function updateOrderStatusInAirtable(orderRef: string, status: string) {
         body: JSON.stringify({
           fields: {
             Status: status,
-            "Updated At": new Date().toISOString(),
           },
         }),
       }
@@ -480,7 +488,7 @@ function generateAdminOrderNotification(data: {
         <p><strong>Email:</strong> ${data.customerEmail}</p>
         <p><strong>Téléphone:</strong> ${data.customerPhone}</p>
       </div>
-      <p><a href="https://fournitures-scolaire.vercel.app/admin/orders" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Voir dans l'admin</a></p>
+      <p><a href="https://fournitures-scolaire.vercel.app/admin/orders-airtable" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Voir dans l'admin</a></p>
     </div>
   `;
 }

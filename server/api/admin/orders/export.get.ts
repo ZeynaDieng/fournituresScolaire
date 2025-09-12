@@ -1,4 +1,4 @@
-// /server/api/admin/orders/export.get.ts
+// /server/api/admin/orders-airtable/export.get.ts
 import { exportOrdersToCSV } from "../../../../utils/local-storage";
 import { promises as fs } from "fs";
 

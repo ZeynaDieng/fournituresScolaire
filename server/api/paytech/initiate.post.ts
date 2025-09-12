@@ -26,15 +26,11 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    if (
-      !body.customer?.name ||
-      !body.customer?.email ||
-      !body.customer?.phone
-    ) {
+    if (!body.customer?.name || !body.customer?.phone) {
       throw createError({
         statusCode: 400,
         statusMessage:
-          "Les informations du client (nom, email, téléphone) sont requises",
+          "Les informations du client (nom, téléphone) sont requises",
       });
     }
 
@@ -42,7 +38,12 @@ export default defineEventHandler(async (event) => {
     const ref =
       body.ref_command ||
       `CMD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const customer = body.customer;
+
+    // Générer un email par défaut si non fourni
+    const customer = {
+      ...body.customer,
+      email: body.customer.email || `client_${Date.now()}@edushop.sn`,
+    };
 
     // Construction des données selon la documentation Paytech
     const itemName = body.item_name || `Commande EduShop #${ref}`;
@@ -67,10 +68,22 @@ export default defineEventHandler(async (event) => {
         promo_code: body.promoCode || null,
         promo_discount: body.promoDiscount || 0,
       }),
-      ipn_url: `${config.public.baseUrl}/api/paytech/webhook`,
-      success_url: `${config.public.baseUrl}/payment/success?ref=${ref}`,
-      cancel_url: `${config.public.baseUrl}/payment/cancel?ref=${ref}`,
-      refund_notif_url: `${config.public.baseUrl}/api/paytech/refund-webhook`,
+      ipn_url: `${config.public.baseUrl.replace(
+        /\/$/,
+        ""
+      )}/api/paytech/webhook-new`,
+      success_url: `${config.public.baseUrl.replace(
+        /\/$/,
+        ""
+      )}/payment/success?ref=${ref}`,
+      cancel_url: `${config.public.baseUrl.replace(
+        /\/$/,
+        ""
+      )}/payment/cancel?ref=${ref}`,
+      refund_notif_url: `${config.public.baseUrl.replace(
+        /\/$/,
+        ""
+      )}/api/paytech/refund-webhook`,
     };
 
     // 📊 Enregistrer directement dans Airtable (plus de Prisma)

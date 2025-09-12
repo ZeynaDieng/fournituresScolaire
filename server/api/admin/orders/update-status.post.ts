@@ -1,4 +1,4 @@
-// /server/api/admin/orders/update-status.post.ts
+// /server/api/admin/orders-airtable/update-status.post.ts
 import { updateOrderStatus as updateGoogleSheets } from "../../../../utils/google-sheets";
 import {
   updateOrderStatus as updateLocalStorage,

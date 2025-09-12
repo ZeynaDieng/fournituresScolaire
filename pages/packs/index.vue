@@ -14,7 +14,7 @@
 
       <!-- Overlay for text readability -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/75 to-teal-900/80"
+        class="absolute inset-0 bg-gradient-to-br from-green-900/80 via-green-800/75 to-green-900/80"
       ></div>
 
       <!-- Background Pattern -->
@@ -59,7 +59,7 @@
             </h1>
 
             <p
-              class="text-xl sm:text-2xl text-emerald-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up"
+              class="text-xl sm:text-2xl text-green-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up"
               style="animation-delay: 0.3s"
             >
               Des solutions complètes et personnalisées pour chaque niveau
@@ -79,19 +79,17 @@
           >
             <div class="text-center">
               <div class="text-3xl sm:text-4xl font-bold text-white">15+</div>
-              <div class="text-emerald-200 text-sm font-medium">
+              <div class="text-green-200 text-sm font-medium">
                 Packs Disponibles
               </div>
             </div>
             <div class="text-center">
               <div class="text-3xl sm:text-4xl font-bold text-white">98%</div>
-              <div class="text-emerald-200 text-sm font-medium">
-                Satisfaction
-              </div>
+              <div class="text-green-200 text-sm font-medium">Satisfaction</div>
             </div>
             <div class="text-center">
               <div class="text-3xl sm:text-4xl font-bold text-white">24h</div>
-              <div class="text-emerald-200 text-sm font-medium">Expédition</div>
+              <div class="text-green-200 text-sm font-medium">Expédition</div>
             </div>
           </div>
         </div>
@@ -127,7 +125,7 @@
         <div class="block sm:hidden">
           <select
             v-model="selectedLevel"
-            class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-2xl text-lg font-medium focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all"
+            class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-2xl text-lg font-medium focus:border-primary-green focus:ring-4 focus:ring-green-100 transition-all"
           >
             <option v-for="level in packLevels" :key="level" :value="level">
               {{ level }}
@@ -144,9 +142,9 @@
             class="group relative px-6 lg:px-8 py-3 lg:py-4 font-semibold text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 active:scale-95 animate-slide-in-up"
             :style="{ animationDelay: `${0.6 + index * 0.1}s` }"
             :class="{
-              'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-xl shadow-emerald-200':
+              'bg-primary-green text-white shadow-xl shadow-green-200':
                 selectedLevel === level,
-              'bg-white text-slate-700 border-2 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700':
+              'bg-white text-slate-700 border-2 border-slate-200 hover:border-primary-green hover:bg-green-50 hover:text-primary-green':
                 selectedLevel !== level,
             }"
           >
@@ -237,7 +235,7 @@
                     <h3 class="font-bold text-lg text-slate-900">
                       {{ pack.name }}
                     </h3>
-                    <span class="text-2xl font-bold text-emerald-600">{{
+                    <span class="text-2xl font-bold text-primary-green">{{
                       formatPrice(pack.price)
                     }}</span>
                   </div>
@@ -325,13 +323,13 @@
                     >
                       <td class="py-6 px-6">
                         <div
-                          class="font-semibold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors"
+                          class="font-semibold text-lg text-slate-900 group-hover:text-primary-green transition-colors"
                         >
                           {{ pack.name }}
                         </div>
                       </td>
                       <td class="py-6 px-6 text-center">
-                        <span class="text-2xl font-bold text-emerald-600">{{
+                        <span class="text-2xl font-bold text-primary-green">{{
                           formatPrice(pack.price)
                         }}</span>
                       </td>
@@ -393,7 +391,7 @@
           </p>
           <button
             @click="selectedLevel = 'Tous'"
-            class="px-8 py-3 bg-emerald-600 text-white font-semibold rounded-2xl hover:bg-emerald-700 transition-colors"
+            class="px-8 py-3 bg-primary-green text-white font-semibold rounded-2xl hover:bg-green-700 transition-colors"
           >
             Voir tous les niveaux
           </button>
@@ -405,38 +403,60 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useProductsStore } from "~/stores/products";
-import { useCartStore } from "~/stores/cart";
-import { useFormatter } from "~/composables/useFormatter";
-import AppPackCard from "~/components/AppPackCard.vue";
+import { useCartStore } from "../stores/cart";
+import { useFormatter } from "../composables/useFormatter";
+import AppPackCard from "../components/AppPackCard.vue";
 
-const productsStore = useProductsStore();
 const cartStore = useCartStore();
 const { formatPrice } = useFormatter();
 
 const packLevels = ["Tous", "CP", "CE1-CE2", "Collège", "Lycée"];
 const selectedLevel = ref("Tous");
 const loading = ref(true);
+const packs = ref<any[]>([]);
 
-// Charger les données au montage du composant
-onMounted(async () => {
+// Charger les données directement depuis l'API Airtable
+async function fetchPacks() {
   try {
-    await productsStore.fetchProducts();
-    console.log("Packs chargés:", productsStore.packs);
+    loading.value = true;
+    const response = (await $fetch("/api/admin/packs")) as any[];
+
+    // Transformer les données d'Airtable au format attendu par AppPackCard
+    packs.value = response.map((pack: any) => ({
+      id: pack.id,
+      name: pack.Name,
+      level: pack.Level,
+      price: pack.Price,
+      originalPrice: pack["Original Price"],
+      description: pack.Description,
+      contents: pack.Contents ? pack.Contents.split(", ") : [],
+      isPopular: pack["Is Popular"],
+      inStock: pack["In Stock"],
+      localId: pack["Local ID"],
+      discountPercent: pack["Discount %"],
+      image: pack["Image URL"],
+      isPromotion: pack["Discount %"] > 0,
+    }));
+
+    console.log("Packs chargés depuis Airtable:", packs.value);
   } catch (error) {
     console.error("Erreur lors du chargement des packs:", error);
+    // Fallback vers des données de démonstration en cas d'erreur
+    packs.value = [];
   } finally {
     loading.value = false;
   }
-});
+}
+
+// Charger les données au montage du composant
+onMounted(fetchPacks);
 
 // Filtre les packs par niveau
 const filteredPacks = computed(() => {
-  const packs = [...productsStore.packs];
   if (selectedLevel.value === "Tous") {
-    return packs;
+    return packs.value;
   }
-  return packs.filter((pack) => pack.level === selectedLevel.value);
+  return packs.value.filter((pack) => pack.level === selectedLevel.value);
 });
 
 // Sélectionner un niveau avec animation
@@ -460,7 +480,7 @@ function addToCart(pack: any) {
 
 // Compter les éléments spécifiques dans le contenu
 function countItem(items: string[], keyword: string): number {
-  if (!items) return 0;
+  if (!items || !Array.isArray(items)) return 0;
   return items.filter((item) =>
     item.toLowerCase().includes(keyword.toLowerCase())
   ).length;
@@ -619,8 +639,41 @@ useHead({
 /* Focus states accessibles */
 button:focus-visible,
 select:focus-visible {
-  outline: 2px solid #10b981;
+  outline: 2px solid #16a34a;
   outline-offset: 2px;
+}
+
+/* Couleurs personnalisées avec #16a34a */
+.text-primary-green {
+  color: #16a34a;
+}
+
+.bg-primary-green {
+  background-color: #16a34a;
+}
+
+.border-primary-green {
+  border-color: #16a34a;
+}
+
+.hover\:bg-primary-green:hover {
+  background-color: #16a34a;
+}
+
+.hover\:border-primary-green:hover {
+  border-color: #16a34a;
+}
+
+.hover\:text-primary-green:hover {
+  color: #16a34a;
+}
+
+.focus\:border-primary-green:focus {
+  border-color: #16a34a;
+}
+
+.focus\:ring-primary-green:focus {
+  --tw-ring-color: #16a34a;
 }
 
 /* States loading améliorés */

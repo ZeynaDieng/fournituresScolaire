@@ -1127,19 +1127,91 @@ export const useProductsStore = defineStore("products", {
       ];
     },
 
-    // Charger les produits (simulation API)
+    // Charger les produits depuis Airtable
     async fetchProducts(): Promise<void> {
       this.loading = true;
       try {
-        // Simulation d'appel API
-        await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-        this.initializeDemoData();
+        // Charger les produits depuis l'API Airtable
+        const productsResponse = await $fetch("/api/admin/products");
+        const packsResponse = await $fetch("/api/admin/packs");
+        const promotionsResponse = await $fetch("/api/admin/promotions");
+
+        // Transformer les données Airtable en format attendu
+        this.products = productsResponse.map((product: any) => ({
+          id: product.id,
+          name: product.Name,
+          price: product.Price,
+          originalPrice: product["Original Price"] || null,
+          image:
+            product["Image URL"] ||
+            "https://placehold.co/600x400/F4ECF7/17202A?text=Produit",
+          images: product["Image URL"]
+            ? [product["Image URL"]]
+            : ["https://placehold.co/600x400/F4ECF7/17202A?text=Produit"],
+          category: product.Category,
+          description: product.Description || "",
+          inStock: product["In Stock"] || true,
+          isPromotion:
+            product["Original Price"] &&
+            product["Original Price"] > product.Price,
+          features: product.Features
+            ? typeof product.Features === "string"
+              ? product.Features.split(", ")
+              : product.Features
+            : [],
+          specs: product.Specs
+            ? typeof product.Specs === "string"
+              ? product.Specs.split(", ")
+              : product.Specs
+            : [],
+          reviews: [],
+          bulkOptions: [],
+        }));
+
+        // Transformer les packs Airtable en format attendu
+        this.packs = packsResponse.map((pack: any) => ({
+          id: pack.id,
+          name: pack.Name,
+          level: pack.Level,
+          price: pack.Price,
+          originalPrice: pack["Original Price"] || null,
+          image:
+            pack["Image URL"] ||
+            "https://placehold.co/600x400/F4ECF7/17202A?text=Pack",
+          description: pack.Description || "",
+          contents: pack.Contents
+            ? pack.Contents.split("\n").filter((item: string) => item.trim())
+            : [],
+          isPopular: pack["Is Popular"] || false,
+          inStock: pack["In Stock"] || true,
+          isPromotion:
+            pack["Original Price"] && pack["Original Price"] > pack.Price,
+        }));
+
+        // Transformer les promotions Airtable en format attendu
+        this.promotions = promotionsResponse.map((promo: any) => ({
+          id: promo.id,
+          title: promo.Name,
+          description: promo.Description || "",
+          discount: promo["Discount %"] || 0,
+          endDate: promo["End Date"] || new Date(),
+          products: promo.Products ? promo.Products.split(",") : [],
+          type: "percentage" as const,
+          trending: promo.Trending || false,
+        }));
+
+        console.log("✅ Données Airtable chargées:", {
+          products: this.products.length,
+          packs: this.packs.length,
+          promotions: this.promotions.length,
+        });
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error("Error fetching products:", error.message);
-        } else {
-          console.error("An unknown error occurred while fetching products");
-        }
+        console.error(
+          "❌ Erreur lors du chargement des données Airtable:",
+          error
+        );
+        // Fallback vers les données de démo en cas d'erreur
+        this.initializeDemoData();
       } finally {
         this.loading = false;
       }

@@ -42,7 +42,7 @@ async function testOrderCreation() {
     const result = await addOrderToAirtable(testOrder);
     console.log("✅ Commande créée avec succès:", result.id);
     console.log("   Référence:", testOrder.ref);
-    console.log("   Total:", testOrder.amounts.total, "€");
+    console.log("   Total:", testOrder.amounts.total, "FCFA");
 
     // Tester la mise à jour du statut (si le champ Status existe)
     try {

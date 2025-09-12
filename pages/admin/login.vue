@@ -157,7 +157,9 @@ async function login() {
 
     if (res.success && "token" in res && typeof res.token === "string") {
       localStorage.setItem("admin_token", res.token);
-      router.push("stats-simple");
+      document.cookie = `admin_token=${res.token}; path=/; SameSite=Lax;`;
+      router.push("/admin/dashboard");
+      setTimeout(() => window.location.reload(), 100);
     } else if (
       !res.success &&
       "message" in res &&

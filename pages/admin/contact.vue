@@ -245,6 +245,11 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: "admin",
+  middleware: "admin",
+});
+
 import { ref, computed, onMounted } from "vue";
 
 // État

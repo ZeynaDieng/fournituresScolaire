@@ -3,7 +3,7 @@
     <!-- Animated Background Elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div
-        class="absolute -top-24 -right-24 w-96 h-96 bg-primary-600 rounded-full blur-3xl animate-pulse"
+        class="absolute -top-24 -right-24 w-96 h-96 bg-green-600 rounded-full blur-3xl animate-pulse"
       ></div>
       <div
         class="absolute -bottom-32 -left-32 w-80 h-80 bg-green-500 rounded-full blur-3xl animate-pulse delay-1000"
@@ -35,7 +35,7 @@
         </div>
 
         <h2
-          class="text-5xl md:text-6xl font-black mb-6 bg-primary-600 bg-clip-text text-transparent animate-fade-in"
+          class="text-5xl md:text-6xl font-black mb-6 bg-green-600 bg-clip-text text-transparent animate-fade-in"
         >
           Promotions Limitées
         </h2>
@@ -52,16 +52,22 @@
       </div>
 
       <!-- Ultra Modern Promotions Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+      <!-- Grille des cartes de promotion -->
+      <div
+        v-if="activePromotions.length > 0"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16"
+      >
+        <!-- Boucle pour afficher chaque promotion -->
         <div
-          v-for="(promo, index) in displayedPromotions"
+          v-for="(promo, index) in activePromotions"
           :key="promo.id"
           class="group relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 hover:shadow-4xl transition-all duration-500 transform hover:-translate-y-3 hover:rotate-1 animate-fade-in-up"
           :style="{ animationDelay: `${index * 200}ms` }"
         >
-          <!-- Premium Badge -->
+          <!-- Badge de réduction (coin supérieur droit) -->
           <div class="absolute -top-4 -right-4 z-20">
             <div class="relative">
+              <!-- Cercle principal avec le pourcentage de réduction -->
               <div
                 class="w-20 h-20 bg-gradient-to-br from-[#15803d] to-[#15803d] rounded-full flex items-center justify-center shadow-2xl animate-spin-slow"
               >
@@ -69,13 +75,14 @@
                   -{{ promo.discount }}%
                 </div>
               </div>
+              <!-- Effet de pulsation autour du badge -->
               <div
                 class="absolute inset-0 bg-gradient-to-br from-[#15803d] to-[#15803d] rounded-full animate-ping opacity-20"
               ></div>
             </div>
           </div>
 
-          <!-- Trending Badge -->
+          <!-- Badge "TENDANCE" (côté gauche, si la promotion est trending) -->
           <div
             v-if="promo.trending"
             class="absolute top-0 bottom-8 left-4 z-10"
@@ -83,6 +90,7 @@
             <div
               class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center animate-pulse"
             >
+              <!-- Icône de flamme pour "TENDANCE" -->
               <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
@@ -94,22 +102,26 @@
             </div>
           </div>
 
-          <!-- Content -->
+          <!-- Contenu principal de la carte -->
           <div class="relative z-10">
-            <!-- Icon/Image -->
+            <!-- En-tête avec titre et informations -->
             <div class="flex items-center mb-6">
               <div class="flex-1">
+                <!-- Titre de la promotion -->
                 <h3
-                  class="text-2xl font-bold text-gray-800 mb-1 group-hover:text-primary-600 transition-colors"
+                  class="text-2xl font-bold text-gray-800 mb-1 group-hover:text-green-600 transition-colors"
                 >
                   {{ promo.title }}
                 </h3>
+                <!-- Tags et évaluation -->
                 <div class="flex items-center space-x-2">
+                  <!-- Badge de catégorie -->
                   <span
                     class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium"
                   >
                     {{ promo.category || "Offre spéciale" }}
                   </span>
+                  <!-- Étoiles de notation (si disponible) -->
                   <div
                     class="flex items-center text-yellow-500"
                     v-if="promo.rating"
@@ -133,19 +145,21 @@
               </div>
             </div>
 
-            <!-- Description with Features -->
+            <!-- Description et caractéristiques principales -->
             <div class="space-y-4 mb-6">
+              <!-- Description de la promotion -->
               <p class="text-gray-700 text-lg leading-relaxed">
                 {{ promo.description }}
               </p>
 
-              <!-- Key Features -->
+              <!-- Liste des caractéristiques clés (si disponibles) -->
               <div class="grid grid-cols-2 gap-3" v-if="promo.features">
                 <div
                   v-for="feature in promo.features"
                   :key="feature"
                   class="flex items-center text-sm text-gray-600"
                 >
+                  <!-- Icône de validation (coche verte) -->
                   <svg
                     class="w-4 h-4 text-green-500 mr-2 flex-shrink-0"
                     fill="none"
@@ -164,16 +178,19 @@
               </div>
             </div>
 
-            <!-- Price Section -->
+            <!-- Section des prix (si prix disponible) -->
             <div
               class="flex items-center justify-between mb-6"
               v-if="promo.originalPrice"
             >
               <div class="space-y-1">
+                <!-- Prix barré et prix actuel -->
                 <div class="flex items-center space-x-3">
+                  <!-- Prix original barré -->
                   <span class="text-lg text-gray-400 line-through"
                     >{{ promo.originalPrice }} CFA</span
                   >
+                  <!-- Prix promotionnel en grand -->
                   <span
                     class="text-3xl font-black bg-gradient-to-r from-dark-green to-primary-600 bg-clip-text text-transparent"
                   >
@@ -183,6 +200,7 @@
                     CFA
                   </span>
                 </div>
+                <!-- Montant économisé -->
                 <div class="text-sm text-green-600 font-semibold">
                   Économie:
                   <template
@@ -198,11 +216,13 @@
               </div>
             </div>
 
-            <!-- Enhanced Countdown -->
+            <!-- Section countdown (temps restant) -->
             <div
               class="bg-gradient-to-r from-green-50 to-green-50 rounded-2xl p-4 mb-6 border border-red-100"
             >
+              <!-- En-tête du countdown -->
               <div class="flex items-center mb-2">
+                <!-- Icône d'horloge animée -->
                 <svg
                   class="w-5 h-5 text-green-500 mr-2 animate-pulse"
                   fill="none"
@@ -220,21 +240,31 @@
                   >Offre limitée dans le temps</span
                 >
               </div>
-              <AppCountdown :end-date="promo.endDate" />
+              <!-- Affichage du temps restant -->
+              <div class="text-sm text-gray-600">
+                <div class="font-semibold text-red-600">⏰ Offre limitée</div>
+                <div class="text-xs">
+                  Expire dans {{ getTimeRemaining(promo.endDate) }}
+                </div>
+              </div>
             </div>
 
-            <!-- Enhanced CTA Button -->
+            <!-- Boutons d'action -->
             <div class="space-y-3">
+              <!-- Bouton principal "Profiter de l'offre" -->
               <button
                 @click="handlePromoClick(promo)"
                 class="group/btn w-full bg-gradient-to-r from-[#15803d] via-[#15803d] to-[#15803d] text-white py-4 px-8 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-[#15803d]/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 relative overflow-hidden"
               >
+                <!-- Effet de brillance au survol -->
                 <div
                   class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"
                 ></div>
+                <!-- Contenu du bouton -->
                 <div
                   class="relative flex items-center justify-center space-x-3"
                 >
+                  <!-- Icône d'éclair -->
                   <svg
                     class="w-6 h-6 group-hover/btn:animate-bounce"
                     fill="none"
@@ -249,6 +279,7 @@
                     />
                   </svg>
                   <span>Profiter de l'offre maintenant</span>
+                  <!-- Icône de flèche -->
                   <svg
                     class="w-5 h-5 group-hover/btn:translate-x-1 transition-transform"
                     fill="none"
@@ -265,11 +296,12 @@
                 </div>
               </button>
 
-              <!-- Bouton de partage -->
+              <!-- Bouton secondaire de partage -->
               <button
                 @click="sharePromo(promo)"
-                class="w-full bg-white border-2 border-primary-600 text-dark-green py-2 px-4 rounded-xl font-medium hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
+                class="w-full bg-white border-2 border-green-600 text-green-800 py-2 px-4 rounded-xl font-medium hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
               >
+                <!-- Icône de partage -->
                 <svg
                   class="w-4 h-4"
                   fill="none"
@@ -288,13 +320,33 @@
             </div>
           </div>
 
-          <!-- Decorative Elements -->
+          <!-- Éléments décoratifs de la carte -->
+          <!-- Barre de progression au survol (bas de la carte) -->
           <div
-            class="absolute bottom-0 left-0 w-full h-1 bg-primary-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl"
+            class="absolute bottom-0 left-0 w-full h-1 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl"
           ></div>
+          <!-- Cercle décoratif flou (coin supérieur droit) -->
           <div
             class="absolute top-0 right-0 w-32 h-32 bg-dark-green rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"
           ></div>
+        </div>
+      </div>
+
+      <!-- Message d'état vide (si aucune promotion) -->
+      <div v-if="activePromotions.length === 0" class="text-center py-16">
+        <div
+          class="bg-white/60 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20"
+        >
+          <!-- Icône d'étiquette -->
+          <div class="text-6xl mb-6">🏷️</div>
+          <!-- Titre du message vide -->
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">
+            Aucune promotion disponible
+          </h3>
+          <!-- Message explicatif -->
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Revenez bientôt pour découvrir nos offres exceptionnelles !
+          </p>
         </div>
       </div>
 
@@ -323,7 +375,7 @@
           >
             <NuxtLink
               to="/promotions"
-              class="group bg-primary-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-red-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center space-x-3"
+              class="group bg-green-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center space-x-3"
             >
               <svg
                 class="w-6 h-6 group-hover:animate-bounce"
@@ -361,8 +413,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { navigateTo } from "nuxt/app";
+// AppCountdown remplacé par une fonction countdown simple
 
 // Props
 const props = defineProps<{
@@ -387,28 +440,89 @@ interface Promotion {
   currentPrice?: number;
 }
 
-// Stores
-const airtableStore = useAirtableStore();
-const cartStore = useCartStore();
+// Données de démonstration (remplace les stores et API calls)
+const demoPromotions = ref([
+  {
+    id: "1",
+    title: "Pack Rentrée CP - Offre Spéciale",
+    description: "Tout le nécessaire pour une rentrée réussie en CP",
+    discount: 25,
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
+    products: ["Cahiers", "Crayons", "Gommes"],
+    type: "percentage" as const,
+    trending: true,
+    icon: "🎒",
+    category: "Rentrée",
+    rating: 4.8,
+    features: [
+      "Matériel de qualité",
+      "Livraison gratuite",
+      "Garantie satisfaction",
+    ],
+    originalPrice: 15000,
+    currentPrice: 11250,
+  },
+  {
+    id: "2",
+    title: "Pack Rentrée CE1 - Super Promo",
+    description: "Équipement complet pour le CE1",
+    discount: 30,
+    endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 jours
+    products: ["Livres", "Fournitures", "Accessoires"],
+    type: "percentage" as const,
+    trending: false,
+    icon: "📚",
+    category: "Rentrée",
+    rating: 4.9,
+    features: ["Économies garanties", "Qualité premium", "Support client"],
+    originalPrice: 20000,
+    currentPrice: 14000,
+  },
+]);
 
-// Utiliser les promotions passées en props ou celles du store
-const displayedPromotions = computed(() => {
-  return props.promotions || airtableStore.activePromotions;
+// Utiliser uniquement les données de démonstration (version autonome)
+const activePromotions = computed(() => {
+  return demoPromotions.value;
 });
 
 // Computed properties pour les stats
-const activePromosCount = computed(() => displayedPromotions.value.length);
+const activePromosCount = computed(() => activePromotions.value.length);
 const totalSavings = computed(() => {
-  const savings = displayedPromotions.value.map((p) => p.discount);
+  const savings = activePromotions.value.map((p) => p.discount);
   return savings.length
     ? Math.round(savings.reduce((a, b) => a + b, 0) / savings.length)
     : 0;
 });
+
 const averageRating = computed(() => 4.8);
 
 // Méthodes
+// Fonction countdown simple
+const getTimeRemaining = (endDate: Date | string) => {
+  if (typeof window === "undefined") return "Calcul...";
+
+  const now = new Date().getTime();
+  const end = new Date(endDate).getTime();
+  const difference = end - now;
+
+  if (difference < 0) return "Expiré";
+
+  const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+  const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (days > 0) return `${days}j ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+};
+
 function handlePromoClick(promo: any) {
   console.log("Promo clicked:", promo);
+
+  // Vérification côté client
+  if (typeof window === "undefined") return;
 
   // Si la promotion a un prix et peut être considérée comme un produit
   if (promo.currentPrice && promo.originalPrice) {
@@ -426,8 +540,8 @@ function handlePromoClick(promo: any) {
       features: promo.features || [],
     };
 
-    // Ajouter au panier via le store
-    cartStore.addItem(productToAdd, 1);
+    // Ajouter au panier (version simplifiée)
+    console.log("Ajout au panier:", productToAdd);
   } else {
     // Si la promotion n'est pas directement achetable, rediriger vers les produits liés
     if (promo.products && promo.products.length > 0) {

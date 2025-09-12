@@ -32,7 +32,7 @@
 - Sélecteurs dropdown pour les niveaux (CP, CE1, CE2, etc.)
 - Affichage optimisé des packs avec statuts
 
-#### ✅ `/admin/orders.vue` - Gestion des commandes
+#### ✅ `/admin/orders-airtable.vue` - Gestion des commandes
 
 - Statistiques des commandes en temps réel
 - Gestion des statuts avec badges colorés
@@ -118,15 +118,15 @@
 
 ## 📊 Pages converties au nouveau système
 
-| Page                    | Statut | Layout Admin | Sidebar dynamique | Fonctionnalités                   |
-| ----------------------- | ------ | ------------ | ----------------- | --------------------------------- |
-| `/admin/index.vue`      | ✅     | ✅           | ✅                | Dashboard, widgets, stats         |
-| `/admin/products.vue`   | ✅     | ✅           | ✅                | CRUD produits, images, validation |
-| `/admin/packs.vue`      | ✅     | ✅           | ✅                | Packs scolaires, niveaux          |
-| `/admin/orders.vue`     | ✅     | ✅           | ✅                | Commandes, statuts, revenue       |
-| `/admin/users.vue`      | ✅     | ✅           | ✅                | Utilisateurs, profils, stats      |
-| `/admin/promotions.vue` | ✅     | ✅           | ✅                | Promos, types, dates              |
-| `/admin/statistics.vue` | ✅     | ✅           | ✅                | Analytics avancées                |
+| Page                         | Statut | Layout Admin | Sidebar dynamique | Fonctionnalités                   |
+| ---------------------------- | ------ | ------------ | ----------------- | --------------------------------- |
+| `/admin/index.vue`           | ✅     | ✅           | ✅                | Dashboard, widgets, stats         |
+| `/admin/products.vue`        | ✅     | ✅           | ✅                | CRUD produits, images, validation |
+| `/admin/packs.vue`           | ✅     | ✅           | ✅                | Packs scolaires, niveaux          |
+| `/admin/orders-airtable.vue` | ✅     | ✅           | ✅                | Commandes, statuts, revenue       |
+| `/admin/users.vue`           | ✅     | ✅           | ✅                | Utilisateurs, profils, stats      |
+| `/admin/promotions.vue`      | ✅     | ✅           | ✅                | Promos, types, dates              |
+| `/admin/statistics.vue`      | ✅     | ✅           | ✅                | Analytics avancées                |
 
 ## 🎨 Améliorations UX/UI
 

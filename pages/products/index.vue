@@ -224,21 +224,52 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useProductsStore } from "~/stores/products";
-import { useCartStore } from "~/stores/cart";
-import AppProductCard from "~/components/AppProductCard.vue";
+// Déclaration pour l'auto-import Nuxt côté types
+declare const useHead: any;
+// axios non requis, on consomme l'API serveur
+import AppProductCard from "../../components/AppProductCard.vue";
+import { useAirtableStore } from "../../stores/airtable";
+import type { Product } from "../../stores/products";
 
-const productsStore = useProductsStore();
-const cartStore = useCartStore();
-
+const products = ref<Product[]>([]);
 const currentCategory = ref("Tous");
 const loading = ref(true);
+
+const airtableStore = useAirtableStore();
+
+// Charger depuis l'API admin (même source que l'admin)
+async function fetchProductsFromAdmin(): Promise<Product[]> {
+  const rows = (await $fetch("/api/admin/products")) as any[];
+  return rows.map((p) => {
+    // Images: priorité à "Image URL", sinon première de "Images" (séparées par virgule)
+    let image: string = p["Image URL"] || "";
+    if (!image && typeof p.Images === "string") {
+      image = p.Images.split(",").map((s: string) => s.trim())[0] || "";
+    }
+    return {
+      id: p.id,
+      name: p.Name || "",
+      price: Number(p.Price) || 0,
+      originalPrice: p["Original Price"] ?? undefined,
+      category: p.Category || "Autres",
+      image,
+      images: image ? [image] : [],
+      description: p.Description || "",
+      inStock: Boolean(p["In Stock"]) || false,
+      isPromotion: Boolean(p["Is Promotion"]) || false,
+      promotionEndDate: p["Promotion End Date"]
+        ? new Date(p["Promotion End Date"])
+        : undefined,
+    } as Product;
+  });
+}
 
 // Charger les données au montage du composant
 onMounted(async () => {
   try {
-    await productsStore.fetchProducts();
-    console.log("Produits chargés:", productsStore.products);
+    // Source unifiée: même endpoint que l'admin
+    products.value = await fetchProductsFromAdmin();
+    console.log("Produits chargés (admin API):", products.value);
   } catch (error) {
     console.error("Erreur lors du chargement des produits:", error);
   } finally {
@@ -248,40 +279,27 @@ onMounted(async () => {
 
 // Calculer les catégories disponibles
 const categories = computed(() => {
-  const allCategories = productsStore.products.map((p) => p.category);
-  const uniqueCategories = [...new Set(allCategories)];
+  const allCategories = products.value.map((p) => p.category || "Autres");
+  const uniqueCategories = [...new Set(allCategories)].filter(Boolean);
   return ["Tous", ...uniqueCategories];
 });
 
 // Filtrer les produits par catégorie
 const filteredProducts = computed(() => {
   if (currentCategory.value === "Tous") {
-    return productsStore.products;
+    return products.value;
   }
-  return productsStore.products.filter(
-    (p) => p.category === currentCategory.value
-  );
+  return products.value.filter((p) => p.category === currentCategory.value);
 });
 
 // Sélectionner une catégorie
-function filterCategory(cat: string) {
+function filterCategory(cat) {
   currentCategory.value = cat;
 }
 
 // Ajouter au panier
-function addToCart(product: any, quantity = 1) {
-  cartStore.addItem(
-    {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      type: "product",
-      category: product.category,
-      description: product.description,
-    },
-    quantity
-  );
+function addToCart(product, quantity = 1) {
+  // ...utilise ton store ou logique panier ici si besoin...
 }
 
 // Configuration du head
