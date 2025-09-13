@@ -38,9 +38,7 @@
     <!-- Wishlist Button -->
 
     <!-- Image Container -->
-    <div
-      class="relative h-56 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 rounded-t-3xl"
-    >
+    <div class="relative h-56 overflow-hidden bg-white rounded-t-3xl">
       <img
         :src="product.image"
         :alt="product.name"
@@ -308,7 +306,7 @@
               {{ option.quantity }}x
             </div>
             <div class="text-xs text-emerald-600 font-semibold">
-              {{ formatPrice(option.unitPrice) }}
+              {{ formatPrice(option.unitPrice) }} /unité
             </div>
             <div class="text-xs text-slate-500">-{{ option.discount }}%</div>
           </button>

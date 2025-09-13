@@ -33,7 +33,7 @@
     <!-- Content -->
     <div class="container relative z-10 text-center mt-20 px-6">
       <h1
-        class="text-4xl md:text-6xl font-bold mt-20 text-white drop-shadow-lg mb-6 typewriter-text"
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mt-20 text-white drop-shadow-lg mb-6 typewriter-text"
       >
         <span class="typewriter-content">Préparez la rentrée sans stress</span>
         <span class="typewriter-cursor">|</span>
@@ -43,8 +43,7 @@
         class="text-lg md:text-2xl mb-10 text-white opacity-0 animate-fade-in-up max-w-3xl mx-auto"
         style="--delay: 0.3s"
       >
-        Tous vos packs scolaires et fournitures livrés à domicile partout à
-        Dakar
+        Tous vos fournitures scolaires livrés à domicile partout à Dakar
       </p>
 
       <!-- CTA Buttons -->
@@ -265,29 +264,37 @@
   overflow: hidden;
   white-space: nowrap;
   border-right: 2px solid transparent;
+  min-height: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .typewriter-content {
   display: inline-block;
-  animation: typewriter 3s steps(30, end) forwards;
+  animation: typewriter 6s steps(30, end) infinite;
   width: 0;
   overflow: hidden;
+  animation-delay: 0s;
 }
 
 .typewriter-cursor {
   display: inline-block;
   animation: blink-cursor 1s infinite;
-  color: #06610d;
+  color: #16a34a;
   font-weight: normal;
-  animation-iteration-count: infinite;
+  margin-left: 2px;
 }
 
 @keyframes typewriter {
   0% {
     width: 0;
   }
-  100% {
+  50% {
     width: 100%;
+  }
+  100% {
+    width: 0;
   }
 }
 
@@ -299,6 +306,30 @@
   51%,
   100% {
     opacity: 0;
+  }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 640px) {
+  .typewriter-text {
+    min-height: 1.5em;
+    line-height: 1.2;
+  }
+
+  .typewriter-content {
+    animation: typewriter-mobile 6s steps(25, end) infinite;
+  }
+}
+
+@keyframes typewriter-mobile {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
   }
 }
 

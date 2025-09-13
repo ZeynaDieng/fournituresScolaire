@@ -23,10 +23,59 @@
     </div>
 
     <!-- Options de paiement -->
+    <div v-if="availableMethods.length > 0" class="space-y-3">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Méthode de paiement
+      </label>
+      <div class="grid grid-cols-1 gap-3">
+        <div
+          v-for="method in availableMethods"
+          :key="method"
+          @click="selectSingleMethod(method)"
+          :class="[
+            'p-3 rounded-lg border-2 cursor-pointer transition-all duration-200',
+            selectedMethod === method
+              ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500 ring-opacity-20'
+              : 'border-gray-200 hover:border-gray-300',
+          ]"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <img
+                :src="getMethodIcon(method)"
+                :alt="method"
+                class="w-8 h-8 mr-3"
+                @error="handleImageError"
+              />
+              <div>
+                <h3 class="font-semibold text-gray-900">{{ method }}</h3>
+                <p class="text-sm text-gray-600">
+                  {{ getMethodDescription(method) }}
+                </p>
+              </div>
+            </div>
+            <div
+              :class="[
+                'w-4 h-4 rounded-full border-2',
+                selectedMethod === method
+                  ? 'border-emerald-500 bg-emerald-500'
+                  : 'border-gray-300',
+              ]"
+            >
+              <div
+                v-if="selectedMethod === method"
+                class="w-2 h-2 bg-white rounded-full m-0.5"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted } from "vue";
 interface Props {
   modelValue?: string;
   amount?: number;
@@ -36,6 +85,10 @@ interface Props {
 interface Emits {
   (e: "update:modelValue", value: string): void;
   (e: "change", value: string): void;
+  (
+    e: "payment-method-selected",
+    data: { method: string; country: string }
+  ): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -54,16 +107,16 @@ const availableMethods = ref<string[]>([]);
 // Payment methods by country
 const getPaymentMethodsByCountry = (country: string = "SN") => {
   const methodsByCountry: Record<string, string[]> = {
-    SN: ["Orange Money", "Wave", "Free Money", "Carte Bancaire"],
+    SN: ["Wave", "Free Money", "Orange Money", "Carte Bancaire"],
     CI: [
-      "Orange Money CI",
       "Wave CI",
       "Mtn Money CI",
       "Moov Money CI",
+      "Orange Money CI",
       "Carte Bancaire",
     ],
-    ML: ["Orange Money ML", "Moov Money ML", "Carte Bancaire"],
-    BJ: ["Moov Money BJ", "Mtn Money BJ", "Carte Bancaire"],
+    ML: ["Moov Money ML", "Orange Money ML", "Carte Bancaire"],
+    BJ: ["Mtn Money BJ", "Moov Money BJ", "Carte Bancaire"],
   };
 
   return methodsByCountry[country] || methodsByCountry["SN"];
@@ -104,11 +157,11 @@ const updatePaymentMethods = () => {
     isMultipleSelected.value = false;
   }
 
-  // Auto-sélectionner la première méthode si aucune n'est sélectionnée
-  if (!selectedMethod.value && availableMethods.value.length > 0) {
-    const firstMethod = availableMethods.value[0];
-    selectSingleMethod(firstMethod);
-  }
+  // Ne pas auto-sélectionner - laisser l'utilisateur choisir
+  // if (!selectedMethod.value && availableMethods.value.length > 0) {
+  //   const firstMethod = availableMethods.value[0];
+  //   selectSingleMethod(firstMethod);
+  // }
 };
 
 const selectSingleMethod = (method: string) => {
@@ -117,6 +170,14 @@ const selectSingleMethod = (method: string) => {
   console.log("PaymentMethodSelector: Méthode sélectionnée:", method);
   emit("update:modelValue", method);
   emit("change", method);
+
+  // Déclencher automatiquement le popup PayTech après un court délai
+  setTimeout(() => {
+    emit("payment-method-selected", {
+      method,
+      country: selectedCountry.value,
+    });
+  }, 500);
 };
 
 const selectMultipleMethods = () => {
@@ -126,6 +187,11 @@ const selectMultipleMethods = () => {
   emit("update:modelValue", allMethods);
   emit("change", allMethods);
 };
+
+// Initialiser les méthodes de paiement au montage
+onMounted(() => {
+  updatePaymentMethods();
+});
 
 const getMethodIcon = (method: string): string => {
   const iconMap: Record<string, string> = {
@@ -149,9 +215,32 @@ const getMethodIcon = (method: string): string => {
   return iconMap[method] || "/images/payment/default.png";
 };
 
+const getMethodDescription = (method: string): string => {
+  const descriptionMap: Record<string, string> = {
+    "Orange Money": "Paiement mobile Orange",
+    "Orange Money CI": "Paiement mobile Orange Côte d'Ivoire",
+    "Orange Money ML": "Paiement mobile Orange Mali",
+    Wave: "Paiement mobile Wave",
+    "Wave CI": "Paiement mobile Wave Côte d'Ivoire",
+    "Free Money": "Paiement mobile Free",
+    "Mtn Money CI": "Paiement mobile MTN Côte d'Ivoire",
+    "Mtn Money BJ": "Paiement mobile MTN Bénin",
+    "Moov Money CI": "Paiement mobile Moov Côte d'Ivoire",
+    "Moov Money ML": "Paiement mobile Moov Mali",
+    "Moov Money BJ": "Paiement mobile Moov Bénin",
+    "Carte Bancaire": "Visa, Mastercard, etc.",
+    Wizall: "Paiement mobile Wizall",
+    Emoney: "Paiement mobile Emoney",
+    "Tigo Cash": "Paiement mobile Tigo",
+  };
+  return descriptionMap[method] || "Méthode de paiement";
+};
+
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement;
-  img.src = "/images/payment/default.png";
+  if (img) {
+    img.style.display = "none";
+  }
 };
 
 // Initialize
