@@ -1,7 +1,7 @@
 <template>
   <NuxtLink :to="`/packs/${pack.id}`" class="block group">
     <article
-      class="relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] border border-slate-100"
+      class="relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl mb-2 transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] border border-slate-100"
     >
       <!-- Background Gradient Overlay -->
       <div
@@ -57,7 +57,7 @@
       </div>
 
       <!-- Image Container -->
-      <div class="relative overflow-hidden bg-white aspect-[4/3]">
+      <div class="relative overflow-hidden bg-white aspect-[3/2]">
         <img
           :src="pack.image"
           :alt="pack.name"
@@ -74,7 +74,7 @@
       </div>
 
       <!-- Content -->
-      <div class="p-6 space-y-4 relative z-10">
+      <div class="p-5 space-y-3 relative z-10">
         <!-- Category & Level -->
         <div class="flex items-center justify-between">
           <span
@@ -97,11 +97,11 @@
         <!-- Title -->
         <div>
           <h3
-            class="text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight"
+            class="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight"
           >
             {{ pack.name }}
           </h3>
-          <p class="text-slate-600 text-sm mt-2 line-clamp-2 leading-relaxed">
+          <p class="text-slate-600 text-sm mt-1 line-clamp-2 leading-relaxed">
             {{ pack.description }}
           </p>
         </div>
@@ -127,10 +127,10 @@
         </div>
 
         <!-- Pricing -->
-        <div class="flex items-center justify-between pt-2">
+        <div class="flex items-center justify-between pt-1">
           <div class="flex items-end gap-2">
             <span
-              class="text-2xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors"
+              class="text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors"
             >
               {{ formatPrice(pack.price) }}
             </span>
@@ -147,38 +147,21 @@
           <!-- Quick Add Button -->
           <button
             @click.prevent="addToCart"
-            class="group/btn relative overflow-hidden bg-green-700 text-white font-semibold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 active:scale-95"
+            class="group/btn relative overflow-hidden bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-2 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
           >
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
-            ></div>
-            <div class="relative flex items-center gap-2">
+            <div class="relative flex items-center gap-1.5">
               <ShoppingCartIcon
-                :width="16"
-                :height="16"
+                :width="14"
+                :height="14"
                 class="transition-transform group-hover/btn:scale-110"
                 fill="currentColor"
               />
-              <span class="text-sm">Ajouter</span>
+              <span class="text-xs font-semibold">Ajouter</span>
             </div>
           </button>
         </div>
 
         <!-- Progress Indicator -->
-        <div class="pt-2">
-          <div
-            class="flex items-center justify-between text-xs text-slate-500 mb-1"
-          >
-            <span>Popularité</span>
-            <span>85%</span>
-          </div>
-          <div class="w-full bg-slate-200 rounded-full h-1.5">
-            <div
-              class="bg-green-600 h-1.5 rounded-full transition-all duration-1000 group-hover:w-[85%]"
-              style="width: 75%"
-            ></div>
-          </div>
-        </div>
       </div>
 
       <!-- Shine Effect -->

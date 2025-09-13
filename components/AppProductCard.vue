@@ -38,7 +38,7 @@
     <!-- Wishlist Button -->
 
     <!-- Image Container -->
-    <div class="relative h-56 overflow-hidden bg-white rounded-t-3xl">
+    <div class="relative aspect-[3/2] overflow-hidden bg-white rounded-t-3xl">
       <img
         :src="product.image"
         :alt="product.name"
@@ -61,11 +61,11 @@
           <button
             @click.stop="quickAddToCart"
             :disabled="!product.inStock || isLoading"
-            class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50"
+            class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50"
           >
-            <div v-if="!isLoading" class="flex items-center gap-2">
+            <div v-if="!isLoading" class="flex items-center gap-1.5">
               <svg
-                class="w-5 h-5"
+                class="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -77,24 +77,24 @@
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"
                 />
               </svg>
-              <span>Ajout rapide</span>
+              <span class="text-sm">Ajout rapide</span>
             </div>
-            <div v-else class="flex items-center gap-2">
+            <div v-else class="flex items-center gap-1.5">
               <div
-                class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
               ></div>
-              <span>Ajout...</span>
+              <span class="text-sm">Ajout...</span>
             </div>
           </button>
 
           <NuxtLink
             :to="`/products/${product.id}`"
-            class="bg-white/90 hover:bg-white text-slate-700 hover:text-emerald-700 px-6 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            class="bg-white/90 hover:bg-white text-slate-700 hover:text-emerald-700 px-4 py-2 rounded-lg font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
             @click.stop
           >
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5">
               <svg
-                class="w-5 h-5"
+                class="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -112,7 +112,7 @@
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                 />
               </svg>
-              <span>Voir</span>
+              <span class="text-sm">Voir</span>
             </div>
           </NuxtLink>
         </div>
@@ -120,7 +120,7 @@
     </div>
 
     <!-- Content -->
-    <div class="p-6 space-y-4 relative z-10">
+    <div class="p-5 space-y-3 relative z-10">
       <!-- Category & Reviews -->
       <div class="flex items-center justify-between">
         <span
@@ -151,7 +151,7 @@
       <div>
         <NuxtLink :to="`/products/${product.id}`" class="block group/title">
           <h3
-            class="text-xl font-bold text-slate-900 group-hover/title:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight mb-2"
+            class="text-lg font-bold text-slate-900 group-hover/title:text-emerald-700 transition-colors duration-300 line-clamp-2 leading-tight mb-1"
           >
             {{ product.name }}
           </h3>
@@ -168,7 +168,7 @@
         <div class="flex items-end justify-between">
           <div class="flex items-end gap-2">
             <span
-              class="text-2xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors"
+              class="text-xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors"
             >
               {{ formatPrice(product.price) }}
             </span>
@@ -245,26 +245,26 @@
         <button
           @click="onAddToCartClick"
           :disabled="!product.inStock || isLoading"
-          class="w-full group/btn relative overflow-hidden bg-green-700 hover:bg-green-800 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full group/btn relative overflow-hidden bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div
             class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"
           ></div>
           <div class="relative flex items-center justify-center gap-3">
-            <div v-if="!isLoading" class="flex items-center gap-3">
+            <div v-if="!isLoading" class="flex items-center gap-2">
               <ShoppingCartIcon
-                :width="20"
-                :height="20"
+                :width="16"
+                :height="16"
                 class="transition-transform group-hover/btn:scale-110"
                 fill="currentColor"
               />
-              <span class="text-lg">Ajouter au panier</span>
+              <span class="text-sm font-semibold">Ajouter au panier</span>
             </div>
-            <div v-else class="flex items-center gap-3">
+            <div v-else class="flex items-center gap-2">
               <div
-                class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
               ></div>
-              <span class="text-lg">Ajout en cours...</span>
+              <span class="text-sm font-semibold">Ajout en cours...</span>
             </div>
           </div>
         </button>
@@ -315,16 +315,6 @@
     </div>
 
     <!-- Countdown Timer -->
-    <div
-      v-if="product.isPromotion && product.promotionEndDate"
-      class="px-6 pb-6"
-    >
-      <AppCountdown
-        :end-date="product.promotionEndDate"
-        class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-2xl"
-        size="small"
-      />
-    </div>
 
     <!-- Shine Effect -->
     <div

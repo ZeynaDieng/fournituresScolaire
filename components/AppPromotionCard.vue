@@ -532,7 +532,7 @@ function handlePromoClick(promo: any) {
       name: promo.title,
       price: promo.currentPrice,
       originalPrice: promo.originalPrice,
-      image: promo.image || "/images/promotions/default.jpg", // Image par défaut
+      image: promo.image, // Image par défaut
       type: "promotion" as const,
       category: promo.category || "Promotion",
       description: promo.description,

@@ -1,7 +1,7 @@
 <!-- components/CheckoutForm.vue -->
 <template>
   <div class="max-w-4xl mx-auto p-6">
-    <div class="mb-8">
+    <div class="my-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">
         Finaliser ma commande
       </h1>

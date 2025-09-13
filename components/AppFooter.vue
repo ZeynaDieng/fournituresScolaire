@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-green-800 text-white">
+  <footer class="bg-green-800 text-white pt-10">
     <div class="container mx-auto px-4 py-12">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- Logo et description -->
@@ -239,12 +239,12 @@
           </address>
 
           <!-- Newsletter -->
-          <div class="mt-6">
+          <div class="my-10">
             <h4 class="text-sm font-semibold text-white mb-2">Newsletter</h4>
             <p class="text-xs text-gray-300 mb-3">
               Inscrivez-vous pour recevoir nos offres spéciales
             </p>
-            <form class="flex">
+            <form class="flex mb-20">
               <input
                 type="email"
                 placeholder="Votre email"

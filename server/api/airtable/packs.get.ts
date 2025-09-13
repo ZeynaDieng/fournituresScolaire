@@ -26,13 +26,25 @@ export default defineEventHandler(async (event) => {
       const level = String(pack.Level || "");
       const contents = pack.Contents ? String(pack.Contents).split(", ") : [];
 
+      // Mapping des IDs Airtable vers les IDs personnalisés
+      const idMapping: { [key: string]: string } = {
+        recGwsGcGdl8iGpov: "pack-college",
+        recL9XrvTjGEORPXj: "pack-cp",
+        recrMlITCW66BdhxA: "pack-ce",
+        rec5hUm7kqxGzhNcs: "pack-lycee",
+        // Ajoutez d'autres mappings si nécessaire
+      };
+
+      console.log("🔍 Pack Image pour", name, ":", pack["Image URL"]);
+      console.log("🔍 Tous les champs du pack:", Object.keys(pack));
+
       return {
-        id: pack.id,
+        id: idMapping[pack.id] || pack.id,
         name: name,
         level: level,
         price: pack.Price,
         originalPrice: pack["Original Price"],
-        image: images[level] || "/images/pack-default.jpg",
+        image: pack["Image URL"],
         description: parts[0] || pack.Description, // Description sans le nom du pack
         contents: contents,
         isPopular: pack["Is Popular"],
