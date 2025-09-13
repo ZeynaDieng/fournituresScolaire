@@ -504,7 +504,7 @@
                       {{ option.quantity }}x
                     </div>
                     <div class="text-lg font-semibold text-emerald-600 mb-1">
-                      {{ formatPrice(option?.unitPrice) }}
+                      {{ formatPrice(option?.unitPrice) }} /unité
                     </div>
                     <div class="text-sm text-slate-500">
                       {{ option.discount }}% de remise
@@ -760,9 +760,13 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import CartIcon from "~/components/icons/CartIcon.vue";
+import { useCartStore } from "~/stores/cart";
+import { useNotifications } from "~/composables/useNotifications";
 
 const route = useRoute();
 const router = useRouter();
+const cartStore = useCartStore();
+const { showSuccess } = useNotifications();
 
 const pending = ref(true);
 const product = ref(null);
@@ -822,12 +826,28 @@ function toggleWishlist() {
 }
 
 function addToCart() {
-  if (!product.value.inStock) return;
+  if (!product.value || !product.value.inStock) return;
+
   isLoading.value = true;
+
+  // Ajouter au panier via le store
+  cartStore.addItem(
+    {
+      id: product.value.id,
+      name: product.value.name,
+      price: product.value.price,
+      image: product.value.image,
+      type: "product",
+    },
+    quantity.value
+  );
+
   setTimeout(() => {
     isLoading.value = false;
-    alert(`${quantity.value} ${product.value.name} ajouté(s) au panier !`);
-  }, 1000);
+    showSuccess(
+      `${quantity.value} ${product.value.name} ajouté(s) au panier !`
+    );
+  }, 500);
 }
 
 function buyNow() {

@@ -57,9 +57,7 @@
       </div>
 
       <!-- Image Container -->
-      <div
-        class="relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 aspect-[4/3]"
-      >
+      <div class="relative overflow-hidden bg-white aspect-[4/3]">
         <img
           :src="pack.image"
           :alt="pack.name"

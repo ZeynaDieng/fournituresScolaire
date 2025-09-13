@@ -42,6 +42,9 @@
             <option value="5ème">5ème</option>
             <option value="4ème">4ème</option>
             <option value="3ème">3ème</option>
+            <option value="2nde">2nde</option>
+            <option value="1ère">1ère</option>
+            <option value="Terminale">Terminale</option>
           </select>
           <input
             v-model.number="form.Price"

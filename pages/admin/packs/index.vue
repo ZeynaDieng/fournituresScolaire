@@ -210,6 +210,9 @@
             <option value="5ème">5ème</option>
             <option value="4ème">4ème</option>
             <option value="3ème">3ème</option>
+            <option value="2nde">2nde</option>
+            <option value="1ère">1ère</option>
+            <option value="Terminale">Terminale</option>
           </select>
           <input
             v-model.number="editPack.Price"
@@ -508,9 +511,9 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: "admin", middleware: "admin" });
-
 import { ref, onMounted } from "vue";
+
+definePageMeta({ layout: "admin", middleware: "admin" });
 
 // Reactive state pour les packs
 const packs = ref<any[]>([]);
@@ -599,6 +602,12 @@ async function addPack() {
   try {
     // Transformer Contents en array si c'est une string
     const body: any = { ...newPack.value };
+
+    // S'assurer qu'il n'y a pas d'ID et de champs calculés dans les données
+    delete body.id;
+    delete body["Discount %"]; // Champ calculé par Airtable
+    delete body["Pack Description Summary"]; // Champ calculé par Airtable
+
     if (body.Contents && typeof body.Contents === "string") {
       body.Contents = body.Contents.split("\n").filter((line: string) =>
         line.trim()
@@ -615,6 +624,8 @@ async function addPack() {
     if (!body["Local ID"] || body["Local ID"] === "") {
       delete body["Local ID"];
     }
+
+    console.log("Adding pack with data:", body);
 
     await $fetch("/api/admin/packs", { method: "POST", body });
 
@@ -635,8 +646,12 @@ async function addPack() {
 
     showAdd.value = false;
     await fetchPacks();
-  } catch (error) {
+    alert("Pack ajouté avec succès !");
+  } catch (error: any) {
     console.error("Erreur lors de l'ajout du pack:", error);
+    const errorMessage =
+      error.data?.message || error.message || "Erreur inconnue";
+    alert(`Erreur lors de l'ajout: ${errorMessage}`);
   }
 }
 
@@ -644,6 +659,24 @@ async function updatePack() {
   try {
     if (!editPack.value) return;
     const body: any = { ...editPack.value };
+
+    console.log("Updating pack with data:", body);
+
+    // Validation côté client
+    if (
+      !body.Name ||
+      !body.Level ||
+      body.Price === undefined ||
+      body.Price === null
+    ) {
+      alert("Veuillez remplir tous les champs requis (Nom, Niveau, Prix)");
+      return;
+    }
+
+    // Exclure l'ID et les champs calculés des données envoyées à Airtable
+    delete body.id;
+    delete body["Discount %"]; // Champ calculé par Airtable
+    delete body["Pack Description Summary"]; // Champ calculé par Airtable
 
     // Nettoyer les champs vides pour Airtable
     if (!body["Promotion End Date"] || body["Promotion End Date"] === "") {
@@ -656,6 +689,16 @@ async function updatePack() {
       delete body["Local ID"];
     }
 
+    // S'assurer que les valeurs numériques sont correctes
+    if (body.Price && typeof body.Price === "string") {
+      body.Price = parseFloat(body.Price);
+    }
+    if (body["Original Price"] && typeof body["Original Price"] === "string") {
+      body["Original Price"] = parseFloat(body["Original Price"]);
+    }
+
+    console.log("Cleaned body for Airtable:", body);
+
     await $fetch(`/api/admin/packs/${editPack.value.id}`, {
       method: "PUT",
       body,
@@ -663,8 +706,12 @@ async function updatePack() {
 
     showEdit.value = false;
     await fetchPacks();
-  } catch (error) {
+    alert("Pack mis à jour avec succès !");
+  } catch (error: any) {
     console.error("Erreur lors de la mise à jour du pack:", error);
+    const errorMessage =
+      error.data?.message || error.message || "Erreur inconnue";
+    alert(`Erreur lors de la mise à jour: ${errorMessage}`);
   }
 }
 

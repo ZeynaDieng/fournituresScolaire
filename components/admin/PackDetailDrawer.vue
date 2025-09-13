@@ -24,7 +24,7 @@
               v-if="parsedPack['Image URL']"
               :src="parsedPack['Image URL']"
               :alt="parsedPack.Name"
-              class="w-40 h-40 object-cover rounded-xl border"
+              class="w-40 h-40 object-cover rounded-xl border bg-white"
             />
           </div>
           <!-- Infos principales -->
