@@ -108,7 +108,7 @@
     <!-- Main Content -->
     <div class="relative -mt-1 px-4 py-12 sm:py-16 lg:py-20 max-w-7xl mx-auto">
       <!-- Promotions Grid -->
-      <div class="space-y-16">
+      <div class="space-y-16 text-center">
         <div
           class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
         >
@@ -177,14 +177,14 @@
               </div>
 
               <!-- Countdown -->
-              <AppCountdown :endDate="promo.endTime" class="mb-6" />
+              <AppCountdown :endDate="promo.endTime" class="text-center mb-6" />
 
               <!-- Features List -->
-              <div class="space-y-2 mb-6">
+              <div class="text-center space-y-2 mb-6">
                 <div
                   v-for="feature in promo.features"
                   :key="feature"
-                  class="flex items-center text-sm text-gray-600"
+                  class="text-center text-sm text-gray-600"
                 >
                   <i class="fas fa-check-circle text-green-500 mr-2"></i>
                   {{ feature }}

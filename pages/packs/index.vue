@@ -263,6 +263,7 @@ async function fetchPacks() {
     const response = (await $fetch("/api/admin/packs")) as any[];
 
     // Transformer les données d'Airtable au format attendu par AppPackCard
+    // Dans votre API ou store Airtable, vérifiez la transformation des données
     packs.value = response.map((pack: any) => ({
       id: pack.id,
       name: pack.Name,
@@ -275,7 +276,8 @@ async function fetchPacks() {
       inStock: pack["In Stock"],
       localId: pack["Local ID"],
       discountPercent: pack["Discount %"],
-      image: pack["Image URL"],
+      // Vérifiez que ce champ existe et est correctement mappé
+      image: pack["Image URL"] || pack.Image || pack.image,
       isPromotion: pack["Discount %"] > 0,
     }));
 

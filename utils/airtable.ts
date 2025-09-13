@@ -42,7 +42,7 @@ export interface AirtablePack {
   Level?: string;
   Price: number;
   "Original Price"?: number;
-  Image: string;
+  "Image URL": string;
   Description?: string;
   Contents?: string[];
   "Is Popular": boolean;
@@ -152,7 +152,7 @@ export class AirtableService {
         Level: record.get("Level") as string,
         Price: record.get("Price") as number,
         "Original Price": record.get("Original Price") as number,
-        Image: record.get("Image") as string,
+        "Image URL": record.get("Image URL") as string,
         Description: record.get("Description") as string,
         Contents: record.get("Contents") as string[],
         "Is Popular": record.get("Is Popular") as boolean,
@@ -182,7 +182,7 @@ export class AirtableService {
         Level: record.get("Level") as string,
         Price: record.get("Price") as number,
         "Original Price": record.get("Original Price") as number,
-        Image: record.get("Image") as string,
+        "Image URL": record.get("Image URL") as string,
         Description: record.get("Description") as string,
         Contents: record.get("Contents") as string[],
         "Is Popular": record.get("Is Popular") as boolean,

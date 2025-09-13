@@ -60,11 +60,36 @@
               class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200 aspect-[4/3] shadow-2xl"
             >
               <transition name="image-fade" mode="out-in">
+                <div
+                  v-if="!pack?.image && !imageError"
+                  class="w-full h-full flex items-center justify-center bg-slate-200"
+                >
+                  <svg
+                    class="w-24 h-24 text-slate-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                </div>
+
                 <img
+                  v-else
                   :key="pack?.image"
                   :src="pack?.image"
-                  :alt="pack?.name"
+                  :alt="pack?.name || 'Pack éducatif'"
                   class="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-110"
+                  loading="lazy"
+                  @error="handleImageError"
+                  @load="
+                    console.log('✅ Image chargée avec succès:', pack?.image)
+                  "
                 />
               </transition>
 
@@ -103,6 +128,75 @@
                   </svg>
                   <span class="text-sm font-medium text-slate-700">4.9/5</span>
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 mt-4 gap-3">
+            <button
+              @click="sharePack"
+              class="flex items-center justify-center gap-2 py-3 px-4 border-2 shadow-sm border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-medium rounded-xl transition-all duration-300 hover:bg-emerald-50"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                />
+              </svg>
+              <span>Partager</span>
+            </button>
+          </div>
+          <!-- Informations supplémentaires -->
+          <div class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+            <h4 class="font-semibold text-slate-900 mb-4">Informations</h4>
+            <div class="space-y-3 text-sm text-slate-600">
+              <div class="flex items-center gap-3">
+                <svg
+                  class="w-4 h-4 text-emerald-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span>Livraison gratuite a partir de 5packs</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg
+                  class="w-4 h-4 text-emerald-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span>Expédition sous 24-48h</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <svg
+                  class="w-4 h-4 text-emerald-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span>Support client 7j/7</span>
               </div>
             </div>
           </div>
@@ -243,103 +337,25 @@
                   class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 ></div>
                 <div class="relative flex items-center justify-center gap-3">
-                  <CartIcon :size="20" />
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"
+                    />
+                  </svg>
                   <span class="text-lg">Ajouter au panier</span>
                 </div>
               </button>
-
-              <div class="grid grid-cols-2 gap-3">
-                <button
-                  class="flex items-center justify-center gap-2 py-3 px-4 border-2 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-medium rounded-xl transition-all duration-300 hover:bg-emerald-50"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                  <span>Favoris</span>
-                </button>
-
-                <button
-                  @click="sharePack"
-                  class="flex items-center justify-center gap-2 py-3 px-4 border-2 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-medium rounded-xl transition-all duration-300 hover:bg-emerald-50"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                    />
-                  </svg>
-                  <span>Partager</span>
-                </button>
-              </div>
             </div>
 
             <!-- Informations supplémentaires -->
-            <div
-              class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200"
-            >
-              <h4 class="font-semibold text-slate-900 mb-4">Informations</h4>
-              <div class="space-y-3 text-sm text-slate-600">
-                <div class="flex items-center gap-3">
-                  <svg
-                    class="w-4 h-4 text-emerald-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span>Livraison gratuite a partir de 5packs</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <svg
-                    class="w-4 h-4 text-emerald-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span>Expédition sous 24-48h</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <svg
-                    class="w-4 h-4 text-emerald-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span>Support client 7j/7</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -348,7 +364,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useHead } from "@unhead/vue";
 import { useProductsStore } from "~/stores/products";
@@ -368,53 +384,46 @@ const {
   info: showInfo,
 } = useNotification();
 
-// Charger les données Airtable si pas encore fait
+// État pour gérer les erreurs d'images
+const imageError = ref(false);
+
+// État pour stocker les données du pack
+const packData = ref(null);
+
+// Gestion des erreurs d'images
+const handleImageError = (event: Event) => {
+  console.log("❌ Erreur de chargement d'image pour:", packData.value?.image);
+  imageError.value = true;
+
+  // Optionnel : remplacer par une image par défaut
+};
+
+// Charger les données du pack spécifique depuis l'API
 onMounted(async () => {
   console.log("🔄 Chargement des données pour la page pack détail...");
 
-  if (airtableStore.packs.length === 0) {
-    console.log("📡 Chargement des packs depuis Airtable...");
-    await airtableStore.fetchPacks();
-  }
+  try {
+    const packId = route.params.id;
+    console.log(
+      "📡 Récupération du pack spécifique depuis l'API Airtable...",
+      packId
+    );
 
-  // Fallback sur les données locales si pas de données Airtable
-  if (productsStore.packs.length === 0) {
-    console.log("📦 Chargement des packs locaux...");
-    productsStore.fetchProducts();
+    const response = await $fetch(`/api/airtable/packs/${packId}`);
+    if (response.success && response.data) {
+      console.log("✅ Pack récupéré avec succès:", response.data.name);
+      packData.value = response.data;
+    } else {
+      console.error("❌ Erreur lors de la récupération du pack");
+    }
+  } catch (error) {
+    console.error("❌ Erreur lors du chargement des données:", error);
   }
-
-  console.log("📊 Packs Airtable:", airtableStore.packs.length);
-  console.log("📦 Packs locaux:", productsStore.packs.length);
 });
 
-// Chercher d'abord dans Airtable, puis dans le store local
+// Utiliser les données du pack stockées localement
 const pack = computed(() => {
-  const packId = route.params.id;
-  console.log("🔍 Recherche du pack avec ID:", packId);
-
-  // Essayer d'abord dans Airtable
-  let foundPack = airtableStore.packs.find((p) => p.id === packId);
-  console.log("📡 Pack trouvé dans Airtable:", !!foundPack);
-
-  // Fallback sur les données locales
-  if (!foundPack) {
-    foundPack = productsStore.packs.find((p) => p.id === packId);
-    console.log("📦 Pack trouvé dans store local:", !!foundPack);
-  }
-
-  if (!foundPack) {
-    console.warn("⚠️  Aucun pack trouvé avec l'ID:", packId);
-    console.log(
-      "Available Airtable pack IDs:",
-      airtableStore.packs.map((p) => p.id)
-    );
-    console.log(
-      "Available local pack IDs:",
-      productsStore.packs.map((p) => p.id)
-    );
-  }
-
-  return foundPack;
+  return packData.value;
 });
 
 function addToCart(pack: any) {
