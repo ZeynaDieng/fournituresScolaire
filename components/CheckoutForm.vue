@@ -135,7 +135,10 @@
       </div>
 
       <!-- Résumé de la commande (après les informations personnelles) -->
-      <div v-if="cartItems.length > 0" class="bg-white p-6 rounded-lg shadow-sm border">
+      <div
+        v-if="cartItems.length > 0"
+        class="bg-white p-6 rounded-lg shadow-sm border"
+      >
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
           Résumé de la commande
         </h3>
@@ -193,7 +196,6 @@
           </div>
         </div>
 
-       
         <!-- Bouton Continuer après le résumé -->
         <div class="mt-6">
           <button
@@ -298,9 +300,7 @@
                 @change="updateShippingCost"
               >
                 <option value="">À définir avec vous</option>
-                <option value="standard">
-                  Livraison standard - 500 FCFA
-                </option>
+                <option value="standard">Livraison standard - 500 FCFA</option>
                 <option value="express">Livraison express - 2000 FCFA</option>
                 <option value="pickup">Retrait direct - Gratuit</option>
               </select>
@@ -443,27 +443,44 @@
         <!-- Section paiement direct -->
         <div v-if="paymentMode === 'direct'" class="mb-6">
           <!-- Indicateur de popup de paiement -->
-          <div v-if="isPaymentPopupOpen" class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div
+            v-if="isPaymentPopupOpen"
+            class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+          >
             <div class="flex items-center">
-              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+              <div
+                class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"
+              ></div>
               <div>
                 <h4 class="font-medium text-blue-900">Paiement en cours...</h4>
-                <p class="text-sm text-blue-700">Veuillez compléter votre paiement dans la fenêtre qui s'est ouverte.</p>
+                <p class="text-sm text-blue-700">
+                  Veuillez compléter votre paiement dans la fenêtre qui s'est
+                  ouverte.
+                </p>
               </div>
             </div>
           </div>
-          
+
           <!-- Message informatif -->
           <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
             <div class="flex items-start">
-              <svg class="w-5 h-5 text-emerald-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              <svg
+                class="w-5 h-5 text-emerald-600 mr-3 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clip-rule="evenodd"
+                ></path>
               </svg>
               <div>
                 <h4 class="font-medium text-emerald-900">Paiement sécurisé</h4>
                 <p class="text-sm text-emerald-700 mt-1">
-                  Cliquez sur "Payer maintenant" pour ouvrir l'interface de paiement PayTech. 
-                  Vous pourrez choisir votre méthode de paiement directement dans leur interface sécurisée.
+                  Cliquez sur "Payer maintenant" pour ouvrir l'interface de
+                  paiement PayTech. Vous pourrez choisir votre méthode de
+                  paiement directement dans leur interface sécurisée.
                 </p>
               </div>
             </div>
@@ -507,14 +524,36 @@
           </button>
 
           <!-- Bouton paiement direct -->
+          <!-- PayTech Dialog -->
+          <div v-if="paymentMode === 'direct'" class="flex-1">
+            <PayTechDialog
+              :total-amount="totalAmount"
+              :order-data="orderData"
+              @initiate-payment="handleInitiatePayment"
+              @proceed-to-payment="handleProceedToPayment"
+              @payment-success="handlePaymentSuccess"
+              @payment-error="handlePaymentError"
+            />
+          </div>
           <button
-            v-if="paymentMode === 'direct'"
+            v-if="paymentMode === 'whatsapp'"
             type="button"
-            @click="initiateDirectPayment"
-            :disabled="isProcessing || !isStep1Valid || !isStep2Valid"
-            class="btn-primary flex-1"
+            @click="sendToWhatsApp"
+            :disabled="isProcessing"
+            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex-1 flex items-center justify-center"
+            :title="
+              isProcessing
+                ? 'Traitement en cours...'
+                : 'Envoyer la commande sur WhatsApp'
+            "
+            id="btn-whatsapp-checkout"
           >
-            <span v-if="isProcessing" class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
+              />
+            </svg>
+            <span v-if="isProcessing">
               <svg
                 class="animate-spin h-4 w-4 mr-2"
                 fill="none"
@@ -534,29 +573,6 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              Ouverture du paiement...
-            </span>
-            <span v-else"> Payer {{ formatAmount(totalAmount) }} </span>
-          </button>
-          <button
-            v-if="paymentMode === 'whatsapp'"
-            type="button"
-            @click="sendToWhatsApp"
-            :disabled="isProcessing"
-            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex-1 flex items-center justify-center"
-            :title="isProcessing ? 'Traitement en cours...' : 'Envoyer la commande sur WhatsApp'"
-            id="btn-whatsapp-checkout"
-          >
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
-              />
-            </svg>
-            <span v-if="isProcessing">
-              <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
               Envoi WhatsApp...
             </span>
             <span v-else>Envoyer sur WhatsApp</span>
@@ -570,11 +586,12 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useCartStore } from "~/stores/cart";
+import { useCartStore } from "../stores/cart";
 import {
   formatWhatsAppOrderMessage,
   createWhatsAppLink,
 } from "../utils/whatsapp-config";
+import PayTechDialog from "./PayTechDialog.vue";
 
 // Props et émissions
 interface Props {
@@ -625,8 +642,18 @@ const phonePrefix = ref("+221");
 const phoneNumber = ref("");
 const promoCode = ref("");
 const promoDiscount = ref(0);
-const paymentMode = ref("whatsapp"); // 'direct' ou 'whatsapp' - PayTech temporairement désactivé
+const paymentMode = ref("direct"); // 'direct' ou 'whatsapp' - PayTech activé
 const isPaymentPopupOpen = ref(false);
+
+// Données de commande pour PayTech
+const orderData = computed(() => ({
+  customer: form.customer,
+  shipping: form.shipping,
+  items: props.cartItems,
+  amount: totalAmount.value,
+  promoCode: promoCode.value,
+  promoDiscount: promoDiscount.value,
+}));
 
 // Form data
 const form = reactive({
@@ -668,10 +695,7 @@ const totalAmount = computed(() => {
 });
 
 const isStep1Valid = computed(() => {
-  return (
-    form.customer.name.trim() !== "" &&
-    phoneNumber.value.trim() !== ""
-  );
+  return form.customer.name.trim() !== "" && phoneNumber.value.trim() !== "";
 });
 
 const isStep2Valid = computed(() => {
@@ -828,8 +852,13 @@ const sendToWhatsApp = async () => {
       saveOrderResponse = await saveOrderAsPending();
       console.log("💾 Commande sauvegardée en attente", saveOrderResponse);
     } catch (errSave) {
-      console.error("❌ Erreur lors de la sauvegarde de la commande en attente:", errSave);
-      alert("Erreur lors de la sauvegarde de la commande en attente. Veuillez réessayer ou contacter le support.");
+      console.error(
+        "❌ Erreur lors de la sauvegarde de la commande en attente:",
+        errSave
+      );
+      alert(
+        "Erreur lors de la sauvegarde de la commande en attente. Veuillez réessayer ou contacter le support."
+      );
       return;
     }
 
@@ -881,7 +910,8 @@ const sendToWhatsApp = async () => {
   } catch (error) {
     console.error("Erreur lors de l'envoi WhatsApp:", error);
     alert(
-      "Erreur lors de la préparation de votre commande WhatsApp. Détail: " + (error?.message || error)
+      "Erreur lors de la préparation de votre commande WhatsApp. Détail: " +
+        (error?.message || error)
     );
   }
 };
@@ -907,7 +937,10 @@ const saveOrderAsPending = async () => {
       createdAt: new Date().toISOString(),
     };
 
-    console.log("[DEBUG] saveOrderAsPending - orderData:", JSON.stringify(orderData, null, 2));
+    console.log(
+      "[DEBUG] saveOrderAsPending - orderData:",
+      JSON.stringify(orderData, null, 2)
+    );
 
     const response = (await $fetch("/api/airtable/orders/create-pending", {
       method: "POST",
@@ -928,7 +961,11 @@ const saveOrderAsPending = async () => {
 
     return response;
   } catch (error) {
-    console.error("❌ Erreur lors de la sauvegarde (détail):", error, error?.response);
+    console.error(
+      "❌ Erreur lors de la sauvegarde (détail):",
+      error,
+      error?.response
+    );
     if (error?.response) {
       alert("Erreur API: " + JSON.stringify(error.response, null, 2));
     }
@@ -978,19 +1015,21 @@ const handleSubmit = async () => {
 // Fonction pour ouvrir PayTech dans une popup
 const openPayTechPopup = (paymentUrl: string) => {
   isPaymentPopupOpen.value = true;
-  
+
   const popup = window.open(
     paymentUrl,
-    'paytech-payment',
-    'width=800,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
+    "paytech-payment",
+    "width=800,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no"
   );
-  
+
   if (!popup) {
     isPaymentPopupOpen.value = false;
-    alert('Veuillez autoriser les popups pour ce site pour procéder au paiement');
+    alert(
+      "Veuillez autoriser les popups pour ce site pour procéder au paiement"
+    );
     return;
   }
-  
+
   // Surveiller la fermeture de la popup
   const checkClosed = setInterval(() => {
     if (popup.closed) {
@@ -1000,7 +1039,7 @@ const openPayTechPopup = (paymentUrl: string) => {
       checkPaymentStatus();
     }
   }, 1000);
-  
+
   // Focus sur la popup
   popup.focus();
 };
@@ -1010,38 +1049,43 @@ const checkPaymentStatus = async () => {
   try {
     // Ici vous pouvez appeler une API pour vérifier le statut du paiement
     // Pour l'instant, on simule une vérification
-    console.log('Vérification du statut du paiement...');
-    
+    console.log("Vérification du statut du paiement...");
+
     // Vous pouvez implémenter une vraie vérification ici
     // const response = await $fetch('/api/paytech/check-status', { method: 'POST' });
-    
+
     // Pour l'instant, on affiche un message de succès
-    alert('Paiement en cours de traitement. Vous recevrez une confirmation par email.');
-    
+    alert(
+      "Paiement en cours de traitement. Vous recevrez une confirmation par email."
+    );
+
     // Vider le panier après paiement réussi
     cartStore.clearCart();
-    
+
     // Rediriger vers la page de succès
-    router.push('/payment/success');
-    
+    router.push("/payment/success");
   } catch (error) {
-    console.error('Erreur lors de la vérification du paiement:', error);
-    alert('Erreur lors de la vérification du paiement. Veuillez contacter le support.');
+    console.error("Erreur lors de la vérification du paiement:", error);
+    alert(
+      "Erreur lors de la vérification du paiement. Veuillez contacter le support."
+    );
   }
 };
 
 // Fonction pour initier directement le paiement PayTech
 const initiateDirectPayment = async () => {
   console.log("Initiation directe du paiement PayTech");
-  
+
   // Vérifier que les informations de base sont remplies
   if (!isStep1Valid.value || !isStep2Valid.value) {
-    alert("Veuillez d'abord remplir vos informations personnelles et d'adresse");
+    alert(
+      "Veuillez d'abord remplir vos informations personnelles et d'adresse"
+    );
     return;
   }
-  
+
   isProcessing.value = true;
-  
+
   try {
     form.amount = totalAmount.value;
     const paymentData = {
@@ -1054,10 +1098,10 @@ const initiateDirectPayment = async () => {
       promoCode: promoCode.value || undefined,
       promoDiscount: promoDiscount.value || undefined,
     };
-    
-    console.log('Initiation directe du paiement PayTech:', paymentData);
+
+    console.log("Initiation directe du paiement PayTech:", paymentData);
     const response = (await initiatePayment(paymentData)) as any;
-    
+
     if (response.success && response.redirect_url) {
       // Ouvrir PayTech dans une popup
       openPayTechPopup(response.redirect_url);
@@ -1065,11 +1109,65 @@ const initiateDirectPayment = async () => {
       throw new Error("Erreur lors de l'initiation du paiement");
     }
   } catch (error: any) {
-    console.error('Erreur paiement direct:', error);
+    console.error("Erreur paiement direct:", error);
     alert("Erreur lors de l'initiation du paiement. Veuillez réessayer.");
   } finally {
     isProcessing.value = false;
   }
+};
+
+// Fonctions de gestion des événements du dialogue PayTech
+const handleInitiatePayment = (orderData: any) => {
+  console.log("Initiation du paiement PayTech depuis le dialogue");
+  // Ici vous pouvez ajouter une logique supplémentaire si nécessaire
+};
+
+const handleProceedToPayment = async (orderData: any) => {
+  console.log("Procéder au paiement PayTech depuis le dialogue");
+  isProcessing.value = true;
+
+  try {
+    // Utiliser la logique existante d'initiation du paiement
+    await initiateDirectPayment();
+  } catch (error) {
+    console.error("Erreur lors du paiement PayTech:", error);
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
+// Gestion du succès du paiement PayTech
+const handlePaymentSuccess = (paymentData: any) => {
+  console.log("Paiement PayTech réussi:", paymentData);
+
+  // Afficher un message de succès
+  alert(
+    `Paiement réussi !\n\nNuméro de commande: ${
+      paymentData.orderNumber || "N/A"
+    }\nMontant: ${formatPrice(
+      paymentData.amount || totalAmount.value
+    )}\nMéthode: ${
+      paymentData.method || "PayTech"
+    }\n\nVotre commande sera traitée sous 24h.`
+  );
+
+  // Vider le panier
+  cartStore.clearCart();
+
+  // Rediriger vers la page d'accueil
+  navigateTo("/");
+};
+
+// Gestion des erreurs de paiement PayTech
+const handlePaymentError = (error: any) => {
+  console.error("Erreur de paiement PayTech:", error);
+
+  // Afficher un message d'erreur
+  alert(
+    `Erreur lors du paiement:\n\n${
+      error.message || "Une erreur inattendue s'est produite"
+    }\n\nVeuillez réessayer ou choisir une autre méthode de paiement.`
+  );
 };
 
 const handleSubmit = async () => {
@@ -1077,7 +1175,7 @@ const handleSubmit = async () => {
   isProcessing.value = true;
   try {
     form.amount = totalAmount.value;
-    if (paymentMode.value === 'direct') {
+    if (paymentMode.value === "direct") {
       const paymentData = {
         amount: form.amount,
         currency: form.currency,
@@ -1088,7 +1186,7 @@ const handleSubmit = async () => {
         promoCode: promoCode.value || undefined,
         promoDiscount: promoDiscount.value || undefined,
       };
-      console.log('Initiation du paiement:', paymentData);
+      console.log("Initiation du paiement:", paymentData);
       const response = (await initiatePayment(paymentData)) as any;
       if (response.success && response.redirect_url) {
         // Ouvrir PayTech dans une popup au lieu de rediriger
@@ -1096,12 +1194,12 @@ const handleSubmit = async () => {
       } else {
         throw new Error("Erreur lors de l'initiation du paiement");
       }
-    } else if (paymentMode.value === 'whatsapp') {
+    } else if (paymentMode.value === "whatsapp") {
       // Rediriger vers sendToWhatsApp pour gérer la logique WhatsApp
       await sendToWhatsApp();
     }
   } catch (error: any) {
-    console.error('Erreur paiement:', error);
+    console.error("Erreur paiement:", error);
     // Afficher le message d'erreur à l'utilisateur
   } finally {
     isProcessing.value = false;
