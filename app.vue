@@ -10,9 +10,6 @@
     <!-- Panier latéral -->
     <CartSidebar />
 
-    <!-- Notifications -->
-    <NotificationContainer />
-
     <!-- Chargement global moderne -->
     <Transition name="fade">
       <div
