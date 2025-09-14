@@ -18,7 +18,7 @@
           d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
         ></path>
       </svg>
-      Payer avec PayTech
+      Payer
     </button>
 
     <!-- Dialogue modal avec iframe PayTech -->
@@ -73,7 +73,7 @@
           >
             <div class="text-center">
               <svg
-                class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4"
+                class="animate-spin h-8 w-8 text-green-600 mx-auto mb-4"
                 fill="none"
                 viewBox="0 0 24 24"
               >

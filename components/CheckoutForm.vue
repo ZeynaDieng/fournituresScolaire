@@ -1,336 +1,16 @@
 <!-- components/CheckoutForm.vue -->
 <template>
-  <div class="max-w-4xl mx-auto p-6">
-    <div class="my-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">
-        Finaliser ma commande
-      </h1>
-      <p class="text-gray-600">
-        Commande via WhatsApp - Seuls le nom, téléphone et adresse sont requis
-      </p>
-    </div>
-
-    <!-- Stepper -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between">
+  <div
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50"
+  >
+    <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <!-- En-tête amélioré -->
+      <div class="text-center mb-8">
         <div
-          v-for="(step, index) in steps"
-          :key="step.id"
-          class="flex items-center"
+          class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-700 to-yellow-400 rounded-full mb-4"
         >
-          <div
-            :class="[
-              'flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium',
-              currentStep >= index + 1
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-200 text-gray-500',
-            ]"
-          >
-            {{ index + 1 }}
-          </div>
-          <div class="ml-2">
-            <p
-              :class="[
-                'text-sm font-medium',
-                currentStep >= index + 1 ? 'text-primary-600' : 'text-gray-500',
-              ]"
-            >
-              {{ step.title }}
-            </p>
-          </div>
-          <div
-            v-if="index < steps.length - 1"
-            :class="[
-              'w-12 h-0.5 mx-4',
-              currentStep > index + 1 ? 'bg-primary-600' : 'bg-gray-200',
-            ]"
-          ></div>
-        </div>
-      </div>
-    </div>
-
-    <form @submit.prevent="handleSubmit" class="max-w-4xl mx-auto space-y-8">
-      <!-- Informations client -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-          Informations personnelles
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              for="name"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Nom complet *
-            </label>
-            <input
-              id="name"
-              v-model="form.customer.name"
-              type="text"
-              required
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500"
-              placeholder="Votre nom complet"
-            />
-          </div>
-
-          <div>
-            <label
-              for="email"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email (optionnel)
-            </label>
-            <input
-              id="email"
-              v-model="form.customer.email"
-              type="email"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500"
-              placeholder="votre@email.com (optionnel)"
-            />
-          </div>
-
-          <div class="md:col-span-2">
-            <label
-              for="phone"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Téléphone *
-            </label>
-            <div class="flex">
-              <select
-                v-model="phonePrefix"
-                class="px-4 py-3 border border-gray-300 rounded-r-none rounded-l-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 w-20 text-center"
-              >
-                <option value="+221">+221</option>
-                <option value="+225">+225</option>
-                <option value="+223">+223</option>
-                <option value="+229">+229</option>
-              </select>
-              <input
-                id="phone"
-                v-model="phoneNumber"
-                type="tel"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-l-none rounded-r-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500 flex-1"
-                placeholder="77 123 45 67"
-                @input="formatPhoneNumber"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Résumé de la commande (après les informations personnelles) -->
-      <div
-        v-if="cartItems.length > 0"
-        class="bg-white p-6 rounded-lg shadow-sm border"
-      >
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Résumé de la commande
-        </h3>
-
-        <!-- Articles -->
-        <div class="space-y-3 mb-4">
-          <div
-            v-for="item in cartItems"
-            :key="item.id"
-            class="flex items-center justify-between py-2 border-b border-gray-100"
-          >
-            <div class="flex items-center">
-              <img
-                :src="item.image"
-                :alt="item.name"
-                class="w-12 h-12 object-cover rounded mr-3 bg-white"
-              />
-              <div>
-                <h4 class="font-medium text-gray-900">{{ item.name }}</h4>
-                <p class="text-sm text-gray-500">Qté: {{ item.quantity }}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="font-medium">
-                {{ formatAmount(item.price * item.quantity) }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Totaux -->
-        <div class="space-y-2 border-t border-gray-200 pt-4">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Sous-total</span>
-            <span>{{ formatAmount(subtotal) }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Livraison</span>
-            <span>{{ formatAmount(form.shipping.cost) }}</span>
-          </div>
-          <div
-            v-if="promoDiscount > 0"
-            class="flex justify-between text-green-600"
-          >
-            <span>Réduction</span>
-            <span>-{{ formatAmount(promoDiscount) }}</span>
-          </div>
-          <div
-            class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2"
-          >
-            <span>Total</span>
-            <span class="text-primary-600">{{
-              formatAmount(totalAmount)
-            }}</span>
-          </div>
-        </div>
-
-        <!-- Bouton Continuer après le résumé -->
-        <div class="mt-6">
-          <button
-            type="button"
-            @click="nextStep"
-            :disabled="!isStep1Valid"
-            class="btn-primary w-full"
-          >
-            Continuer vers la livraison
-          </button>
-        </div>
-      </div>
-
-      <!-- Informations de livraison -->
-      <div
-        v-show="currentStep === 2"
-        class="bg-white p-6 rounded-lg shadow-sm border"
-      >
-        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          Livraison
-        </h2>
-
-        <div class="space-y-4">
-          <div>
-            <label
-              for="address"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Adresse de livraison *
-            </label>
-            <textarea
-              id="address"
-              v-model="form.shipping.address"
-              required
-              rows="3"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500 resize-vertical"
-              placeholder="Votre adresse complète..."
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                for="city"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Ville (optionnel)
-              </label>
-              <select
-                id="city"
-                v-model="form.shipping.city"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900"
-              >
-                <option value="">Choisir une ville (optionnel)</option>
-                <option value="Dakar">Dakar</option>
-                <option value="Thiès">Thiès</option>
-                <option value="Saint-Louis">Saint-Louis</option>
-                <option value="Kaolack">Kaolack</option>
-                <option value="Ziguinchor">Ziguinchor</option>
-                <option value="Diourbel">Diourbel</option>
-                <option value="Tambacounda">Tambacounda</option>
-                <option value="Fatick">Fatick</option>
-                <option value="Kaffrine">Kaffrine</option>
-                <option value="Kolda">Kolda</option>
-                <option value="Louga">Louga</option>
-                <option value="Matam">Matam</option>
-                <option value="Kédougou">Kédougou</option>
-                <option value="Sédhiou">Sédhiou</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                for="delivery-method"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Mode de livraison (optionnel)
-              </label>
-              <select
-                id="delivery-method"
-                v-model="form.shipping.method"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900"
-                @change="updateShippingCost"
-              >
-                <option value="">À définir avec vous</option>
-                <option value="standard">Livraison standard - 500 FCFA</option>
-                <option value="express">Livraison express - 2000 FCFA</option>
-                <option value="pickup">Retrait direct - Gratuit</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-6 flex space-x-4">
-          <button type="button" @click="prevStep" class="btn-secondary flex-1">
-            Retour
-          </button>
-          <button
-            type="button"
-            @click="nextStep"
-            :disabled="!isStep2Valid"
-            class="btn-primary flex-1"
-          >
-            Continuer vers le paiement
-          </button>
-        </div>
-      </div>
-
-      <!-- Méthode de paiement -->
-      <div
-        v-show="currentStep === 3"
-        class="bg-white p-6 rounded-lg shadow-sm border"
-      >
-        <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-          <svg
-            class="w-5 h-5 mr-2"
+            class="w-8 h-8 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -340,132 +20,516 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-            />
+            ></path>
           </svg>
-          Choisissez votre mode de commande
-        </h2>
+        </div>
+        <h1
+          class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-2"
+        >
+          Finaliser ma commande
+        </h1>
+        <p class="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto">
+          Commande sécurisée - Seuls le nom, téléphone et adresse sont requis
+        </p>
+      </div>
 
-        <!-- Choix du mode de commande -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <!-- Option Paiement Direct -->
+      <!-- Stepper -->
+      <div class="mb-8">
+        <div class="flex items-center justify-between">
           <div
-            @click="paymentMode = 'direct'"
-            :class="[
-              'p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
-              paymentMode === 'direct'
-                ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500 ring-opacity-20'
-                : 'border-gray-200 hover:border-gray-300',
-            ]"
+            v-for="(step, index) in steps"
+            :key="step.id"
+            class="flex items-center"
           >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <svg
-                  class="w-8 h-8 text-emerald-600 mr-3"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                  />
-                </svg>
-                <div>
-                  <h3 class="font-semibold text-gray-900">Paiement Direct</h3>
-                  <p class="text-sm text-gray-600">Payez maintenant en ligne</p>
-                </div>
-              </div>
-              <div
+            <div
+              :class="[
+                'flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium',
+                currentStep >= index + 1
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-200 text-gray-500',
+              ]"
+            >
+              {{ index + 1 }}
+            </div>
+            <div class="ml-2">
+              <p
                 :class="[
-                  'w-4 h-4 rounded-full border-2',
-                  paymentMode === 'direct'
-                    ? 'border-emerald-500 bg-emerald-500'
-                    : 'border-gray-300',
+                  'text-sm font-medium',
+                  currentStep >= index + 1
+                    ? 'text-primary-600'
+                    : 'text-gray-500',
                 ]"
               >
-                <div
-                  v-if="paymentMode === 'direct'"
-                  class="w-2 h-2 bg-white rounded-full m-0.5"
-                ></div>
-              </div>
+                {{ step.title }}
+              </p>
             </div>
-            <div class="mt-2 text-xs text-gray-500">
-              Sécurisé par PayTech • Paiement instantané
-            </div>
+            <div
+              v-if="index < steps.length - 1"
+              :class="[
+                'w-12 h-0.5 mx-4',
+                currentStep > index + 1 ? 'bg-primary-600' : 'bg-gray-200',
+              ]"
+            ></div>
           </div>
+        </div>
+      </div>
 
-          <!-- Option WhatsApp -->
-          <div
-            @click="paymentMode = 'whatsapp'"
-            :class="[
-              'p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
-              paymentMode === 'whatsapp'
-                ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-opacity-20'
-                : 'border-gray-200 hover:border-gray-300',
-            ]"
+      <form @submit.prevent="handleSubmit" class="max-w-4xl mx-auto space-y-8">
+        <!-- Informations client -->
+        <div
+          class="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300"
+        >
+          <h2
+            class="text-lg font-semibold text-gray-900 mb-4 flex items-center"
           >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <svg
-                  class="w-8 h-8 text-green-600 mr-3"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
-                  />
-                </svg>
-                <div>
-                  <h3 class="font-semibold text-gray-900">Commande WhatsApp</h3>
-                  <p class="text-sm text-gray-600">
-                    Envoyez votre commande sur WhatsApp
-                  </p>
-                </div>
-              </div>
-              <div
-                :class="[
-                  'w-4 h-4 rounded-full border-2',
-                  paymentMode === 'whatsapp'
-                    ? 'border-green-500 bg-green-500'
-                    : 'border-gray-300',
-                ]"
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            Informations personnelles
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="name"
+                class="block text-sm font-medium text-gray-700 mb-1"
               >
-                <div
-                  v-if="paymentMode === 'whatsapp'"
-                  class="w-2 h-2 bg-white rounded-full m-0.5"
-                ></div>
-              </div>
+                Nom complet *
+              </label>
+              <input
+                id="name"
+                v-model="form.customer.name"
+                type="text"
+                required
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-green-500 transition-all duration-300 bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-400 shadow-sm hover:shadow-md"
+                placeholder="Votre nom complet"
+              />
             </div>
-            <div class="mt-2 text-xs text-gray-500">
-              Commande personnalisée • Lien de paiement Wave
+
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Email (optionnel)
+              </label>
+              <input
+                id="email"
+                v-model="form.customer.email"
+                type="email"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-green-500 transition-all duration-300 bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-400 shadow-sm hover:shadow-md"
+                placeholder="votre@email.com (optionnel)"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label
+                for="phone"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Téléphone *
+              </label>
+              <div class="flex">
+                <select
+                  v-model="phonePrefix"
+                  class="px-4 py-3 border border-gray-300 rounded-r-none rounded-l-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 w-24 text-center"
+                >
+                  <option value="+221">🇸🇳 +221</option>
+                  <option value="+225">🇨🇮 +225</option>
+                  <option value="+223">🇲🇱 +223</option>
+                  <option value="+229">🇧🇯 +229</option>
+                </select>
+                <input
+                  id="phone"
+                  v-model="phoneNumber"
+                  type="tel"
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-l-none rounded-r-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500 flex-1"
+                  placeholder="77 123 45 67"
+                  @input="formatPhoneNumber"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Section paiement direct -->
-        <div v-if="paymentMode === 'direct'" class="mb-6">
-          <!-- Indicateur de popup de paiement -->
-          <div
-            v-if="isPaymentPopupOpen"
-            class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
-          >
-            <div class="flex items-center">
-              <div
-                class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"
-              ></div>
-              <div>
-                <h4 class="font-medium text-blue-900">Paiement en cours...</h4>
-                <p class="text-sm text-blue-700">
-                  Veuillez compléter votre paiement dans la fenêtre qui s'est
-                  ouverte.
+        <!-- Résumé de la commande (après les informations personnelles) -->
+        <div
+          v-if="cartItems.length > 0"
+          class="bg-white p-6 rounded-lg shadow-sm border"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Résumé de la commande
+          </h3>
+
+          <!-- Articles -->
+          <div class="space-y-3 mb-4">
+            <div
+              v-for="item in cartItems"
+              :key="item.id"
+              class="flex items-center justify-between py-2 border-b border-gray-100"
+            >
+              <div class="flex items-center">
+                <img
+                  :src="item.image"
+                  :alt="item.name"
+                  class="w-12 h-12 object-cover rounded mr-3 bg-white"
+                />
+                <div>
+                  <h4 class="font-medium text-gray-900">{{ item.name }}</h4>
+                  <p class="text-sm text-gray-500">Qté: {{ item.quantity }}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-medium">
+                  {{ formatAmount(item.price * item.quantity) }}
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- Message informatif -->
-          <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+          <!-- Totaux -->
+          <div class="space-y-2 border-t border-gray-200 pt-4">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Sous-total</span>
+              <span>{{ formatAmount(subtotal) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Livraison</span>
+              <span>{{ formatAmount(form.shipping.cost) }}</span>
+            </div>
+            <div
+              v-if="promoDiscount > 0"
+              class="flex justify-between text-green-600"
+            >
+              <span>Réduction</span>
+              <span>-{{ formatAmount(promoDiscount) }}</span>
+            </div>
+            <div
+              class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2"
+            >
+              <span>Total</span>
+              <span class="text-primary-600">{{
+                formatAmount(totalAmount)
+              }}</span>
+            </div>
+          </div>
+
+          <!-- Bouton Continuer après le résumé -->
+          <div class="mt-6">
+            <button
+              type="button"
+              @click="nextStep"
+              :disabled="!isStep1Valid"
+              class="btn-primary w-full"
+            >
+              Continuer vers la livraison
+            </button>
+          </div>
+        </div>
+
+        <!-- Informations de livraison -->
+        <div
+          v-show="currentStep === 2"
+          class="bg-white p-6 rounded-lg shadow-sm border"
+        >
+          <h2
+            class="text-lg font-semibold text-gray-900 mb-4 flex items-center"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            Livraison
+          </h2>
+
+          <div class="space-y-4">
+            <div>
+              <label
+                for="address"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Adresse de livraison *
+              </label>
+              <textarea
+                id="address"
+                v-model="form.shipping.address"
+                required
+                rows="3"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500 resize-vertical"
+                placeholder="Votre adresse complète..."
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="city"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Ville (optionnel)
+                </label>
+                <select
+                  id="city"
+                  v-model="form.shipping.city"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900"
+                >
+                  <option value="">Choisir une ville (optionnel)</option>
+                  <option value="Dakar">Dakar</option>
+                  <option value="Thiès">Thiès</option>
+                  <option value="Saint-Louis">Saint-Louis</option>
+                  <option value="Kaolack">Kaolack</option>
+                  <option value="Ziguinchor">Ziguinchor</option>
+                  <option value="Diourbel">Diourbel</option>
+                  <option value="Tambacounda">Tambacounda</option>
+                  <option value="Fatick">Fatick</option>
+                  <option value="Kaffrine">Kaffrine</option>
+                  <option value="Kolda">Kolda</option>
+                  <option value="Louga">Louga</option>
+                  <option value="Matam">Matam</option>
+                  <option value="Kédougou">Kédougou</option>
+                  <option value="Sédhiou">Sédhiou</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  for="delivery-method"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Mode de livraison (optionnel)
+                </label>
+                <select
+                  id="delivery-method"
+                  v-model="form.shipping.method"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors duration-200 bg-white text-gray-900"
+                  @change="updateShippingCost"
+                >
+                  <option value="">À définir avec vous</option>
+                  <option value="standard">
+                    Livraison standard - 500 FCFA
+                  </option>
+                  <option value="express">Livraison express - 2000 FCFA</option>
+                  <option value="pickup">Retrait direct - Gratuit</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex space-x-4">
+            <button
+              type="button"
+              @click="prevStep"
+              class="btn-secondary flex-1"
+            >
+              Retour
+            </button>
+            <button
+              type="button"
+              @click="nextStep"
+              :disabled="!isStep2Valid"
+              class="btn-primary flex-1"
+            >
+              Continuer
+            </button>
+          </div>
+        </div>
+
+        <!-- Méthode de paiement -->
+        <div
+          v-show="currentStep === 3"
+          class="bg-white p-6 rounded-lg shadow-sm border"
+        >
+          <h2
+            class="text-lg font-semibold text-gray-900 mb-6 flex items-center"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+              />
+            </svg>
+            Choisissez votre mode de commande
+          </h2>
+
+          <!-- Choix du mode de commande -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- Option Paiement Direct -->
+            <div
+              @click="paymentMode = 'direct'"
+              :class="[
+                'p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
+                paymentMode === 'direct'
+                  ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500 ring-opacity-20'
+                  : 'border-gray-200 hover:border-gray-300',
+              ]"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <svg
+                    class="w-8 h-8 text-emerald-600 mr-3"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                    />
+                  </svg>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">Paiement Direct</h3>
+                  </div>
+                </div>
+                <div
+                  :class="[
+                    'w-4 h-4 rounded-full border-2',
+                    paymentMode === 'direct'
+                      ? 'border-emerald-500 bg-emerald-500'
+                      : 'border-gray-300',
+                  ]"
+                >
+                  <div
+                    v-if="paymentMode === 'direct'"
+                    class="w-2 h-2 bg-white rounded-full m-0.5"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option WhatsApp -->
+            <div
+              @click="paymentMode = 'whatsapp'"
+              :class="[
+                'p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
+                paymentMode === 'whatsapp'
+                  ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-opacity-20'
+                  : 'border-gray-200 hover:border-gray-300',
+              ]"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <svg
+                    class="w-8 h-8 text-green-600 mr-3"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
+                    />
+                  </svg>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">
+                      Commande WhatsApp
+                    </h3>
+                  </div>
+                </div>
+                <div
+                  :class="[
+                    'w-4 h-4 rounded-full border-2',
+                    paymentMode === 'whatsapp'
+                      ? 'border-green-500 bg-green-500'
+                      : 'border-gray-300',
+                  ]"
+                >
+                  <div
+                    v-if="paymentMode === 'whatsapp'"
+                    class="w-2 h-2 bg-white rounded-full m-0.5"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section paiement direct -->
+          <div v-if="paymentMode === 'direct'" class="mb-6">
+            <!-- Indicateur de popup de paiement -->
+            <div
+              v-if="isPaymentPopupOpen"
+              class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+            >
+              <div class="flex items-center">
+                <div
+                  class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"
+                ></div>
+                <div>
+                  <h4 class="font-medium text-blue-900">
+                    Paiement en cours...
+                  </h4>
+                  <p class="text-sm text-blue-700">
+                    Veuillez compléter votre paiement dans la fenêtre qui s'est
+                    ouverte.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message informatif -->
+            <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+              <div class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-emerald-600 mr-3 mt-0.5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <div>
+                  <h4 class="font-medium text-emerald-900">
+                    Paiement sécurisé
+                  </h4>
+                  <p class="text-sm text-emerald-700 mt-1">
+                    Cliquez sur "Payer maintenant" pour ouvrir l'interface de
+                    paiement PayTech. Vous pourrez choisir votre méthode de
+                    paiement directement dans leur interface sécurisée.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section WhatsApp -->
+          <div
+            v-if="paymentMode === 'whatsapp'"
+            class="mb-6 p-4 bg-green-50 rounded-lg border border-green-200"
+          >
             <div class="flex items-start">
               <svg
-                class="w-5 h-5 text-emerald-600 mr-3 mt-0.5"
+                class="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -473,113 +537,95 @@
                   fill-rule="evenodd"
                   d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                   clip-rule="evenodd"
-                ></path>
+                />
               </svg>
               <div>
-                <h4 class="font-medium text-emerald-900">Paiement sécurisé</h4>
-                <p class="text-sm text-emerald-700 mt-1">
-                  Cliquez sur "Payer maintenant" pour ouvrir l'interface de
-                  paiement PayTech. Vous pourrez choisir votre méthode de
-                  paiement directement dans leur interface sécurisée.
-                </p>
+                <h4 class="font-medium text-green-800 mb-1">
+                  Comment ça marche ?
+                </h4>
+                <ul class="text-sm text-green-700 space-y-1">
+                  <li>
+                    1. Votre commande sera envoyée directement sur WhatsApp
+                  </li>
+                  <li>
+                    2. Nous vous contacterons pour confirmer votre commande
+                  </li>
+                  <li>
+                    3. Vous recevrez un lien de paiement Wave personnalisé
+                  </li>
+                  <li>4. Livraison après confirmation du paiement</li>
+                </ul>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Section WhatsApp -->
-        <div
-          v-if="paymentMode === 'whatsapp'"
-          class="mb-6 p-4 bg-green-50 rounded-lg border border-green-200"
-        >
-          <div class="flex items-start">
-            <svg
-              class="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+          <div class="mt-6 flex space-x-4">
+            <button
+              type="button"
+              @click="prevStep"
+              class="btn-secondary flex-1"
             >
-              <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clip-rule="evenodd"
+              Retour
+            </button>
+
+            <!-- Bouton paiement direct -->
+            <!-- PayTech Dialog -->
+            <div v-if="paymentMode === 'direct'" class="flex-1">
+              <PayTechDialog
+                :total-amount="totalAmount"
+                :order-data="orderData"
+                @initiate-payment="handleInitiatePayment"
+                @proceed-to-payment="handleProceedToPayment"
+                @payment-success="handlePaymentSuccess"
+                @payment-error="handlePaymentError"
               />
-            </svg>
-            <div>
-              <h4 class="font-medium text-green-800 mb-1">
-                Comment ça marche ?
-              </h4>
-              <ul class="text-sm text-green-700 space-y-1">
-                <li>1. Votre commande sera envoyée directement sur WhatsApp</li>
-                <li>2. Nous vous contacterons pour confirmer votre commande</li>
-                <li>3. Vous recevrez un lien de paiement Wave personnalisé</li>
-                <li>4. Livraison après confirmation du paiement</li>
-              </ul>
             </div>
-          </div>
-        </div>
-
-        <div class="mt-6 flex space-x-4">
-          <button type="button" @click="prevStep" class="btn-secondary flex-1">
-            Retour
-          </button>
-
-          <!-- Bouton paiement direct -->
-          <!-- PayTech Dialog -->
-          <div v-if="paymentMode === 'direct'" class="flex-1">
-            <PayTechDialog
-              :total-amount="totalAmount"
-              :order-data="orderData"
-              @initiate-payment="handleInitiatePayment"
-              @proceed-to-payment="handleProceedToPayment"
-              @payment-success="handlePaymentSuccess"
-              @payment-error="handlePaymentError"
-            />
-          </div>
-          <button
-            v-if="paymentMode === 'whatsapp'"
-            type="button"
-            @click="sendToWhatsApp"
-            :disabled="isProcessing"
-            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex-1 flex items-center justify-center"
-            :title="
-              isProcessing
-                ? 'Traitement en cours...'
-                : 'Envoyer la commande sur WhatsApp'
-            "
-            id="btn-whatsapp-checkout"
-          >
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
-              />
-            </svg>
-            <span v-if="isProcessing">
-              <svg
-                class="animate-spin h-4 w-4 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
+            <button
+              v-if="paymentMode === 'whatsapp'"
+              type="button"
+              @click="sendToWhatsApp"
+              :disabled="isProcessing"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex-1 flex items-center justify-center"
+              :title="
+                isProcessing
+                  ? 'Traitement en cours...'
+                  : 'Envoyer la commande sur WhatsApp'
+              "
+              id="btn-whatsapp-checkout"
+            >
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.690"
+                />
               </svg>
-              Envoi WhatsApp...
-            </span>
-            <span v-else>Envoyer sur WhatsApp</span>
-          </button>
+              <span v-if="isProcessing">
+                <svg
+                  class="animate-spin h-4 w-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Envoi WhatsApp...
+              </span>
+              <span v-else>Envoyer sur WhatsApp</span>
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </template>
 
