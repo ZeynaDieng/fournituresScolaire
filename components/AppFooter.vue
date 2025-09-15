@@ -4,7 +4,11 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- Logo et description -->
         <div class="space-y-4">
-          <NuxtLink to="/" class="flex items-center space-x-2">
+          <NuxtLink
+            to="/"
+            @click="scrollToTop"
+            class="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
+          >
             <div
               class="w-10 h-10 bg-accent-400 rounded-lg flex items-center justify-center"
             >
@@ -268,7 +272,15 @@
 </template>
 
 <script setup lang="ts">
-// Script setup if needed
+// Fonction pour scroller vers le haut de la page
+const scrollToTop = () => {
+  if (process.client) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+};
 </script>
 
 <style scoped>

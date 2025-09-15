@@ -60,7 +60,11 @@
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16 md:h-20">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center space-x-2">
+        <NuxtLink
+          to="/"
+          @click="scrollToTop"
+          class="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
+        >
           <div
             class="w-10 h-10 bg-accent-400 rounded-lg flex items-center justify-center"
           >
@@ -361,6 +365,16 @@ import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon.vue";
 const cartStore = useCartStore();
 const productsStore = useProductsStore();
 const searchStore = useSearchStore();
+
+// Fonction pour scroller vers le haut de la page
+const scrollToTop = () => {
+  if (process.client) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+};
 
 // Réinitialiser la recherche lors du changement de page
 const route = useRoute();
