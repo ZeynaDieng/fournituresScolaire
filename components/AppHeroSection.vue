@@ -31,11 +31,14 @@
     ></div>
 
     <!-- Content -->
-    <div class="container relative z-10 text-center mt-20 px-6">
-      <h1
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mt-20 text-white drop-shadow-lg mb-6 typewriter-text"
-      >
-        <span class="typewriter-content">Préparez la rentrée sans stress</span>
+    <div
+      class="container relative z-10 text-center mt-12 sm:mt-20 px-4 sm:px-6"
+    >
+      <h1 class="text-2xl sm:text-4xl font-bold text-white typewriter-text">
+        <span class="typewriter-content">
+          <span class="inline sm:hidden">Préparez la rentrée...</span>
+          <span class="hidden sm:inline">Préparez la rentrée sans stress</span>
+        </span>
         <span class="typewriter-cursor">|</span>
       </h1>
 
@@ -272,7 +275,7 @@
 
 .typewriter-content {
   display: inline-block;
-  animation: typewriter 6s steps(30, end) infinite;
+  animation: typewriter 6s steps(35, end) infinite;
   width: 0;
   overflow: hidden;
   animation-delay: 0s;
@@ -317,7 +320,7 @@
   }
 
   .typewriter-content {
-    animation: typewriter-mobile 6s steps(25, end) infinite;
+    animation: typewriter-mobile 6s steps(35, end) infinite;
   }
 }
 

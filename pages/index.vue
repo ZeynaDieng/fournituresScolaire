@@ -11,7 +11,11 @@
       <div class="container px-4">
         <!-- Loading State Moderne et Beau -->
         <div
-          v-if="airtableStore.loading || productsStore.loading"
+          v-if="
+            airtableStore.loading ||
+            productsStore.loading ||
+            packsFromAirtable.length === 0
+          "
           class="relative"
         >
           <!-- Loading Moderne -->
@@ -99,9 +103,7 @@
 
           <div class="pack-grid">
             <div
-              v-for="(pack, index) in airtableStore.packs.length > 0
-                ? airtableStore.packs.slice(0, 3)
-                : productsStore.popularPacks"
+              v-for="(pack, index) in packsFromAirtable.slice(0, 3)"
               :key="pack.id"
               class="group"
             >
@@ -421,10 +423,30 @@
         </div>
 
         <div class="relative overflow-hidden">
-          <div class="testimonials-carousel flex gap-8 animate-scroll">
-            <!-- Testimonial 1 -->
+          <div
+            ref="testimonialsContainer"
+            class="testimonials-carousel flex gap-8 transition-transform duration-500 ease-in-out select-none"
+            :style="{
+              transform: `translateX(-${currentInfiniteIndex * 320}px)`,
+            }"
+            @touchstart="handleTouchStart"
+            @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd"
+            @mousedown="handleMouseDown"
+            @mousemove="handleMouseMove"
+            @mouseup="handleMouseUp"
+            @mouseleave="isDragging = false"
+          >
+            <!-- Témoignages infinis -->
             <div
-              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-80"
+              v-for="(testimonial, index) in infiniteTestimonials"
+              :key="`${testimonial.id}-${index}`"
+              @click="!isDragging && (currentInfiniteIndex = index)"
+              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 flex-shrink-0 w-80 cursor-pointer"
+              :class="{
+                'opacity-50 scale-95': index !== currentInfiniteIndex,
+                'scale-105 shadow-2xl': index === currentInfiniteIndex,
+              }"
             >
               <div class="flex items-center mb-4">
                 <div class="flex text-yellow-400">
@@ -455,223 +477,42 @@
                   </svg>
                 </div>
               </div>
-              <p class="text-gray-600 mb-4">
-                "Excellent service ! J'ai reçu toutes les fournitures de mon
-                fils en 24h. Qualité parfaite et prix très raisonnables."
-              </p>
+              <p class="text-gray-600 mb-4">"{{ testimonial.text }}"</p>
               <div class="flex items-center">
                 <div
-                  class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3"
+                  :class="`w-10 h-10 bg-${testimonial.color}-100 rounded-full flex items-center justify-center mr-3`"
                 >
-                  <span class="text-green-600 font-semibold">AM</span>
+                  <span
+                    :class="`text-${testimonial.color}-600 font-semibold`"
+                    >{{ testimonial.initials }}</span
+                  >
                 </div>
                 <div>
-                  <div class="font-semibold text-gray-900">Aminata Mbaye</div>
-                  <div class="text-sm text-gray-500">Mère de famille</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Testimonial 2 -->
-            <div
-              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-80"
-            >
-              <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <p class="text-gray-600 mb-4">
-                "Commande facile et rapide. Les packs sont parfaits pour la
-                rentrée. Je recommande vivement !"
-              </p>
-              <div class="flex items-center">
-                <div
-                  class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3"
-                >
-                  <span class="text-blue-600 font-semibold">IS</span>
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">Ibrahima Sarr</div>
-                  <div class="text-sm text-gray-500">Père de famille</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Testimonial 3 -->
-            <div
-              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-80"
-            >
-              <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <p class="text-gray-600 mb-4">
-                "Service client exceptionnel ! Ils m'ont aidé à choisir les
-                bonnes fournitures pour ma fille. Merci !"
-              </p>
-              <div class="flex items-center">
-                <div
-                  class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3"
-                >
-                  <span class="text-purple-600 font-semibold">FD</span>
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">Fatou Diop</div>
-                  <div class="text-sm text-gray-500">Mère de famille</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Testimonial 4 (dupliqué pour le défilement) -->
-            <div
-              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-80"
-            >
-              <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <p class="text-gray-600 mb-4">
-                "Excellent service ! J'ai reçu toutes les fournitures de mon
-                fils en 24h. Qualité parfaite et prix très raisonnables."
-              </p>
-              <div class="flex items-center">
-                <div
-                  class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3"
-                >
-                  <span class="text-green-600 font-semibold">AM</span>
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">Aminata Mbaye</div>
-                  <div class="text-sm text-gray-500">Mère de famille</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Testimonial 5 (dupliqué pour le défilement) -->
-            <div
-              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex-shrink-0 w-80"
-            >
-              <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <p class="text-gray-600 mb-4">
-                "Commande facile et rapide. Les packs sont parfaits pour la
-                rentrée. Je recommande vivement !"
-              </p>
-              <div class="flex items-center">
-                <div
-                  class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3"
-                >
-                  <span class="text-blue-600 font-semibold">IS</span>
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">Ibrahima Sarr</div>
-                  <div class="text-sm text-gray-500">Père de famille</div>
+                  <div class="font-semibold text-gray-900">
+                    {{ testimonial.name }}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{ testimonial.role }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Indicateurs de position -->
+        <div class="flex justify-center gap-2 mt-8">
+          <button
+            v-for="(testimonial, index) in testimonials"
+            :key="index"
+            @click="currentIndex = index"
+            :class="[
+              'w-3 h-3 rounded-full transition-all duration-300',
+              index === currentIndex
+                ? 'bg-primary-600 scale-125'
+                : 'bg-gray-300 hover:bg-gray-400',
+            ]"
+          ></button>
         </div>
       </div>
     </section>
@@ -709,7 +550,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, defineAsyncComponent } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onUnmounted,
+  defineAsyncComponent,
+} from "vue";
 import { useProductsStore } from "../stores/products";
 import { useAirtableStore } from "../stores/airtable";
 import { useCartStore } from "../stores/cart";
@@ -750,6 +597,290 @@ const cartStore = useCartStore();
 // Cache simple pour éviter les appels répétés
 const dataLoaded = ref(false);
 
+// Refs pour les témoignages
+const currentIndex = ref(0);
+const isAutoScrolling = ref(true);
+const autoScrollInterval = ref(null);
+const testimonialsContainer = ref(null);
+
+// Refs pour le swipe amélioré
+const startX = ref(0);
+const startY = ref(0);
+const isDragging = ref(false);
+const dragOffset = ref(0);
+const isTransitioning = ref(false);
+
+// Données des témoignages
+const testimonials = ref([
+  {
+    id: 1,
+    name: "Aminata Mbaye",
+    role: "Mère de famille",
+    initials: "AM",
+    color: "green",
+    text: "Excellent service ! J'ai reçu toutes les fournitures de mon fils en 24h. Qualité parfaite et prix très raisonnables.",
+  },
+  {
+    id: 2,
+    name: "Ibrahima Sarr",
+    role: "Père de famille",
+    initials: "IS",
+    color: "blue",
+    text: "Commande facile et rapide. Les packs sont parfaits pour la rentrée. Je recommande vivement !",
+  },
+  {
+    id: 3,
+    name: "Fatou Diop",
+    role: "Mère de famille",
+    initials: "FD",
+    color: "purple",
+    text: "Service client exceptionnel ! Ils m'ont aidé à choisir les bonnes fournitures pour ma fille. Merci !",
+  },
+]);
+
+// Navigation des témoignages avec défilement infini
+const nextTestimonial = () => {
+  currentInfiniteIndex.value++;
+  // Synchroniser l'index normal pour les dots
+  currentIndex.value = currentInfiniteIndex.value % testimonials.value.length;
+};
+
+const previousTestimonial = () => {
+  currentInfiniteIndex.value--;
+  // Synchroniser l'index normal pour les dots
+  currentIndex.value = currentInfiniteIndex.value % testimonials.value.length;
+};
+
+// Fonction pour créer un défilement infini
+const createInfiniteTestimonials = () => {
+  // Dupliquer les témoignages pour créer un effet infini
+  const duplicated = [
+    ...testimonials.value,
+    ...testimonials.value,
+    ...testimonials.value,
+  ];
+  return duplicated;
+};
+
+// Témoignages infinis
+const infiniteTestimonials = computed(() => createInfiniteTestimonials());
+
+// Index de départ au milieu pour permettre le défilement dans les deux sens
+const startIndex = testimonials.value.length;
+const currentInfiniteIndex = ref(startIndex);
+
+const toggleAutoScroll = () => {
+  isAutoScrolling.value = !isAutoScrolling.value;
+  if (isAutoScrolling.value) {
+    startAutoScroll();
+  } else {
+    stopAutoScroll();
+  }
+};
+
+const startAutoScroll = () => {
+  stopAutoScroll(); // S'assurer qu'il n'y a pas d'intervalle en cours
+  autoScrollInterval.value = setInterval(() => {
+    nextTestimonial();
+    // Réinitialiser la position si on atteint les bords
+    resetPositionIfNeeded();
+  }, 2000); // Défilement plus rapide : 2 secondes au lieu de 6
+};
+
+// Fonction pour réinitialiser la position si nécessaire
+const resetPositionIfNeeded = () => {
+  const totalTestimonials = testimonials.value.length;
+  const currentPos = currentInfiniteIndex.value;
+
+  // Si on est dans la première série, on peut continuer normalement
+  if (currentPos < totalTestimonials) {
+    return;
+  }
+
+  // Si on est dans la troisième série, on remet au début de la deuxième
+  if (currentPos >= totalTestimonials * 2) {
+    currentInfiniteIndex.value = totalTestimonials;
+    // Forcer un re-render sans transition
+    setTimeout(() => {
+      const container = testimonialsContainer.value;
+      if (container) {
+        container.style.transition = "none";
+        container.style.transform = `translateX(-${totalTestimonials * 320}px)`;
+        setTimeout(() => {
+          container.style.transition = "transform 500ms ease-in-out";
+        }, 50);
+      }
+    }, 500);
+  }
+};
+
+const stopAutoScroll = () => {
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value);
+    autoScrollInterval.value = null;
+  }
+};
+
+// Fonctions pour le swipe amélioré
+const handleTouchStart = (e) => {
+  if (isTransitioning.value) return;
+  isDragging.value = true;
+  startX.value = e.touches[0].clientX;
+  startY.value = e.touches[0].clientY;
+  dragOffset.value = 0;
+
+  // Pause l'auto-scroll pendant le drag
+  stopAutoScroll();
+};
+
+const handleMouseDown = (e) => {
+  if (isTransitioning.value) return;
+  isDragging.value = true;
+  startX.value = e.clientX;
+  startY.value = e.clientY;
+  dragOffset.value = 0;
+
+  // Pause l'auto-scroll pendant le drag
+  stopAutoScroll();
+};
+
+const handleTouchMove = (e) => {
+  if (!isDragging.value || isTransitioning.value) return;
+  e.preventDefault();
+
+  const currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
+  const deltaX = startX.value - currentX;
+  const deltaY = startY.value - currentY;
+
+  // Vérifier que c'est un mouvement horizontal
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    dragOffset.value = deltaX;
+    // Appliquer l'offset en temps réel
+    const container = testimonialsContainer.value;
+    if (container) {
+      const baseTransform = -currentInfiniteIndex.value * 320;
+      container.style.transform = `translateX(${baseTransform + deltaX}px)`;
+    }
+  }
+};
+
+const handleMouseMove = (e) => {
+  if (!isDragging.value || isTransitioning.value) return;
+
+  const currentX = e.clientX;
+  const currentY = e.clientY;
+  const deltaX = startX.value - currentX;
+  const deltaY = startY.value - currentY;
+
+  // Vérifier que c'est un mouvement horizontal
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    dragOffset.value = deltaX;
+    // Appliquer l'offset en temps réel
+    const container = testimonialsContainer.value;
+    if (container) {
+      const baseTransform = -currentInfiniteIndex.value * 320;
+      container.style.transform = `translateX(${baseTransform + deltaX}px)`;
+    }
+  }
+};
+
+const handleTouchEnd = (e) => {
+  if (!isDragging.value || isTransitioning.value) return;
+
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
+  const deltaX = startX.value - endX;
+  const deltaY = startY.value - endY;
+
+  // Seuil pour déclencher le changement de carte
+  const threshold = 80;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
+    isTransitioning.value = true;
+
+    if (deltaX > 0) {
+      // Swipe vers la gauche = témoignage suivant
+      nextTestimonial();
+    } else {
+      // Swipe vers la droite = témoignage précédent
+      previousTestimonial();
+    }
+
+    // Réactiver l'auto-scroll après un délai
+    setTimeout(() => {
+      if (isAutoScrolling.value) {
+        startAutoScroll();
+      }
+      isTransitioning.value = false;
+    }, 500);
+  } else {
+    // Retour à la position initiale
+    const container = testimonialsContainer.value;
+    if (container) {
+      container.style.transform = `translateX(-${
+        currentInfiniteIndex.value * 320
+      }px)`;
+    }
+
+    // Réactiver l'auto-scroll
+    if (isAutoScrolling.value) {
+      startAutoScroll();
+    }
+  }
+
+  isDragging.value = false;
+  dragOffset.value = 0;
+};
+
+const handleMouseUp = (e) => {
+  if (!isDragging.value || isTransitioning.value) return;
+
+  const endX = e.clientX;
+  const endY = e.clientY;
+  const deltaX = startX.value - endX;
+  const deltaY = startY.value - endY;
+
+  // Seuil pour déclencher le changement de carte
+  const threshold = 80;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
+    isTransitioning.value = true;
+
+    if (deltaX > 0) {
+      // Drag vers la gauche = témoignage suivant
+      nextTestimonial();
+    } else {
+      // Drag vers la droite = témoignage précédent
+      previousTestimonial();
+    }
+
+    // Réactiver l'auto-scroll après un délai
+    setTimeout(() => {
+      if (isAutoScrolling.value) {
+        startAutoScroll();
+      }
+      isTransitioning.value = false;
+    }, 500);
+  } else {
+    // Retour à la position initiale
+    const container = testimonialsContainer.value;
+    if (container) {
+      container.style.transform = `translateX(-${
+        currentInfiniteIndex.value * 320
+      }px)`;
+    }
+
+    // Réactiver l'auto-scroll
+    if (isAutoScrolling.value) {
+      startAutoScroll();
+    }
+  }
+
+  isDragging.value = false;
+  dragOffset.value = 0;
+};
+
 // Fetch data on component mount - Optimisé pour de meilleures performances
 onMounted(async () => {
   // Éviter les appels répétés
@@ -772,6 +903,7 @@ onMounted(async () => {
           airtableStore.fetchPromotions(),
           airtableStore.fetchTestimonials(),
           fetchProductsFromAdmin(),
+          fetchPacksFromAirtable(), // Charger les packs d'Airtable
         ]);
       } catch (error) {
         console.warn("⚠️ Chargement en arrière-plan échoué:", error);
@@ -780,11 +912,53 @@ onMounted(async () => {
   } catch (error) {
     console.error("❌ Erreur lors du chargement:", error);
   }
+
+  // Démarrer l'auto-scroll des témoignages
+  startAutoScroll();
+});
+
+// Nettoyer l'intervalle au démontage
+onUnmounted(() => {
+  stopAutoScroll();
 });
 
 // Latest Products Section
 const selectedCategory = ref("Tous");
 const productsFromAdmin = ref<Product[]>([]);
+
+// Packs from Airtable (same as packs page)
+const packsFromAirtable = ref<any[]>([]);
+
+// Fonction pour récupérer les packs depuis Airtable (même que la page packs)
+async function fetchPacksFromAirtable() {
+  try {
+    const response = (await $fetch("/api/admin/packs")) as any[];
+
+    // Transformer les données d'Airtable au format attendu par AppPackCard
+    packsFromAirtable.value = response.map((pack: any) => ({
+      id: pack.id,
+      name: pack.Name,
+      level: pack.Level,
+      price: Number(pack.Price) || 0,
+      originalPrice: pack["Original Price"]
+        ? Number(pack["Original Price"])
+        : undefined,
+      image: pack.Image || pack["Image URL"] || "",
+      description: pack.Description || "",
+      items: pack.Items || [],
+      discount: pack["Discount %"] || 0,
+      isPromotion: pack["Discount %"] > 0,
+    }));
+
+    console.log(
+      "Packs chargés depuis Airtable pour l'accueil:",
+      packsFromAirtable.value
+    );
+  } catch (error) {
+    console.error("Erreur lors du chargement des packs d'Airtable:", error);
+    packsFromAirtable.value = [];
+  }
+}
 
 async function fetchProductsFromAdmin(): Promise<Product[]> {
   const rows = (await $fetch("/api/admin/products")) as any[];
@@ -921,22 +1095,7 @@ const quickOrder = (level: string) => {
 }
 
 /* Testimonials Carousel Animation */
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll {
-  animation: scroll 20s linear infinite;
-}
-
-.testimonials-carousel:hover .animate-scroll {
-  animation-play-state: paused;
-}
+/* Animation supprimée - remplacée par la navigation manuelle */
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {

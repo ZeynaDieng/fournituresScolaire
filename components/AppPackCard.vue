@@ -101,7 +101,7 @@
           >
             {{ pack.name }}
           </h3>
-          <p class="text-slate-600 text-sm mt-1 line-clamp-2 leading-relaxed">
+          <p class="text-slate-600 text-sm mt-1 line-clamp-1 leading-relaxed">
             {{ pack.description }}
           </p>
         </div>
