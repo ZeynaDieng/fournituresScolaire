@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
       ipn_url: `${config.public.baseUrl.replace(
         /\/$/,
         ""
-      )}/api/paytech/webhook-new`,
+      )}/api/paytech/webhook-simple`,
       success_url: `${config.public.baseUrl.replace(
         /\/$/,
         ""
