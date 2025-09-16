@@ -54,12 +54,49 @@ export default defineNuxtPlugin(() => {
       }
     };
 
-    // Ajouter le listener
+    // Solution de fallback : vider le panier si on détecte une redirection de succès
+    const handlePageVisibility = () => {
+      if (document.visibilityState === "visible") {
+        // Vérifier si on revient d'une page de paiement
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentSuccess =
+          urlParams.get("payment_success") ||
+          urlParams.get("success") ||
+          window.location.pathname.includes("success");
+
+        if (paymentSuccess) {
+          console.log("🔄 Détection retour paiement réussi - vidage panier");
+          setTimeout(async () => {
+            try {
+              const { useCartStore } = await import("../stores/cart");
+              const cartStore = useCartStore();
+              if (
+                cartStore &&
+                cartStore.clearCart &&
+                cartStore.items.length > 0
+              ) {
+                cartStore.clearCart();
+                console.log("✅ Panier vidé (fallback après succès)");
+              }
+            } catch (error) {
+              console.warn("⚠️ Erreur fallback vidage panier:", error);
+            }
+          }, 1000);
+        }
+      }
+    };
+
+    // Ajouter les listeners
     window.addEventListener("message", handlePaymentMessage);
+    document.addEventListener("visibilitychange", handlePageVisibility);
+
+    // Vérifier immédiatement au chargement de la page
+    handlePageVisibility();
 
     // Nettoyer à la destruction
     onBeforeUnmount(() => {
       window.removeEventListener("message", handlePaymentMessage);
+      document.removeEventListener("visibilitychange", handlePageVisibility);
     });
   }
 });
