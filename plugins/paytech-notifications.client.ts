@@ -16,6 +16,18 @@ export default defineNuxtPlugin(() => {
           // Paiement réussi
           console.log("Paiement réussi reçu:", data);
 
+          // Vider le panier après paiement réussi
+          try {
+            const { useCartStore } = await import("../stores/cart");
+            const cartStore = useCartStore();
+            if (cartStore && cartStore.clearCart) {
+              cartStore.clearCart();
+              console.log("✅ Panier vidé après paiement PayTech");
+            }
+          } catch (error) {
+            console.warn("⚠️ Erreur lors du vidage du panier:", error);
+          }
+
           // Afficher une notification de succès au lieu de rediriger
           if (data.ref_command) {
             // Afficher une notification toast ou modal
