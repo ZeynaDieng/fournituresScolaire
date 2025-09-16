@@ -1,4 +1,4 @@
-import { defineEventHandler, createError } from "h3";
+import { defineEventHandler, createError, setHeader } from "h3";
 
 export default defineEventHandler(async (event) => {
   try {

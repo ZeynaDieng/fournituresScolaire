@@ -6,6 +6,7 @@
 import { defineEventHandler, readBody, createError } from "h3";
 import { sendInvoices } from "~/utils/invoice-service";
 import { sendWhatsAppNotifications } from "~/utils/whatsapp-real";
+import { updateOrderStatusInAirtable } from "~/utils/airtable-orders";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -62,6 +63,16 @@ export default defineEventHandler(async (event) => {
     if (type_event === "sale_complete" && ref_command) {
       console.log(`💰 Paiement réussi pour ${ref_command}`);
 
+      // Mettre à jour le statut dans Airtable
+      try {
+        await updateOrderStatusInAirtable(ref_command, "Paid");
+        console.log(
+          `✅ Statut mis à jour dans Airtable: ${ref_command} -> Paid`
+        );
+      } catch (airtableError) {
+        console.error("⚠️ Erreur mise à jour Airtable:", airtableError);
+      }
+
       // Envoyer les factures par email
       if (customData.customer?.email || customData.email) {
         const invoiceData = {
@@ -110,8 +121,28 @@ export default defineEventHandler(async (event) => {
       }
     } else if (type_event === "sale_cancel" && ref_command) {
       console.log(`❌ Paiement annulé pour ${ref_command}`);
+
+      // Mettre à jour le statut dans Airtable
+      try {
+        await updateOrderStatusInAirtable(ref_command, "Cancelled");
+        console.log(
+          `✅ Statut mis à jour dans Airtable: ${ref_command} -> Cancelled`
+        );
+      } catch (airtableError) {
+        console.error("⚠️ Erreur mise à jour Airtable:", airtableError);
+      }
     } else if (type_event === "sale_pending" && ref_command) {
       console.log(`⏳ Paiement en attente pour ${ref_command}`);
+
+      // Mettre à jour le statut dans Airtable
+      try {
+        await updateOrderStatusInAirtable(ref_command, "Pending");
+        console.log(
+          `✅ Statut mis à jour dans Airtable: ${ref_command} -> Pending`
+        );
+      } catch (airtableError) {
+        console.error("⚠️ Erreur mise à jour Airtable:", airtableError);
+      }
     }
 
     return {
