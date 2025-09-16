@@ -34,7 +34,9 @@
     <div
       class="container relative z-10 text-center mt-12 sm:mt-20 px-4 sm:px-6"
     >
-      <h1 class="text-2xl sm:text-4xl font-bold text-white typewriter-text">
+      <h1
+        class="text-2xl sm:text-4xl lg:text-5xl pb-8 font-bold text-white typewriter-text"
+      >
         <span class="typewriter-content">
           <span class="inline sm:hidden">Préparez la rentrée...</span>
           <span class="hidden sm:inline">Préparez la rentrée sans stress</span>
