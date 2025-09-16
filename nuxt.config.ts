@@ -122,7 +122,7 @@ export default defineNuxtConfig({
       siteUrl:
         process.env.NUXT_PUBLIC_SITE_URL ||
         process.env.BASE_URL ||
-        "https://fournitures-scolaire.vercel.app",
+        "https://www.e-du.shop",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "/api",
 
       // Configuration PayTech publique (optionnelle maintenant)
@@ -135,7 +135,7 @@ export default defineNuxtConfig({
       baseUrl:
         process.env.BASE_URL ||
         process.env.NUXT_PUBLIC_SITE_URL ||
-        "https://fournitures-scolaire.vercel.app",
+        "https://www.e-du.shop",
       payTechApiKey: process.env.PAYTECH_API_KEY,
 
       // Configuration publique WhatsApp
