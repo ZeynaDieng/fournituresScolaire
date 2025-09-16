@@ -2,7 +2,7 @@
 export default defineNuxtPlugin(() => {
   // Écouter les événements de paiement depuis les fenêtres PayTech
   if (process.client) {
-    const handlePaymentMessage = (event: MessageEvent) => {
+    const handlePaymentMessage = async (event: MessageEvent) => {
       // Vérifier que le message vient de PayTech
       if (!event.origin.includes("paytech.sn")) {
         return;
