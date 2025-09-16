@@ -122,12 +122,17 @@ const handlePaymentSuccess = (result: any) => {
     console.warn("Erreur clear cart:", e);
   }
 
-  // Redirection vers la page de succès
-  navigateTo(
-    `/payment/success?ref=${result.ref_command}&amount=${
-      result.amount
-    }&method=${result.payment_method || ""}`
+  // Afficher une notification de succès au lieu de rediriger
+  alert(
+    `Paiement réussi !\n\nNuméro de commande: ${
+      result.ref_command || "N/A"
+    }\nMontant: ${formatAmount(
+      result.amount || totalAmount.value
+    )}\n\nVous pouvez maintenant rechercher votre commande pour télécharger la facture.`
   );
+
+  // Optionnel: rediriger vers la page de recherche de commande
+  // navigateTo(`/orders/search?ref=${result.ref_command}`);
 };
 
 const handlePaymentError = (error: any) => {
