@@ -260,28 +260,30 @@ const packs = ref<any[]>([]);
 async function fetchPacks() {
   try {
     loading.value = true;
-    const response = (await $fetch("/api/admin/packs")) as any[];
+    const response = (await $fetch("/api/airtable/packs")) as any;
 
-    // Transformer les données d'Airtable au format attendu par AppPackCard
-    // Dans votre API ou store Airtable, vérifiez la transformation des données
-    packs.value = response.map((pack: any) => ({
-      id: pack.id,
-      name: pack.Name,
-      level: pack.Level,
-      price: pack.Price,
-      originalPrice: pack["Original Price"],
-      description: pack.Description,
-      contents: pack.Contents ? pack.Contents.split(", ") : [],
-      isPopular: pack["Is Popular"],
-      inStock: pack["In Stock"],
-      localId: pack["Local ID"],
-      discountPercent: pack["Discount %"],
-      // Vérifiez que ce champ existe et est correctement mappé
-      image: pack["Image URL"] || pack.Image || pack.image,
-      isPromotion: pack["Discount %"] > 0,
-    }));
+    if (response.success && response.data) {
+      // Les données sont déjà transformées par l'API
+      packs.value = response.data.map((pack: any) => ({
+        id: pack.id,
+        name: pack.name,
+        level: pack.level,
+        price: pack.price,
+        originalPrice: pack.originalPrice,
+        description: pack.description,
+        contents: pack.contents || [],
+        isPopular: pack.isPopular,
+        inStock: pack.inStock,
+        image: pack.image,
+        isPromotion: pack.isPromotion,
+        promotionEndDate: pack.promotionEndDate,
+      }));
 
-    console.log("Packs chargés depuis Airtable:", packs.value);
+      console.log("Packs chargés depuis Airtable:", packs.value);
+    } else {
+      console.error("Erreur dans la réponse de l'API:", response);
+      packs.value = [];
+    }
   } catch (error) {
     console.error("Erreur lors du chargement des packs:", error);
     // Fallback vers des données de démonstration en cas d'erreur

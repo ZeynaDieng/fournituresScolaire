@@ -21,7 +21,11 @@ export default defineEventHandler(async (event) => {
       recL9XrvTjGEORPXj: "pack-cp",
       recrMlITCW66BdhxA: "pack-ce",
       rec5hUm7kqxGzhNcs: "pack-lycee",
-      // Ajoutez d'autres mappings si nécessaire
+      recDFsw0Vjy1AEEP5: "pack-cm2",
+      recFoZ3p1ddOVqINu: "pack-ce1",
+      recIPxEl6cEk3OjpH: "pack-ce2",
+      recimHRjP8QFVxxA5: "pack-cm1",
+      recAqf0iUqp2T0WoA: "pack-terminale",
     };
 
     // Trouver le pack avec l'ID personnalisé
