@@ -387,43 +387,33 @@ const {
 // État pour gérer les erreurs d'images
 const imageError = ref(false);
 
-// État pour stocker les données du pack
-const packData = ref(null);
-
 // Gestion des erreurs d'images
 const handleImageError = (event: Event) => {
-  console.log("❌ Erreur de chargement d'image pour:", packData.value?.image);
+  console.log("❌ Erreur de chargement d'image pour:", pack.value?.image);
   imageError.value = true;
 
   // Optionnel : remplacer par une image par défaut
 };
 
-// Charger les données du pack spécifique depuis l'API
-onMounted(async () => {
-  console.log("🔄 Chargement des données pour la page pack détail...");
+// Charger les données du pack spécifique depuis l'API avec SSR
+const { data: packResponse, error } = await useFetch(
+  `/api/airtable/packs/${route.params.id}`
+);
 
-  try {
-    const packId = route.params.id;
-    console.log(
-      "📡 Récupération du pack spécifique depuis l'API Airtable...",
-      packId
-    );
-
-    const response = await $fetch(`/api/airtable/packs/${packId}`);
-    if (response.success && response.data) {
-      console.log("✅ Pack récupéré avec succès:", response.data.name);
-      packData.value = response.data;
-    } else {
-      console.error("❌ Erreur lors de la récupération du pack");
-    }
-  } catch (error) {
-    console.error("❌ Erreur lors du chargement des données:", error);
-  }
-});
-
-// Utiliser les données du pack stockées localement
+// Utiliser les données du pack avec gestion d'erreur
 const pack = computed(() => {
-  return packData.value;
+  if (error.value) {
+    console.error("❌ Erreur lors du chargement des données:", error.value);
+    return null;
+  }
+
+  if (packResponse.value?.success && packResponse.value?.data) {
+    console.log("✅ Pack récupéré avec succès:", packResponse.value.data.name);
+    return packResponse.value.data;
+  }
+
+  console.error("❌ Erreur lors de la récupération du pack");
+  return null;
 });
 
 function addToCart(pack: any) {
