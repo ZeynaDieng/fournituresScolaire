@@ -4,6 +4,10 @@
  */
 
 import { defineEventHandler, readBody, createError } from "h3";
+import {
+  sendCustomerConfirmationEmail,
+  sendAdminNotificationEmail,
+} from "~/utils/email-service";
 
 export default defineEventHandler(async (event) => {
   let body;
@@ -384,9 +388,22 @@ async function sendOrderNotifications(data: {
           }),
         };
 
-        // Simulation d'envoi d'email (remplacer par vraie implémentation)
-        console.log("✅ Email client simulé envoyé à:", data.customerEmail);
-        results.email = true;
+        // Envoi réel d'email
+        const emailSent = await sendCustomerConfirmationEmail({
+          orderRef: data.orderRef,
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          customerPhone: data.customerPhone,
+          amount: data.amount,
+          paymentMethod: data.paymentMethod,
+        });
+
+        if (emailSent) {
+          console.log("✅ Email client envoyé à:", data.customerEmail);
+          results.email = true;
+        } else {
+          console.warn("⚠️ Échec envoi email client");
+        }
       } catch (emailError) {
         console.error("❌ Erreur email client:", emailError);
       }
@@ -394,22 +411,21 @@ async function sendOrderNotifications(data: {
 
     // 2. Notification admin par email
     try {
-      const adminEmailData = {
-        from: `${fromName} <${fromEmail}>`,
-        to: adminEmail,
-        subject: `🛒 Nouvelle commande payée - ${data.orderRef}`,
-        html: generateAdminOrderNotification({
-          customerName: data.customerName,
-          customerEmail: data.customerEmail,
-          customerPhone: data.customerPhone,
-          orderRef: data.orderRef,
-          amount: data.amount,
-          paymentMethod: data.paymentMethod,
-        }),
-      };
+      const adminEmailSent = await sendAdminNotificationEmail({
+        orderRef: data.orderRef,
+        customerName: data.customerName,
+        customerEmail: data.customerEmail,
+        customerPhone: data.customerPhone,
+        amount: data.amount,
+        paymentMethod: data.paymentMethod,
+      });
 
-      // Simulation d'envoi d'email admin (remplacer par vraie implémentation)
-      console.log("✅ Email admin simulé envoyé à:", adminEmail);
+      if (adminEmailSent) {
+        console.log("✅ Email admin envoyé à:", adminEmail);
+        results.email = true;
+      } else {
+        console.warn("⚠️ Échec envoi email admin");
+      }
     } catch (adminEmailError) {
       console.error("❌ Erreur email admin:", adminEmailError);
     }

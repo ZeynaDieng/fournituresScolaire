@@ -1,15 +1,15 @@
 import { defineEventHandler, readBody } from "h3";
-import { sendWhatsAppNotifications } from "~/utils/whatsapp-service";
+import { sendInvoices } from "~/utils/invoice-service";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
 
-    // Données de test pour WhatsApp
+    // Données de test pour la facture
     const testInvoiceData = {
-      orderRef: "WHATSAPP-TEST-" + Date.now(),
+      orderRef: "FACT-" + Date.now(),
       customerName: body.customerName || "Test Client",
-      customerEmail: body.customerEmail || "test@example.com",
+      customerEmail: body.customerEmail || "zeynash1@gmail.com",
       customerPhone: body.customerPhone || "+221777780456",
       amount: body.amount || 50000,
       paymentMethod: body.paymentMethod || "PayTech",
@@ -35,27 +35,30 @@ export default defineEventHandler(async (event) => {
       discount: body.discount || 0,
     };
 
-    console.log("🧪 Test d'envoi WhatsApp avec les données:", testInvoiceData);
+    console.log(
+      "🧪 Test d'envoi de factures avec les données:",
+      testInvoiceData
+    );
 
-    // Envoyer les notifications WhatsApp
-    const results = await sendWhatsAppNotifications(testInvoiceData);
+    // Envoyer les factures
+    const results = await sendInvoices(testInvoiceData);
 
     return {
       success: true,
       results: {
-        clientWhatsApp: results.client,
-        adminWhatsApp: results.admin,
+        clientInvoice: results.client,
+        adminInvoice: results.admin,
         invoiceData: testInvoiceData,
       },
       message:
-        "Test WhatsApp terminé. Vérifiez les messages WhatsApp et les logs du serveur.",
+        "Test de facturation terminé. Vérifiez vos boîtes mail et les logs du serveur.",
     };
   } catch (error) {
-    console.error("❌ Erreur lors du test WhatsApp:", error);
+    console.error("❌ Erreur lors du test de facturation:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Erreur inconnue",
-      message: "Échec du test WhatsApp. Vérifiez la configuration.",
+      message: "Échec du test de facturation. Vérifiez la configuration.",
     };
   }
 });
