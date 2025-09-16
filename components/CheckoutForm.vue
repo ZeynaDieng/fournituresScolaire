@@ -1194,14 +1194,14 @@ const handlePaymentSuccess = (paymentData: any) => {
       paymentData.amount || totalAmount.value
     )}\nMéthode: ${
       paymentData.method || "PayTech"
-    }\n\nVotre commande sera traitée sous 24h.`
+    }\n\nVous pouvez maintenant rechercher votre commande pour télécharger la facture.`
   );
 
   // Vider le panier
   cartStore.clearCart();
 
-  // Rediriger vers la page d'accueil
-  navigateTo("/");
+  // Ne pas rediriger - rester sur la page actuelle
+  // navigateTo("/");
 };
 
 // Gestion des erreurs de paiement PayTech

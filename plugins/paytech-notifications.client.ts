@@ -16,21 +16,25 @@ export default defineNuxtPlugin(() => {
           // Paiement réussi
           console.log("Paiement réussi reçu:", data);
 
-          // Rediriger vers la page de succès
+          // Afficher une notification de succès au lieu de rediriger
           if (data.ref_command) {
-            navigateTo(
-              `/payment/success?ref=${data.ref_command}&method=${
-                data.payment_method || ""
-              }`
+            // Afficher une notification toast ou modal
+            alert(
+              `Paiement réussi !\n\nNuméro de commande: ${data.ref_command}\n\nVous pouvez maintenant rechercher votre commande pour télécharger la facture.`
             );
+
+            // Optionnel: rediriger vers la page de recherche de commande
+            // navigateTo(`/orders/search?ref=${data.ref_command}`);
           }
         } else if (data.type === "payment_canceled") {
           // Paiement annulé
           console.log("Paiement annulé reçu:", data);
 
-          // Rediriger vers la page d'annulation
+          // Afficher une notification d'annulation
           if (data.ref_command) {
-            navigateTo(`/payment/cancel?ref=${data.ref_command}`);
+            alert(
+              `Paiement annulé pour la commande ${data.ref_command}.\n\nVous pouvez réessayer le paiement.`
+            );
           }
         }
       } catch (error) {

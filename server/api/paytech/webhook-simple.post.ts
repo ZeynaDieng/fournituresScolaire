@@ -122,11 +122,11 @@ export default defineEventHandler(async (event) => {
     } else if (type_event === "sale_cancel" && ref_command) {
       console.log(`❌ Paiement annulé pour ${ref_command}`);
 
-      // Mettre à jour le statut dans Airtable
+      // Mettre à jour le statut dans Airtable (utiliser "Pending" car "Cancelled" n'existe pas)
       try {
-        await updateOrderStatusInAirtable(ref_command, "Cancelled");
+        await updateOrderStatusInAirtable(ref_command, "Pending");
         console.log(
-          `✅ Statut mis à jour dans Airtable: ${ref_command} -> Cancelled`
+          `✅ Statut mis à jour dans Airtable: ${ref_command} -> Pending (annulé)`
         );
       } catch (airtableError) {
         console.error("⚠️ Erreur mise à jour Airtable:", airtableError);
