@@ -65,12 +65,12 @@ export default defineEventHandler(async (event) => {
         }
         .header {
             text-align: center;
-            border-bottom: 3px solid #2563eb;
+            border-bottom: 3px solid #15803d;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
         .header h1 {
-            color: #2563eb;
+            color: #15803d;
             margin: 0;
             font-size: 28px;
         }
@@ -93,8 +93,8 @@ export default defineEventHandler(async (event) => {
             text-align: right;
             font-size: 1.2em;
             font-weight: bold;
-            background: #f0f9ff;
-            border: 2px solid #2563eb;
+            background: #f0fdf4;
+            border: 2px solid #15803d;
         }
         @media print {
           body { margin: 0; padding: 10px; }
