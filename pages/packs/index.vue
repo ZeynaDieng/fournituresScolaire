@@ -245,6 +245,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
+import { useProductsStore } from "../stores/products";
 import { useFormatter } from "../composables/useFormatter";
 import AppPackCard from "../components/AppPackCard.vue";
 
@@ -256,37 +257,38 @@ const selectedLevel = ref("Tous");
 const loading = ref(true);
 const packs = ref<any[]>([]);
 
-// Charger les données directement depuis l'API Airtable
+// Charger les données depuis le store (avec données de démo)
 async function fetchPacks() {
   try {
     loading.value = true;
-    const response = (await $fetch("/api/airtable/packs")) as any;
 
-    if (response.success && response.data) {
-      // Les données sont déjà transformées par l'API
-      packs.value = response.data.map((pack: any) => ({
-        id: pack.id,
-        name: pack.name,
-        level: pack.level,
-        price: pack.price,
-        originalPrice: pack.originalPrice,
-        description: pack.description,
-        contents: pack.contents || [],
-        isPopular: pack.isPopular,
-        inStock: pack.inStock,
-        image: pack.image,
-        isPromotion: pack.isPromotion,
-        promotionEndDate: pack.promotionEndDate,
-      }));
+    // Utiliser le store avec données de démo
+    const productsStore = useProductsStore();
 
-      console.log("Packs chargés depuis Airtable:", packs.value);
-    } else {
-      console.error("Erreur dans la réponse de l'API:", response);
-      packs.value = [];
+    // Initialiser les données de démo si le store est vide
+    if (productsStore.packs.length === 0) {
+      productsStore.initializeDemoData();
     }
+
+    // Utiliser les données du store
+    packs.value = productsStore.packs.map((pack: any) => ({
+      id: pack.id,
+      name: pack.name,
+      level: pack.level,
+      price: pack.price,
+      originalPrice: pack.originalPrice,
+      description: pack.description,
+      contents: pack.contents || [],
+      isPopular: pack.isPopular,
+      inStock: pack.inStock,
+      image: pack.image,
+      isPromotion: pack.isPromotion,
+      promotionEndDate: pack.promotionEndDate,
+    }));
+
+    console.log("Packs chargés depuis le store:", packs.value);
   } catch (error) {
     console.error("Erreur lors du chargement des packs:", error);
-    // Fallback vers des données de démonstration en cas d'erreur
     packs.value = [];
   } finally {
     loading.value = false;

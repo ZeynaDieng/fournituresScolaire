@@ -364,18 +364,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useHead } from "@unhead/vue";
 import { useProductsStore } from "~/stores/products";
-import { useAirtableStore } from "~/stores/airtable";
 import { useCartStore } from "~/stores/cart";
 import { useFormatter } from "~/composables/useFormatter";
 import { useNotification } from "~/composables/useNotification";
 
 const route = useRoute();
 const productsStore = useProductsStore();
-const airtableStore = useAirtableStore();
 const cartStore = useCartStore();
 const { formatPrice } = useFormatter();
 const {
@@ -395,25 +393,39 @@ const handleImageError = (event: Event) => {
   // Optionnel : remplacer par une image par défaut
 };
 
-// Charger les données du pack spécifique depuis l'API avec SSR
-const { data: packResponse, error } = await useFetch(
-  `/api/airtable/packs/${route.params.id}`
-);
+// État pour stocker le pack
+const pack = ref(null);
 
-// Utiliser les données du pack avec gestion d'erreur
-const pack = computed(() => {
-  if (error.value) {
-    console.error("❌ Erreur lors du chargement des données:", error.value);
-    return null;
+// Charger les données du pack depuis Airtable (comme les produits)
+onMounted(async () => {
+  try {
+    const packId = route.params.id as string;
+    console.log("🔄 Chargement du pack depuis Airtable:", packId);
+
+    // Utiliser l'API Airtable comme les produits
+    const response = await $fetch(`/api/airtable/packs/${packId}`);
+
+    if (response.success && response.data) {
+      console.log("✅ Pack récupéré depuis Airtable:", response.data.name);
+      pack.value = response.data;
+    } else {
+      console.error("❌ Erreur dans la réponse Airtable:", response);
+      // Fallback vers le store en cas d'erreur
+      if (productsStore.packs.length === 0) {
+        productsStore.initializeDemoData();
+      }
+      const foundPack = productsStore.packs.find((p) => p.id === packId);
+      pack.value = foundPack || null;
+    }
+  } catch (error) {
+    console.error("❌ Erreur lors du chargement depuis Airtable:", error);
+    // Fallback vers le store en cas d'erreur
+    if (productsStore.packs.length === 0) {
+      productsStore.initializeDemoData();
+    }
+    const foundPack = productsStore.packs.find((p) => p.id === packId);
+    pack.value = foundPack || null;
   }
-
-  if (packResponse.value?.success && packResponse.value?.data) {
-    console.log("✅ Pack récupéré avec succès:", packResponse.value.data.name);
-    return packResponse.value.data;
-  }
-
-  console.error("❌ Erreur lors de la récupération du pack");
-  return null;
 });
 
 function addToCart(pack: any) {
