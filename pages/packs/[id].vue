@@ -396,35 +396,51 @@ const handleImageError = (event: Event) => {
 // État pour stocker le pack
 const pack = ref(null);
 
-// Charger les données du pack depuis Airtable (comme les produits)
+// Charger les données du pack depuis l'API publique (token côté serveur)
 onMounted(async () => {
   try {
     const packId = route.params.id as string;
-    console.log("🔄 Chargement du pack depuis Airtable:", packId);
+    console.log("🔄 Chargement du pack depuis API publique:", packId);
 
-    // Utiliser l'API Airtable comme les produits
+    // Utiliser l'API publique qui récupère les vraies données Airtable côté serveur
     const response = await $fetch(`/api/airtable/packs/${packId}`);
 
     if (response.success && response.data) {
-      console.log("✅ Pack récupéré depuis Airtable:", response.data.name);
-      pack.value = response.data;
-    } else {
-      console.error("❌ Erreur dans la réponse Airtable:", response);
-      // Fallback vers le store en cas d'erreur
-      if (productsStore.packs.length === 0) {
-        productsStore.initializeDemoData();
+      // Les données sont déjà au bon format depuis l'API publique
+      pack.value = {
+        id: response.data.id,
+        name: response.data.name,
+        level: response.data.level,
+        price: response.data.price,
+        originalPrice: response.data.originalPrice || null,
+        description: response.data.description,
+        contents: response.data.contents || [],
+        isPopular: response.data.isPopular,
+        inStock: response.data.inStock,
+        image: response.data.image,
+        isPromotion: response.data.isPromotion,
+        promotionEndDate: response.data.promotionEndDate
+          ? new Date(response.data.promotionEndDate)
+          : null,
+      };
+
+      // Log de la source des données
+      const source =
+        response.source === "airtable"
+          ? "Airtable en ligne"
+          : "données de fallback";
+      console.log(`✅ Pack récupéré depuis ${source}:`, pack.value.name);
+
+      if (response.warning) {
+        console.warn("⚠️", response.warning);
       }
-      const foundPack = productsStore.packs.find((p) => p.id === packId);
-      pack.value = foundPack || null;
+    } else {
+      console.error("❌ Réponse API invalide:", response);
+      pack.value = null;
     }
   } catch (error) {
-    console.error("❌ Erreur lors du chargement depuis Airtable:", error);
-    // Fallback vers le store en cas d'erreur
-    if (productsStore.packs.length === 0) {
-      productsStore.initializeDemoData();
-    }
-    const foundPack = productsStore.packs.find((p) => p.id === packId);
-    pack.value = foundPack || null;
+    console.error("❌ Erreur lors du chargement du pack:", error);
+    pack.value = null;
   }
 });
 
