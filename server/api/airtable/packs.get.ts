@@ -1,71 +1,109 @@
 // server/api/airtable/packs.get.ts
-import { AirtableService } from "../../../utils/airtable";
+// API publique des packs avec vraies données Airtable (token côté serveur)
+
+import { getAirtableBase } from "~/utils/airtable-base";
+
+// Données de fallback au cas où Airtable ne fonctionne pas
+const fallbackPacksData = [
+  {
+    id: "pack-cp",
+    name: "Pack Essentiel CP",
+    level: "CP",
+    price: 16500,
+    originalPrice: 19000,
+    image:
+      "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+    description:
+      "Le nécessaire pour bien démarrer le Cours Préparatoire (CI/CP).",
+    contents: [
+      "5 Cahiers 96 pages (17x22cm)",
+      "2 Cahiers de dessin 48 pages",
+      "1 Ardoise Velleda + 2 feutres + 1 chiffon",
+      "1 Trousse garnie (2 stylos bleus, 1 stylo vert, 1 crayon noir, 1 gomme, 1 taille-crayon)",
+      "1 Boîte de 12 crayons de couleur",
+      "1 Règle plate 20cm",
+      "5 Protège-cahiers (couleurs assorties)",
+      "1 Paquet de 100 étiquettes",
+    ],
+    isPopular: true,
+    inStock: true,
+    isPromotion: true,
+    promotionEndDate: new Date("2024-12-31"),
+  },
+];
+
+function transformAirtableToPublicFormat(
+  airtableRecord: any,
+  recordId: string
+) {
+  return {
+    id: recordId, // Utiliser l'ID du record Airtable
+    name: airtableRecord.Name,
+    level: airtableRecord.Level,
+    price: Number(airtableRecord.Price) || 0,
+    originalPrice: airtableRecord["Original Price"]
+      ? Number(airtableRecord["Original Price"])
+      : undefined,
+    image: airtableRecord["Image URL"] || airtableRecord.Image || "",
+    description: airtableRecord.Description || "",
+    contents: airtableRecord.Contents
+      ? typeof airtableRecord.Contents === "string"
+        ? airtableRecord.Contents.split(", ")
+        : airtableRecord.Contents
+      : [],
+    isPopular: airtableRecord["Is Popular"] || false,
+    inStock: airtableRecord["In Stock"] !== false,
+    isPromotion: airtableRecord["Is Promotion"] || false,
+    promotionEndDate: airtableRecord["Promotion End Date"]
+      ? new Date(airtableRecord["Promotion End Date"])
+      : null,
+  };
+}
 
 export default defineEventHandler(async (event) => {
   try {
-    const packs = await AirtableService.getPacks();
+    console.log("📦 API publique des packs - tentative Airtable");
 
-    // Transformation des données Airtable vers le format de l'application
-    const formattedPacks = packs.map((pack: any) => {
-      // Extraction du nom depuis la description (dernière partie après le point)
-      const description = String(pack.Description || "");
-      const parts = description.split(". ");
-      const name =
-        parts.length > 1 ? parts[parts.length - 1] : `Pack ${pack.Level}`;
+    // Essayer d'abord de récupérer depuis Airtable
+    try {
+      const base = getAirtableBase();
+      const records = await base(process.env.AIRTABLE_PACKS_TABLE!)
+        .select()
+        .all();
 
-      // Images par niveau - mapping typé
-      const images: Record<string, string> = {
-        CP: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
-        "CE1-CE2":
-          "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg",
-        Collège:
-          "https://i.pinimg.com/736x/10/54/a3/1054a36c0ce9460b0a1e2aafa65c9a20.jpg",
-        Lycée: "https://placehold.co/600x400/F4ECF7/17202A?text=Pack+Lycee",
-      };
+      console.log(`✅ ${records.length} packs récupérés depuis Airtable`);
 
-      const level = String(pack.Level || "");
-      const contents = pack.Contents ? String(pack.Contents).split(", ") : [];
-
-      // Mapping des IDs Airtable vers les IDs personnalisés
-      const idMapping: { [key: string]: string } = {
-        recGwsGcGdl8iGpov: "pack-college",
-        recL9XrvTjGEORPXj: "pack-cp",
-        recrMlITCW66BdhxA: "pack-ce",
-        rec5hUm7kqxGzhNcs: "pack-lycee",
-        // Ajoutez d'autres mappings si nécessaire
-      };
-
-      console.log("🔍 Pack Image pour", name, ":", pack["Image URL"]);
-      console.log("🔍 Tous les champs du pack:", Object.keys(pack));
+      const transformedPacks = records.map((record) =>
+        transformAirtableToPublicFormat(record.fields, record.id)
+      );
 
       return {
-        id: idMapping[pack.id] || pack.id,
-        name: name,
-        level: level,
-        price: pack.Price,
-        originalPrice: pack["Original Price"],
-        image: pack["Image URL"],
-        description: parts[0] || pack.Description, // Description sans le nom du pack
-        contents: contents,
-        isPopular: pack["Is Popular"],
-        inStock: pack["In Stock"],
-        isPromotion: pack["Is Promotion"],
-        promotionEndDate: pack["Promotion End Date"]
-          ? new Date(pack["Promotion End Date"])
-          : null,
+        success: true,
+        data: transformedPacks,
+        source: "airtable",
       };
-    });
+    } catch (airtableError: any) {
+      console.warn(
+        "⚠️ Erreur Airtable, utilisation des données de fallback:",
+        airtableError.message
+      );
+
+      // En cas d'erreur Airtable, utiliser les données de fallback
+      return {
+        success: true,
+        data: fallbackPacksData,
+        source: "fallback",
+        warning: "Données de fallback utilisées - Airtable indisponible",
+      };
+    }
+  } catch (error: any) {
+    console.error("❌ Erreur générale API packs:", error);
 
     return {
-      success: true,
-      data: formattedPacks,
-    };
-  } catch (error) {
-    console.error("Erreur lors de la récupération des packs:", error);
-    return {
       success: false,
-      error: "Erreur lors de la récupération des packs",
-      data: [],
+      error: error.message || "Erreur inconnue",
+      data: fallbackPacksData,
+      source: "fallback",
     };
   }
 });

@@ -1,4 +1,36 @@
-import { AirtableService } from "~/utils/airtable";
+// server/api/airtable/packs/[id].get.ts
+// API publique pour récupérer un pack spécifique par ID (token côté serveur)
+
+import { getAirtableBase } from "~/utils/airtable-base";
+import { defineEventHandler, getRouterParam, createError } from "h3";
+
+function transformAirtableToPublicFormat(
+  airtableRecord: any,
+  recordId: string
+) {
+  return {
+    id: recordId,
+    name: airtableRecord.Name,
+    level: airtableRecord.Level,
+    price: Number(airtableRecord.Price) || 0,
+    originalPrice: airtableRecord["Original Price"]
+      ? Number(airtableRecord["Original Price"])
+      : undefined,
+    image: airtableRecord["Image URL"] || airtableRecord.Image || "",
+    description: airtableRecord.Description || "",
+    contents: airtableRecord.Contents
+      ? typeof airtableRecord.Contents === "string"
+        ? airtableRecord.Contents.split(", ")
+        : airtableRecord.Contents
+      : [],
+    isPopular: airtableRecord["Is Popular"] || false,
+    inStock: airtableRecord["In Stock"] !== false,
+    isPromotion: airtableRecord["Is Promotion"] || false,
+    promotionEndDate: airtableRecord["Promotion End Date"]
+      ? new Date(airtableRecord["Promotion End Date"])
+      : null,
+  };
+}
 
 export default defineEventHandler(async (event) => {
   try {
@@ -7,77 +39,75 @@ export default defineEventHandler(async (event) => {
     if (!packId) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Pack ID is required",
+        statusMessage: "ID du pack manquant",
       });
     }
 
-    console.log("🔍 Recherche du pack avec ID:", packId);
+    console.log(`📦 API publique pack détail - ID: ${packId}`);
 
-    const packs = await AirtableService.getPacks();
+    // Essayer d'abord de récupérer depuis Airtable
+    try {
+      const base = getAirtableBase();
 
-    // Mapping des IDs Airtable vers les IDs personnalisés
-    const idMapping: { [key: string]: string } = {
-      recGwsGcGdl8iGpov: "pack-college",
-      recL9XrvTjGEORPXj: "pack-cp",
-      recrMlITCW66BdhxA: "pack-ce",
-      rec5hUm7kqxGzhNcs: "pack-lycee",
-      recDFsw0Vjy1AEEP5: "pack-cm2",
-      recFoZ3p1ddOVqINu: "pack-ce1",
-      recIPxEl6cEk3OjpH: "pack-ce2",
-      recimHRjP8QFVxxA5: "pack-cm1",
-      recAqf0iUqp2T0WoA: "pack-terminale",
-    };
+      // Récupérer le pack spécifique par ID
+      const record = await base(process.env.AIRTABLE_PACKS_TABLE!).find(packId);
 
-    // Trouver le pack avec l'ID personnalisé
-    const foundPack = packs.find((p) => {
-      const customId = idMapping[p.id] || p.id;
-      return customId === packId;
-    });
+      console.log(`✅ Pack ${packId} récupéré depuis Airtable`);
 
-    if (!foundPack) {
+      const transformedPack = transformAirtableToPublicFormat(
+        record.fields,
+        record.id
+      );
+
+      return {
+        success: true,
+        data: transformedPack,
+        source: "airtable",
+      };
+    } catch (airtableError: any) {
+      console.warn(
+        `⚠️ Erreur Airtable pour pack ${packId}, recherche dans fallback:`,
+        airtableError.message
+      );
+
+      // En cas d'erreur Airtable, essayer de trouver dans les données de fallback
+      // Importer les données de fallback depuis l'API des packs
+      const fallbackResponse = await $fetch("/api/airtable/packs");
+
+      if (fallbackResponse.success && fallbackResponse.data) {
+        const fallbackPack = fallbackResponse.data.find(
+          (pack: any) => pack.id === packId
+        );
+
+        if (fallbackPack) {
+          return {
+            success: true,
+            data: fallbackPack,
+            source: "fallback",
+            warning: "Données de fallback utilisées - Airtable indisponible",
+          };
+        }
+      }
+
+      // Si pas trouvé dans le fallback non plus
       throw createError({
         statusCode: 404,
-        statusMessage: `Pack with ID ${packId} not found`,
+        statusMessage: `Pack avec l'ID ${packId} non trouvé`,
       });
     }
+  } catch (error: any) {
+    console.error(
+      `❌ Erreur générale API pack ${getRouterParam(event, "id")}:`,
+      error
+    );
 
-    console.log("✅ Pack trouvé:", foundPack.Name);
-
-    // Transformer les données comme dans packs.get.ts
-    const name = String(foundPack.Name || "");
-    const parts = name.split(" - ");
-    const level = String(foundPack.Level || "");
-    const contents = foundPack.Contents
-      ? String(foundPack.Contents).split(", ")
-      : [];
-
-    const transformedPack = {
-      id: idMapping[foundPack.id] || foundPack.id,
-      name: name,
-      level: level,
-      price: foundPack.Price,
-      originalPrice: foundPack["Original Price"],
-      image: foundPack["Image URL"],
-      description: parts[0] || foundPack.Description,
-      contents: contents,
-      isPopular: foundPack["Is Popular"],
-      inStock: foundPack["In Stock"],
-      isPromotion: foundPack["Is Promotion"],
-      promotionEndDate: foundPack["Promotion End Date"]
-        ? new Date(foundPack["Promotion End Date"])
-        : null,
-    };
-
-    return {
-      success: true,
-      data: transformedPack,
-    };
-  } catch (error) {
-    console.error("❌ Erreur lors de la récupération du pack:", error);
+    if (error.statusCode) {
+      throw error; // Re-lancer les erreurs HTTP
+    }
 
     throw createError({
       statusCode: 500,
-      statusMessage: "Internal server error",
+      statusMessage: error.message || "Erreur interne du serveur",
     });
   }
 });

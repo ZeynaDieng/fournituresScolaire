@@ -78,7 +78,7 @@
             style="animation-delay: 0.4s"
           >
             <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">15+</div>
+              <div class="text-3xl sm:text-4xl font-bold text-white">8+</div>
               <div class="text-green-200 text-sm font-medium">
                 Packs Disponibles
               </div>
@@ -245,48 +245,69 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
+import { useProductsStore } from "../stores/products";
 import { useFormatter } from "../composables/useFormatter";
 import AppPackCard from "../components/AppPackCard.vue";
 
 const cartStore = useCartStore();
 const { formatPrice } = useFormatter();
 
-const packLevels = ["Tous", "CP", "CE1-CE2", "Collège", "Lycée"];
+const packLevels = [
+  "Tous",
+  "CP",
+  "CE1",
+  "CE2",
+  "CM1",
+  "CM2",
+  "6ème",
+  "Terminale",
+];
 const selectedLevel = ref("Tous");
 const loading = ref(true);
 const packs = ref<any[]>([]);
 
-// Charger les données directement depuis l'API Airtable
+// Charger les vraies données Airtable via l'API publique (token côté serveur)
 async function fetchPacks() {
   try {
     loading.value = true;
-    const response = (await $fetch("/api/airtable/packs")) as any;
 
+    // Utiliser l'API publique qui récupère les vraies données Airtable côté serveur
+    const response = await $fetch("/api/airtable/packs");
+
+    // Les données sont déjà au bon format depuis l'API publique
     if (response.success && response.data) {
-      // Les données sont déjà transformées par l'API
       packs.value = response.data.map((pack: any) => ({
         id: pack.id,
         name: pack.name,
         level: pack.level,
         price: pack.price,
         originalPrice: pack.originalPrice,
+        image: pack.image,
         description: pack.description,
         contents: pack.contents || [],
-        isPopular: pack.isPopular,
-        inStock: pack.inStock,
-        image: pack.image,
-        isPromotion: pack.isPromotion,
-        promotionEndDate: pack.promotionEndDate,
+        isPopular: pack.isPopular || false,
+        inStock: pack.inStock !== false,
+        isPromotion: pack.isPromotion || false,
+        promotionEndDate: pack.promotionEndDate
+          ? new Date(pack.promotionEndDate)
+          : null,
       }));
 
-      console.log("Packs chargés depuis Airtable:", packs.value);
+      // Log de la source des données
+      const source =
+        response.source === "airtable"
+          ? "Airtable en ligne"
+          : "données de fallback";
+      console.log(`Packs chargés depuis ${source}:`, packs.value);
+
+      if (response.warning) {
+        console.warn("⚠️", response.warning);
+      }
     } else {
-      console.error("Erreur dans la réponse de l'API:", response);
       packs.value = [];
     }
   } catch (error) {
     console.error("Erreur lors du chargement des packs:", error);
-    // Fallback vers des données de démonstration en cas d'erreur
     packs.value = [];
   } finally {
     loading.value = false;

@@ -364,18 +364,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useHead } from "@unhead/vue";
 import { useProductsStore } from "~/stores/products";
-import { useAirtableStore } from "~/stores/airtable";
 import { useCartStore } from "~/stores/cart";
 import { useFormatter } from "~/composables/useFormatter";
 import { useNotification } from "~/composables/useNotification";
 
 const route = useRoute();
 const productsStore = useProductsStore();
-const airtableStore = useAirtableStore();
 const cartStore = useCartStore();
 const { formatPrice } = useFormatter();
 const {
@@ -395,25 +393,55 @@ const handleImageError = (event: Event) => {
   // Optionnel : remplacer par une image par défaut
 };
 
-// Charger les données du pack spécifique depuis l'API avec SSR
-const { data: packResponse, error } = await useFetch(
-  `/api/airtable/packs/${route.params.id}`
-);
+// État pour stocker le pack
+const pack = ref(null);
 
-// Utiliser les données du pack avec gestion d'erreur
-const pack = computed(() => {
-  if (error.value) {
-    console.error("❌ Erreur lors du chargement des données:", error.value);
-    return null;
+// Charger les données du pack depuis l'API publique (token côté serveur)
+onMounted(async () => {
+  try {
+    const packId = route.params.id as string;
+    console.log("🔄 Chargement du pack depuis API publique:", packId);
+
+    // Utiliser l'API publique qui récupère les vraies données Airtable côté serveur
+    const response = await $fetch(`/api/airtable/packs/${packId}`);
+
+    if (response.success && response.data) {
+      // Les données sont déjà au bon format depuis l'API publique
+      pack.value = {
+        id: response.data.id,
+        name: response.data.name,
+        level: response.data.level,
+        price: response.data.price,
+        originalPrice: response.data.originalPrice || null,
+        description: response.data.description,
+        contents: response.data.contents || [],
+        isPopular: response.data.isPopular,
+        inStock: response.data.inStock,
+        image: response.data.image,
+        isPromotion: response.data.isPromotion,
+        promotionEndDate: response.data.promotionEndDate
+          ? new Date(response.data.promotionEndDate)
+          : null,
+      };
+
+      // Log de la source des données
+      const source =
+        response.source === "airtable"
+          ? "Airtable en ligne"
+          : "données de fallback";
+      console.log(`✅ Pack récupéré depuis ${source}:`, pack.value.name);
+
+      if (response.warning) {
+        console.warn("⚠️", response.warning);
+      }
+    } else {
+      console.error("❌ Réponse API invalide:", response);
+      pack.value = null;
+    }
+  } catch (error) {
+    console.error("❌ Erreur lors du chargement du pack:", error);
+    pack.value = null;
   }
-
-  if (packResponse.value?.success && packResponse.value?.data) {
-    console.log("✅ Pack récupéré avec succès:", packResponse.value.data.name);
-    return packResponse.value.data;
-  }
-
-  console.error("❌ Erreur lors de la récupération du pack");
-  return null;
 });
 
 function addToCart(pack: any) {

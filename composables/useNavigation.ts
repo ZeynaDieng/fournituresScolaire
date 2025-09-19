@@ -38,13 +38,6 @@ export const useNavigation = () => {
         () => import("~/components/icons/HomeIcon.vue")
       ),
     },
-    {
-      name: "Mes Commandes",
-      path: "/orders/search",
-      icon: defineAsyncComponent(
-        () => import("~/components/icons/HomeIcon.vue")
-      ),
-    },
   ];
 
   return {

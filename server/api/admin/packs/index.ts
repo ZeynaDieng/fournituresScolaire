@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
     const records = await base(process.env.AIRTABLE_PACKS_TABLE!)
       .select()
       .all();
+    console.log("RECORDS:", records);
+
     return records.map((r) => ({ id: r.id, ...r.fields }));
   }
   if (event.method === "POST") {
