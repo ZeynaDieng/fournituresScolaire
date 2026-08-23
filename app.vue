@@ -142,44 +142,15 @@
 import { ref, onMounted, watch, onErrorCaptured } from "vue";
 import { useRoute } from "vue-router";
 
-// État de chargement global
-const isLoading = ref(true);
-const loadingProgress = ref(0);
-const loadingMessage = ref("Initialisation...");
+// État de chargement global (désactivé pour un chargement instantané)
+const isLoading = ref(false);
+const loadingProgress = ref(100);
+const loadingMessage = ref("Prêt !");
 const route = useRoute();
 
-// Messages de chargement progressifs
-const loadingMessages = [
-  "Initialisation...",
-  "Chargement des produits...",
-  "Préparation des packs...",
-  "Configuration du panier...",
-  "Finalisation...",
-  "Prêt !",
-];
-
 // Initialisation de l'application
-onMounted(async () => {
-  // Simulation d'un chargement progressif réaliste
-  const loadingSteps = [
-    { delay: 200, progress: 20, message: 0 },
-    { delay: 400, progress: 40, message: 1 },
-    { delay: 300, progress: 60, message: 2 },
-    { delay: 300, progress: 80, message: 3 },
-    { delay: 200, progress: 95, message: 4 },
-    { delay: 100, progress: 100, message: 5 },
-  ];
-
-  for (const step of loadingSteps) {
-    await new Promise((resolve) => setTimeout(resolve, step.delay));
-    loadingProgress.value = step.progress;
-    loadingMessage.value = loadingMessages[step.message];
-  }
-
-  // Délai final avant de masquer le loading
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 500);
+onMounted(() => {
+  isLoading.value = false;
 
   // Suivre les changements de route
   watch(
