@@ -1,9 +1,7 @@
-// /server/api/admin/orders-airtable/update-status.post.ts
 import {
   updateLocalOrderStatus as updateLocalStorage,
   getAllOrders,
 } from "../../../../utils/local-storage";
-import { addOrderToMasterExcel } from "../../../../utils/excel-master";
 import { sendOrderNotification } from "../../../../utils/email-notifications";
 
 export default defineEventHandler(async (event) => {

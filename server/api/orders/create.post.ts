@@ -4,7 +4,6 @@ import { readBody, getHeader } from "h3";
 // Google Sheets supprimé
 import { saveOrder } from "../../../utils/local-storage";
 import { sendOrderNotification } from "../../../utils/email-notifications";
-import { addOrderToMasterExcel } from "../../../utils/excel-master";
 import { addOrderToAirtable } from "../../../utils/airtable-orders";
 
 interface OrderRequestBody {
@@ -117,22 +116,8 @@ export default defineEventHandler(async (event) => {
       );
     }
 
-    // 📊 Ajouter au fichier Excel maître (non bloquant)
-    try {
-      await addOrderToMasterExcel({
-        ...orderData,
-        id: savedOrder.id,
-      });
-      console.log(
-        "✅ Commande ajoutée au fichier Excel maître:",
-        savedOrder.ref
-      );
-    } catch (excelError) {
-      console.warn(
-        "⚠️ Erreur Excel (la commande est sauvegardée):",
-        excelError instanceof Error ? excelError.message : excelError
-      );
-    }
+// 📊 Intégrations optionnelles
+// Google Sheets & Excel maître désactivés
 
     // Essayer d'intégrer Google Sheets en parallèle (non bloquant)
     try {

@@ -178,7 +178,7 @@ const formatDate = (date: Date): string => {
   }).format(date);
 };
 const sendOrderViaWhatsApp = () => {
-  const number = "221782911844"; // Numéro WhatsApp business
+  const number = "221771133926"; // Numéro WhatsApp business
   const message = encodeURIComponent(
     `🛒 Nouvelle commande EduShop\n\nRéférence: ${
       orderRef.value

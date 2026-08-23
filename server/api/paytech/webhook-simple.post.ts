@@ -5,7 +5,8 @@
 
 import { defineEventHandler, readBody, createError } from "h3";
 import { sendInvoices } from "~/utils/invoice-service";
-import { sendWhatsAppNotifications } from "~/utils/whatsapp-real";
+import { sendWhatsAppNotifications } from "~/utils/whatsapp";
+
 import { updateOrderStatusInAirtable } from "~/utils/airtable-orders";
 
 export default defineEventHandler(async (event) => {
@@ -46,7 +47,8 @@ export default defineEventHandler(async (event) => {
     );
 
     // Décoder custom_field depuis Base64
-    let customData = {};
+    let customData: any = {};
+
     try {
       if (custom_field) {
         const decodedCustomField = Buffer.from(custom_field, "base64").toString(

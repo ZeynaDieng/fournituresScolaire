@@ -1,4 +1,46 @@
 // server/api/airtable/promotions.get.ts
+
+const fallbackPromotionsData = [
+  {
+    id: "fallback-1",
+    title: "Pack Rentrée Scolaire",
+    description: "Profitez de -20% sur tous les packs scolaires",
+    discount: 20,
+    type: "percentage",
+    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 jours
+    products: [],
+    category: "Pack",
+    trending: true,
+    featured: true,
+    icon: "🎒",
+    rating: 5,
+    features: ["Livraison gratuite", "Garantie qualité", "Pack complet"],
+    originalPrice: null,
+    currentPrice: null,
+    isActive: true,
+    createdTime: new Date().toISOString(),
+  },
+  {
+    id: "fallback-2",
+    title: "Fournitures Premium",
+    description: "Réduction sur les fournitures de qualité supérieure",
+    discount: 15,
+    type: "percentage",
+    endDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 jours
+    products: [],
+    category: "Fournitures",
+    trending: false,
+    featured: false,
+    icon: "📚",
+    rating: 4,
+    features: ["Qualité premium", "Durabilité testée"],
+    originalPrice: null,
+    currentPrice: null,
+    isActive: true,
+    createdTime: new Date().toISOString(),
+  },
+];
+
 export default defineEventHandler(async (event) => {
   try {
     const config = useRuntimeConfig();
@@ -7,13 +49,13 @@ export default defineEventHandler(async (event) => {
     const AIRTABLE_TABLE_NAME = "tblrUYgl2PgYIEMY5"; // ID de la table Promotions dans Airtable
 
     if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: "Configuration Airtable manquante",
-      });
+      return {
+        success: true,
+        data: fallbackPromotionsData,
+        total: fallbackPromotionsData.length,
+        fallback: true,
+      };
     }
-
-    console.log("🔄 Récupération des promotions depuis Airtable...");
 
     const response = await fetch(
       `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?view=Grid%20view`,
@@ -25,19 +67,15 @@ export default defineEventHandler(async (event) => {
     );
 
     if (!response.ok) {
-      console.error(
-        `❌ Erreur Airtable: ${response.status} ${response.statusText}`
-      );
-      throw createError({
-        statusCode: response.status,
-        statusMessage: `Erreur Airtable: ${response.statusText}`,
-      });
+      return {
+        success: true,
+        data: fallbackPromotionsData,
+        total: fallbackPromotionsData.length,
+        fallback: true,
+      };
     }
 
     const data = await response.json();
-    console.log(
-      `✅ ${data.records?.length || 0} promotions récupérées depuis Airtable`
-    );
 
     // Transformer les données Airtable en format utilisable
     const promotions =
@@ -48,12 +86,12 @@ export default defineEventHandler(async (event) => {
           title: promo["Title"] || promo["Titre"] || "",
           description: promo["Description"] || "",
           discount: promo["Discount"] || 0,
-          type: promo["Type"] || "percentage", // percentage, fixed, bogo
+          type: promo["Type"] || "percentage",
           endDate:
             promo["End Date"] || promo["Date Fin"]
               ? new Date(promo["End Date"] || promo["Date Fin"])
               : null,
-          products: promo["Products"] || [], // IDs des produits liés
+          products: promo["Products"] || [],
           category: promo["Category"] || promo["Categorie"] || "Offre spéciale",
           trending: Boolean(promo["Trending"] || promo["Tendance"]),
           featured: Boolean(promo["Featured"] || promo["Mise en avant"]),
@@ -65,16 +103,13 @@ export default defineEventHandler(async (event) => {
                   try {
                     const featuresRaw =
                       promo["Features"] || promo["Caracteristiques"];
-                    // Si c'est déjà un array, le retourner
                     if (Array.isArray(featuresRaw)) return featuresRaw;
-                    // Si c'est une string avec des retours à la ligne
                     if (
                       typeof featuresRaw === "string" &&
                       featuresRaw.includes("\n")
                     ) {
                       return featuresRaw.split("\n").filter((f) => f.trim());
                     }
-                    // Si c'est du JSON, le parser
                     if (
                       typeof featuresRaw === "string" &&
                       (featuresRaw.startsWith("[") ||
@@ -82,10 +117,8 @@ export default defineEventHandler(async (event) => {
                     ) {
                       return JSON.parse(featuresRaw);
                     }
-                    // Sinon, retourner comme array d'un élément
                     return [featuresRaw];
                   } catch (e) {
-                    console.warn("Erreur parsing features:", e);
                     return [];
                   }
                 })()
@@ -93,7 +126,7 @@ export default defineEventHandler(async (event) => {
           originalPrice:
             promo["Original Price"] || promo["Prix Original"] || null,
           currentPrice: promo["Current Price"] || promo["Prix Actuel"] || null,
-          isActive: promo["Is Active"] !== false, // Par défaut actif
+          isActive: promo["Is Active"] !== false,
           createdTime: record.createdTime,
         };
       }) || [];
@@ -101,9 +134,18 @@ export default defineEventHandler(async (event) => {
     // Filtrer les promotions actives seulement
     const activePromotions = promotions.filter((promo: any) => {
       if (!promo.isActive) return false;
-      if (!promo.endDate) return true; // Pas de date de fin = toujours actif
-      return new Date(promo.endDate) > new Date(); // Date de fin dans le futur
+      if (!promo.endDate) return true;
+      return new Date(promo.endDate) > new Date();
     });
+
+    if (activePromotions.length === 0) {
+      return {
+        success: true,
+        data: fallbackPromotionsData,
+        total: fallbackPromotionsData.length,
+        fallback: true,
+      };
+    }
 
     return {
       success: true,
@@ -112,57 +154,11 @@ export default defineEventHandler(async (event) => {
       source: "airtable",
     };
   } catch (error: any) {
-    console.error("❌ Erreur lors de la récupération des promotions:", error);
-    console.log("🔄 Utilisation des données de fallback...");
-
-    // Fallback vers les promotions locales en cas d'erreur
-    const fallbackPromotions = [
-      {
-        id: "fallback-1",
-        title: "Pack Rentrée Scolaire",
-        description: "Profitez de -20% sur tous les packs scolaires",
-        discount: 20,
-        type: "percentage",
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 jours
-        products: [],
-        category: "Pack",
-        trending: true,
-        featured: true,
-        icon: "🎒",
-        rating: 5,
-        features: ["Livraison gratuite", "Garantie qualité", "Pack complet"],
-        originalPrice: null,
-        currentPrice: null,
-        isActive: true,
-        createdTime: new Date().toISOString(),
-      },
-      {
-        id: "fallback-2",
-        title: "Fournitures Premium",
-        description: "Réduction sur les fournitures de qualité supérieure",
-        discount: 15,
-        type: "percentage",
-        endDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 jours
-        products: [],
-        category: "Fournitures",
-        trending: false,
-        featured: false,
-        icon: "📚",
-        rating: 4,
-        features: ["Qualité premium", "Durabilité testée"],
-        originalPrice: null,
-        currentPrice: null,
-        isActive: true,
-        createdTime: new Date().toISOString(),
-      },
-    ];
-
     return {
       success: true,
-      data: fallbackPromotions,
-      total: fallbackPromotions.length,
+      data: fallbackPromotionsData,
+      total: fallbackPromotionsData.length,
       fallback: true,
-      message: "Données de démonstration - Configuration Airtable en cours",
     };
   }
 });

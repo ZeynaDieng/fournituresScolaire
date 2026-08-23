@@ -99,16 +99,19 @@
 
         <!-- Footer -->
         <div class="p-4 border-t">
-          <div class="flex justify-between items-center mb-4">
-            <span class="text-lg font-semibold">Total</span>
-            <span class="text-xl font-bold">{{ cartStore.total }} CFA</span>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-base font-bold text-slate-800">Sous-total fournitures</span>
+            <span class="text-xl font-extrabold text-[#0F3D91]">{{ formatPrice(cartStore.subtotal) }}</span>
           </div>
+          <p class="text-[11px] text-slate-500 text-center mb-4">
+            Mode d'obtention (Livraison à domicile ou Retrait gratuit) sélectionnable à la commande.
+          </p>
           <button
             :disabled="cartStore.items.length === 0"
             @click="handleCheckout"
-            class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            class="w-full bg-[#0F3D91] hover:bg-[#0b2f70] text-white py-3.5 rounded-2xl font-display font-extrabold text-sm shadow-md transition-all disabled:bg-slate-300 disabled:cursor-not-allowed cursor-pointer"
           >
-            Valider la commande
+            Valider la commande →
           </button>
         </div>
       </div>
@@ -119,6 +122,10 @@
 <script setup lang="ts">
 import { useCartStore } from "~/stores/cart";
 const cartStore = useCartStore();
+
+const formatPrice = (val: number) => {
+  return new Intl.NumberFormat("fr-FR").format(val || 0) + " F CFA";
+};
 
 // Gérer le clic sur "Valider la commande"
 const handleCheckout = () => {

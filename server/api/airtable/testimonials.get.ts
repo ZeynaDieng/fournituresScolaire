@@ -1,11 +1,8 @@
 // server/api/airtable/testimonials.get.ts
-export default defineEventHandler(async (event) => {
-  console.log(
-    "🔄 Utilisation temporaire des données de fallback pour les témoignages..."
-  );
 
-  // Force l'utilisation des données de fallback temporairement
-  const fallbackTestimonials = [
+const cachedTestimonialsResult = {
+  success: true,
+  data: [
     {
       id: "fallback-1",
       name: "Awa Diop",
@@ -59,37 +56,18 @@ export default defineEventHandler(async (event) => {
       name: "Aissatou Diouf",
       role: "Maman de 3 enfants",
       avatar: "https://i.pravatar.cc/150?img=5",
-      text: "Gain de temps énorme ! Plus besoin de courir les magasins. Tout arrive à domicile et c'est moins cher. Site au top pour les mamans débordées comme moi !",
+      text: "EduShop m'a sauvé la rentrée ! Plus besoin de courir dans toute la ville sous la chaleur. Mes 3 enfants ont eu leurs fournitures complètes à temps.",
       rating: 5,
-      location: "Rufisque",
+      location: "Dakar",
       isActive: true,
       createdTime: new Date().toISOString(),
       order: 5,
     },
-    {
-      id: "fallback-6",
-      name: "Ibrahima Dieng",
-      role: "Étudiant en master",
-      avatar: "https://i.pravatar.cc/150?img=6",
-      text: "Parfait pour les étudiants ! Bons prix, large choix et livraison efficace. J'ai trouvé tout ce dont j'avais besoin pour mes cours. Le service client est réactif !",
-      rating: 4,
-      location: "Touba",
-      isActive: true,
-      createdTime: new Date().toISOString(),
-      order: 6,
-    },
-  ];
+  ],
+  total: 5,
+  source: "local-fallback",
+};
 
-  // Trier par ordre si spécifié
-  const sortedTestimonials = fallbackTestimonials.sort((a: any, b: any) => {
-    return a.order - b.order;
-  });
-
-  return {
-    success: true,
-    data: sortedTestimonials,
-    total: sortedTestimonials.length,
-    fallback: true,
-    message: "Données de démonstration - Configuration Airtable en cours",
-  };
+export default defineEventHandler(async (event) => {
+  return cachedTestimonialsResult;
 });

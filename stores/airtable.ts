@@ -62,18 +62,30 @@ interface Testimonial {
   order: number;
 }
 
+import { useProductsStore } from "./products";
+
 export const useAirtableStore = defineStore("airtable", {
-  state: () => ({
-    products: [] as Product[],
-    packs: [] as Pack[],
-    promotions: [] as Promotion[],
-    testimonials: [] as Testimonial[],
-    categories: [] as string[],
-    loading: false,
-    error: null as string | null,
-  }),
+  state: () => {
+    const productsStore = useProductsStore();
+    return {
+      products: (productsStore.products || []) as Product[],
+      packs: (productsStore.packs || []) as Pack[],
+      promotions: [] as Promotion[],
+      testimonials: [] as Testimonial[],
+      categories: [] as string[],
+      loading: false,
+      error: null as string | null,
+      sources: {} as Record<string, "live" | "cache" | "fallback">,
+      lastUpdates: {} as Record<string, number>,
+    };
+  },
 
   getters: {
+    // État global de la source pour affichage UI
+    isUsingCache: (state) => Object.values(state.sources).includes("cache"),
+    isUsingFallback: (state) =>
+      Object.values(state.sources).includes("fallback"),
+
     // Produits populaires
     popularProducts: (state) => state.products.slice(0, 8),
 
@@ -111,102 +123,159 @@ export const useAirtableStore = defineStore("airtable", {
   },
 
   actions: {
-    // Récupérer tous les produits depuis Airtable
-    async fetchProducts() {
+    /**
+     * Helper pour la gestion intelligente du cache (Smart Fetch)
+     * Priorité Live -> Fallback Cache (localStorage) -> Fallback Statique
+     */
+    async _smartFetch<T>(
+      key: string,
+      apiPath: string,
+      defaultData: T[] = []
+    ): Promise<T[]> {
+      const cacheKey = `airtable_cache_${key}`;
       this.loading = true;
-      this.error = null;
 
       try {
-        const response = (await $fetch("/api/airtable/products")) as any;
-        this.products = response.data;
+        console.log(`📡 Tentative d'appel API Live: ${apiPath}`);
+        const response = (await $fetch(apiPath)) as any;
+        const data = response.data || response;
 
-        // Extraire les catégories uniques
-        this.categories = [
-          ...new Set(response.data.map((p: Product) => p.category)),
-        ].sort();
+        // 1. Mise à jour immédiate si succès et données non vides
+        if (response && response.success !== false && Array.isArray(data) && data.length > 0) {
+          // Sauvegarder dans localStorage (uniquement côté client)
+          if (process.client) {
+            localStorage.setItem(
+              cacheKey,
+              JSON.stringify({
+                data,
+                timestamp: Date.now(),
+              })
+            );
+          }
+
+          this.sources[key] = "live";
+          this.lastUpdates[key] = Date.now();
+          console.log(`✅ ${key} mis à jour depuis Airtable (Live, ${data.length} éléments)`);
+          return data;
+        }
+        throw new Error("Données Airtable vides ou invalides");
       } catch (error) {
-        console.error("Erreur lors de la récupération des produits:", error);
-        this.error = "Erreur lors du chargement des produits";
-        this.products = [];
+        console.warn(`⚠️ Échec API pour ${key}, tentative de récupération cache local.`);
+
+        // 2. Fallback sur le cache LocalStorage
+        if (process.client) {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            try {
+              const { data, timestamp } = JSON.parse(cached);
+              if (Array.isArray(data) && data.length > 0) {
+                this.sources[key] = "cache";
+                this.lastUpdates[key] = timestamp;
+                console.log(`📦 ${key} chargé depuis le Cache Local (${new Date(timestamp).toLocaleString()})`);
+                return data;
+              }
+            } catch (e) {
+              console.error("Erreur de lecture du cache JSON", e);
+            }
+          }
+        }
+
+        // 3. Fallback ultime sur les données statiques par défaut
+        console.warn(`🚨 Aucun cache disponible pour ${key}, utilisation du fallback statique.`);
+        this.sources[key] = "fallback";
+        return defaultData;
       } finally {
         this.loading = false;
       }
     },
 
-    // Récupérer tous les packs depuis Airtable - Optimisé
+    // Récupérer tous les produits depuis Airtable
+    async fetchProducts() {
+      const productsStore = useProductsStore();
+      if (productsStore.products.length === 0) {
+        productsStore.initializeDemoData();
+      }
+
+      this.products = await this._smartFetch<Product>(
+        "products",
+        "/api/airtable/products",
+        productsStore.products as any
+      );
+
+      // Extraire les catégories uniques
+      if (this.products.length > 0) {
+        this.categories = [
+          ...new Set(this.products.map((p: Product) => p.category)),
+        ].sort();
+      }
+    },
+
+    // Récupérer tous les packs depuis Airtable
     async fetchPacks() {
-      // Éviter les appels redondants
-      if (this.packs.length > 0 && !this.loading) {
-        return;
+      const productsStore = useProductsStore();
+      if (productsStore.packs.length === 0) {
+        productsStore.initializeDemoData();
       }
 
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = (await $fetch("/api/airtable/packs")) as any;
-        this.packs = response.data;
-      } catch (error) {
-        console.error("Erreur lors de la récupération des packs:", error);
-        this.error = "Erreur lors du chargement des packs";
-        this.packs = [];
-      } finally {
-        this.loading = false;
-      }
+      this.packs = await this._smartFetch<Pack>(
+        "packs",
+        "/api/airtable/packs",
+        productsStore.packs as any
+      );
     },
 
     // Récupérer toutes les promotions depuis Airtable
     async fetchPromotions() {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = (await $fetch("/api/airtable/promotions")) as any;
-        this.promotions = response.data || [];
-      } catch (error) {
-        console.error("Erreur lors de la récupération des promotions:", error);
-        this.error = "Erreur lors du chargement des promotions";
-        this.promotions = [];
-      } finally {
-        this.loading = false;
-      }
+      this.promotions = await this._smartFetch<Promotion>(
+        "promotions",
+        "/api/airtable/promotions"
+      );
     },
 
     // Récupérer tous les témoignages depuis Airtable
     async fetchTestimonials() {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = (await $fetch("/api/airtable/testimonials")) as any;
-        this.testimonials = response.data || [];
-      } catch (error) {
-        console.error("Erreur lors de la récupération des témoignages:", error);
-        this.error = "Erreur lors du chargement des témoignages";
-        this.testimonials = [];
-      } finally {
-        this.loading = false;
-      }
+      this.testimonials = await this._smartFetch<Testimonial>(
+        "testimonials",
+        "/api/airtable/testimonials"
+      );
     },
 
     // Récupérer un produit par ID
     async fetchProductById(id: string) {
-      return this.products.find((product) => product.id === id) || null;
+      let product = this.products.find((p) => p.id === id);
+      if (product) return product;
+
+      // Essayer le store de fallback
+      const productsStore = useProductsStore();
+      if (productsStore.products.length === 0) {
+        productsStore.initializeDemoData();
+      }
+      const fallbackProd = productsStore.getProductById(id);
+      if (fallbackProd) return fallbackProd;
+
+      // Si pas dans la liste globale, charger via API spécifique
+      try {
+        const response = (await $fetch(`/api/airtable/products/${id}`)) as any;
+        return response.data || null;
+      } catch {
+        return null;
+      }
     },
 
     // Récupérer un pack par ID
     async fetchPackById(id: string) {
-      return this.packs.find((pack) => pack.id === id) || null;
+      let pack = this.packs.find((p) => p.id === id);
+      if (pack) return pack;
+
+      const productsStore = useProductsStore();
+      if (productsStore.packs.length === 0) {
+        productsStore.initializeDemoData();
+      }
+      return productsStore.getPackById(id) || null;
     },
 
     // Créer une commande
-    async createOrder(orderData: {
-      customerName: string;
-      customerEmail?: string;
-      customerPhone?: string;
-      items: any[];
-      total: number;
-    }) {
+    async createOrder(orderData: any) {
       try {
         const response = (await $fetch("/api/airtable/orders", {
           method: "POST",
@@ -220,8 +289,12 @@ export const useAirtableStore = defineStore("airtable", {
       }
     },
 
-    // Initialiser le store
+    // Initialiser le store (évite les ré-appels réseau inutiles)
     async initialize() {
+      if (this.products.length > 0 && this.packs.length > 0) {
+        return;
+      }
+      // Charger les données de base
       await Promise.all([
         this.fetchProducts(),
         this.fetchPacks(),
@@ -229,5 +302,20 @@ export const useAirtableStore = defineStore("airtable", {
         this.fetchTestimonials(),
       ]);
     },
+
+    // Vider le cache local et forcer le rafraîchissement
+    async refreshAll() {
+      if (process.client) {
+        Object.keys(localStorage).forEach((key) => {
+          if (key.startsWith("airtable_cache_")) {
+            localStorage.removeItem(key);
+          }
+        });
+      }
+      this.sources = {};
+      this.lastUpdates = {};
+      await this.initialize();
+    },
   },
 });
+

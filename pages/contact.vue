@@ -1,20 +1,18 @@
 <template>
-  <div class="min-h-screen">
-    <!-- Hero Section -->
-
+  <div class="min-h-screen bg-[#FBFBFA] font-sans">
     <!-- Contact Section -->
-    <section class="py-16 bg-green-50">
+    <section class="py-16 bg-[#FBFBFA]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <!-- Contact Form -->
-          <div class="bg-white rounded-2xl shadow-xl p-8">
+          <div class="bg-white rounded-3xl border-2 border-slate-200/80 shadow-soft p-8">
             <div class="mb-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-4">
+              <span class="eyebrow mb-2">Service Client</span>
+              <h2 class="font-display text-3xl md:text-4xl font-extrabold text-[#0F3D91] mb-2">
                 Envoyez-nous un message
               </h2>
-              <p class="text-gray-600">
-                Remplissez le formulaire ci-dessous et nous vous répondrons dans
-                les plus brefs délais.
+              <p class="text-slate-600 text-sm">
+                Remplissez le formulaire ci-dessous et notre équipe vous répondra rapidement.
               </p>
             </div>
 
@@ -23,7 +21,7 @@
                 <div>
                   <label
                     for="name"
-                    class="block text-sm font-medium text-gray-700 mb-2"
+                    class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2"
                     >Nom complet</label
                   >
                   <input
@@ -31,14 +29,14 @@
                     id="name"
                     v-model="name"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0F3D91] focus:border-transparent transition-all duration-200 text-sm"
                     placeholder="Votre nom"
                   />
                 </div>
                 <div>
                   <label
                     for="email"
-                    class="block text-sm font-medium text-gray-700 mb-2"
+                    class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2"
                     >Email</label
                   >
                   <input
@@ -46,7 +44,7 @@
                     id="email"
                     v-model="email"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0F3D91] focus:border-transparent transition-all duration-200 text-sm"
                     placeholder="votre@email.com"
                   />
                 </div>
@@ -55,35 +53,35 @@
               <div>
                 <label
                   for="phone"
-                  class="block text-sm font-medium text-gray-700 mb-2"
+                  class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2"
                   >Téléphone (optionnel)</label
                 >
                 <input
                   type="tel"
                   id="phone"
                   v-model="phone"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
-                  placeholder="+221 XX XXX XX XX"
+                  class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0F3D91] focus:border-transparent transition-all duration-200 text-sm"
+                  placeholder="+221 77 000 00 00"
                 />
               </div>
 
               <div>
                 <label
                   for="subject"
-                  class="block text-sm font-medium text-gray-700 mb-2"
+                  class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2"
                   >Sujet</label
                 >
                 <select
                   id="subject"
                   v-model="subject"
                   required
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                  class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0F3D91] focus:border-transparent transition-all duration-200 text-sm"
                 >
                   <option value="">Choisissez un sujet</option>
                   <option value="commande">Question sur une commande</option>
-                  <option value="produit">Information produit</option>
-                  <option value="livraison">Livraison</option>
-                  <option value="partenariat">Partenariat</option>
+                  <option value="produit">Information produit / Pack</option>
+                  <option value="livraison">Livraison Dakar & Régions</option>
+                  <option value="partenariat">Établissement / École</option>
                   <option value="autre">Autre</option>
                 </select>
               </div>
@@ -91,7 +89,7 @@
               <div>
                 <label
                   for="message"
-                  class="block text-sm font-medium text-gray-700 mb-2"
+                  class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2"
                   >Message</label
                 >
                 <textarea
@@ -99,7 +97,7 @@
                   v-model="message"
                   required
                   rows="5"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 resize-none"
+                  class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#0F3D91] focus:border-transparent transition-all duration-200 resize-none text-sm"
                   placeholder="Décrivez votre demande en détail..."
                 ></textarea>
               </div>
@@ -109,7 +107,7 @@
                 <button
                   type="submit"
                   :disabled="isLoading"
-                  class="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center"
+                  class="flex-1 bg-[#0F3D91] hover:bg-[#0b2f70] disabled:bg-slate-300 text-white font-extrabold text-sm py-4 px-6 rounded-full transition-all duration-200 transform hover:scale-105 shadow-md flex items-center justify-center gap-2"
                 >
                   <svg
                     v-if="isLoading"
@@ -132,10 +130,8 @@
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  {{ isLoading ? "Envoi en cours..." : "Envoyer le message" }}
+                  <span>{{ isLoading ? "Envoi en cours..." : "Envoyer le message →" }}</span>
                 </button>
-
-                <!-- Bouton de test debug -->
               </div>
             </form>
           </div>
@@ -143,10 +139,11 @@
           <!-- Contact Info -->
           <div class="space-y-8">
             <!-- WhatsApp Card -->
-            <div class="bg-green-700 rounded-2xl shadow-xl p-8 text-white">
+            <div class="bg-[#0F3D91] rounded-3xl shadow-lift p-8 text-white relative overflow-hidden">
+              <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-[#F4C542]/20 rounded-full blur-2xl"></div>
               <div class="flex items-center mb-6">
                 <div
-                  class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4"
+                  class="w-12 h-12 bg-[#F4C542] text-slate-950 rounded-2xl flex items-center justify-center mr-4 shadow-sm"
                 >
                   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -155,67 +152,38 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xl font-bold">Commande rapide</h3>
-                  <p class="text-green-100">WhatsApp Business</p>
+                  <h3 class="font-display text-xl font-extrabold">Commande rapide</h3>
+                  <p class="text-[#F4C542] font-bold text-xs uppercase tracking-wider">WhatsApp Business</p>
                 </div>
               </div>
-              <p class="text-green-100 mb-6">
-                Besoin d'une commande urgente ? Contactez-nous directement sur
-                WhatsApp pour un service ultra-rapide !
+              <p class="text-white/80 text-sm mb-6 leading-relaxed">
+                Besoin d'une commande urgente ou d'un conseil ? Contactez-nous directement sur WhatsApp pour un accompagnement instantané.
               </p>
               <a
-                href="https://wa.me/22177770456"
+                href="https://wa.me/221771133926"
                 target="_blank"
-                class="inline-flex items-center bg-white text-green-600 font-semibold py-3 px-6 rounded-lg hover:bg-green-50 transition-all duration-200 transform hover:scale-105"
+                class="inline-flex items-center bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 shadow-md"
               >
-                <svg
-                  class="w-5 h-5 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.884 3.688"
-                  />
-                </svg>
-                Discuter maintenant
+                💬 Discuter maintenant sur WhatsApp
               </a>
             </div>
 
             <!-- Contact Details -->
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-              <h3 class="text-2xl font-bold text-gray-900 mb-6">
+            <div class="bg-white rounded-3xl border-2 border-slate-200/80 shadow-soft p-8">
+              <h3 class="font-display text-2xl font-extrabold text-[#0F3D91] mb-6">
                 Nos coordonnées
               </h3>
 
               <div class="space-y-6">
                 <div class="flex items-start">
                   <div
-                    class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mr-4 flex-shrink-0"
+                    class="w-10 h-10 bg-[#0F3D91]/10 text-[#0F3D91] rounded-2xl flex items-center justify-center mr-4 flex-shrink-0 font-bold"
                   >
-                    <svg
-                      class="w-6 h-6 text-emerald-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      ></path>
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      ></path>
-                    </svg>
+                    📍
                   </div>
                   <div>
-                    <h4 class="font-semibold text-gray-900">Adresse</h4>
-                    <p class="text-gray-600">Rue Exemple</p>
-                    <p class="text-gray-600">Dakar, Sénégal</p>
+                    <h4 class="font-bold text-slate-900 text-sm">Adresse</h4>
+                    <p class="text-slate-600 text-xs mt-0.5">Ouakam, Dakar, Sénégal</p>
                   </div>
                 </div>
 
@@ -239,7 +207,7 @@
                   </div>
                   <div>
                     <h4 class="font-semibold text-gray-900">Téléphone</h4>
-                    <p class="text-gray-600">+221 77 770 456</p>
+                    <p class="text-gray-600">+221 77 113 39 26</p>
                     <p class="text-sm text-gray-500">
                       Service client disponible
                     </p>
@@ -372,7 +340,7 @@ const canSendWhatsApp = computed(() => {
 });
 
 // Configuration WhatsApp
-const WHATSAPP_BUSINESS_NUMBER = "221782911844";
+const WHATSAPP_BUSINESS_NUMBER = "221771133926";
 
 // FAQ data
 const faqs = ref([
@@ -529,7 +497,7 @@ function toggleFaq(index: number) {
 
 // Fonction de test simple pour WhatsApp
 function testWhatsApp() {
-  const testUrl = `https://wa.me/221782911844?text=Test depuis EduShop`;
+  const testUrl = `https://wa.me/221771133926?text=Test depuis EduShop`;
   console.log("Test WhatsApp URL:", testUrl);
   window.open(testUrl, "_blank");
 }

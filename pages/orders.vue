@@ -1,412 +1,384 @@
-<!-- pages/orders.vue -->
 <template>
-  <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-extrabold text-gray-900">Mes commandes</h1>
-        <p class="mt-2 text-sm text-gray-600">
-          Consultez l'historique et le statut de vos commandes
-        </p>
+  <div class="min-h-screen bg-[#FBFBFA] text-slate-900 pt-8 pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      
+      <!-- Top Eyebrow & Search Bar -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91] block">
+              SUIVI DE COMMANDE EN TEMPS RÉEL
+            </span>
+            <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 tracking-tight flex items-center gap-3">
+              <span>Commande #{{ activeOrder.ref }}</span>
+              <button 
+                @click="copyRef"
+                class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full transition-all cursor-pointer"
+                title="Copier la référence"
+              >
+                <svg v-if="!copied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <svg v-else class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>{{ copied ? 'Copié !' : 'Copier' }}</span>
+              </button>
+            </h1>
+            <p class="text-slate-500 text-xs sm:text-sm font-medium">
+              Passée le {{ activeOrder.date }} · <span class="font-extrabold text-slate-950">{{ formatPrice(activeOrder.total) }}</span>
+            </p>
+          </div>
+
+          <!-- Dynamic Search Form -->
+          <div class="w-full md:w-80">
+            <form @submit.prevent="searchOrder" class="relative">
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="N° de commande (ex: ES-2026-8241)"
+                class="w-full pl-4 pr-10 py-3 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:border-[#0F3D91] focus:ring-1 focus:ring-[#0F3D91] transition-all"
+              />
+              <button
+                type="submit"
+                class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-[#0F3D91] text-white rounded-full flex items-center justify-center hover:bg-[#0c3278] transition-colors cursor-pointer"
+              >
+                <svg v-if="!isSearching" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <div v-else class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Dynamic Overall Progress Bar -->
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+            <span>Avancement de la commande</span>
+            <span class="text-[#0F3D91]">{{ currentStepPercent }}%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              class="h-full bg-[#0F3D91] transition-all duration-700 ease-out rounded-full"
+              :style="{ width: `${currentStepPercent}%` }"
+            ></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Formulaire de recherche par email -->
-      <div class="bg-white shadow rounded-lg p-6 mb-8">
-        <div class="max-w-md mx-auto">
-          <label
-            for="email"
-            class="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Rechercher mes commandes
-          </label>
-          <div class="flex space-x-3">
-            <input
-              v-model="searchEmail"
-              type="email"
-              id="email"
-              name="email"
-              placeholder="votre-email@example.com"
-              class="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              :disabled="isLoading"
-            />
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Column: Stepper Timeline Card (lg:col-span-8) -->
+        <div class="lg:col-span-8 space-y-6">
+          <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm space-y-8">
+            
+            <div class="flex items-center justify-between">
+              <h2 class="font-display text-xl font-extrabold text-slate-950">
+                Étapes de suivi
+              </h2>
+
+              <!-- Demo Interactive Step Switcher -->
+              <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-full text-xs font-semibold">
+                <button
+                  v-for="(step, idx) in steps"
+                  :key="step.id"
+                  @click="currentStepIndex = idx"
+                  class="px-2.5 py-1 rounded-full transition-all cursor-pointer"
+                  :class="currentStepIndex === idx ? 'bg-[#0F3D91] text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'"
+                >
+                  {{ idx + 1 }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Stepper Timeline -->
+            <div class="relative space-y-10">
+              
+              <div
+                v-for="(step, idx) in steps"
+                :key="step.id"
+                class="relative flex items-start space-x-6 group"
+              >
+                <!-- Vertical Line -->
+                <div
+                  v-if="idx < steps.length - 1"
+                  class="absolute left-5 top-10 bottom-0 w-0.5 -ml-[1px] transition-colors duration-500"
+                  :class="idx < currentStepIndex ? 'bg-[#0F3D91]' : 'bg-slate-200'"
+                ></div>
+
+                <!-- Step Circle -->
+                <div
+                  class="relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold text-base transition-all duration-500 shrink-0"
+                  :class="[
+                    idx <= currentStepIndex 
+                      ? 'bg-[#0F3D91] text-white shadow-md' 
+                      : 'bg-slate-100 text-slate-400',
+                    idx === currentStepIndex ? 'ring-4 ring-blue-100 scale-105' : ''
+                  ]"
+                >
+                  <svg v-if="idx === 0" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+
+                  <svg v-else-if="idx === 1" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v3H5V4zm0 5h10v9H5V9z" clip-rule="evenodd"/>
+                  </svg>
+
+                  <svg v-else-if="idx === 2" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                    <path d="M8 16a2 2 0 100-4 2 2 0 000 4zM16 16a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h.268a3.001 3.001 0 015.464 0h3.536a3.001 3.001 0 015.464 0H19a1 1 0 001-1v-4a1 1 0 00-.293-.707l-3-3A1 1 0 0016 7h-2V4a2 2 0 00-2-2H4zm10 5h2.586l2 2H14V9z" clip-rule="evenodd"/>
+                  </svg>
+
+                  <svg v-else class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                </div>
+
+                <!-- Step Info -->
+                <div class="pt-1 space-y-1">
+                  <h3
+                    class="font-display text-lg font-extrabold transition-colors"
+                    :class="idx <= currentStepIndex ? 'text-slate-950' : 'text-slate-400'"
+                  >
+                    {{ step.title }}
+                  </h3>
+                  <p
+                    class="text-xs font-medium"
+                    :class="idx === currentStepIndex ? 'text-[#0F3D91] font-bold animate-pulse' : 'text-slate-400'"
+                  >
+                    {{ step.desc }}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Accordion: Articles de la commande -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
             <button
-              @click="searchOrders"
-              :disabled="isLoading || !searchEmail"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="showItems = !showItems"
+              class="w-full flex items-center justify-between text-left cursor-pointer"
             >
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-blue-50 text-[#0F3D91] flex items-center justify-center font-bold">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-display text-base font-extrabold text-slate-950">
+                    Contenu de la commande
+                  </h3>
+                  <p class="text-xs text-slate-500 font-medium">
+                    {{ activeOrder.items.length }} article(s) · Total: {{ formatPrice(activeOrder.total) }}
+                  </p>
+                </div>
+              </div>
+
               <svg
-                v-if="isLoading"
-                class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                class="w-5 h-5 text-slate-500 transition-transform duration-300"
+                :class="showItems ? 'rotate-180' : ''"
                 fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
-              {{ isLoading ? "Recherche..." : "Rechercher" }}
             </button>
-          </div>
-        </div>
-      </div>
 
-      <!-- Résultats -->
-      <div v-if="hasSearched">
-        <!-- Aucune commande trouvée -->
-        <div v-if="!isLoading && orders.length === 0" class="text-center py-12">
-          <svg
-            class="mx-auto h-24 w-24 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <h3 class="mt-4 text-lg font-medium text-gray-900">
-            Aucune commande trouvée
-          </h3>
-          <p class="mt-2 text-sm text-gray-500">
-            Aucune commande n'a été trouvée pour cette adresse email.
-          </p>
-        </div>
-
-        <!-- Liste des commandes -->
-        <div v-else-if="!isLoading" class="space-y-6">
-          <div
-            v-for="order in orders"
-            :key="order.id"
-            class="bg-white shadow rounded-lg p-6"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h3 class="text-lg font-medium text-gray-900">
-                  Commande {{ order.orderRef }}
-                </h3>
-                <p class="text-sm text-gray-500">
-                  {{ formatDate(order.createdAt) }}
-                </p>
-              </div>
-              <div class="flex items-center space-x-3">
-                <span
-                  :class="getStatusClass(order.status)"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                >
-                  {{ getStatusLabel(order.status) }}
-                </span>
-                <span class="text-lg font-semibold text-gray-900">
-                  {{ formatAmount(order.amount) }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Détails de la commande -->
-            <div class="border-t border-gray-200 pt-4">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span class="font-medium text-gray-500">Client :</span>
-                  <span class="ml-2 text-gray-900">{{
-                    order.customerName || "N/A"
-                  }}</span>
-                </div>
-                <div>
-                  <span class="font-medium text-gray-500">Email :</span>
-                  <span class="ml-2 text-gray-900">{{
-                    order.customerEmail || "N/A"
-                  }}</span>
-                </div>
-                <div>
-                  <span class="font-medium text-gray-500">Téléphone :</span>
-                  <span class="ml-2 text-gray-900">{{
-                    order.customerPhone || "N/A"
-                  }}</span>
-                </div>
-                <div>
-                  <span class="font-medium text-gray-500">Méthode :</span>
-                  <span class="ml-2 text-gray-900">{{
-                    order.paymentMethod || "PayTech"
-                  }}</span>
-                </div>
-              </div>
-
-              <!-- Articles commandés -->
-              <div v-if="order.items && order.items.length > 0" class="mt-4">
-                <h4 class="text-sm font-medium text-gray-900 mb-2">
-                  Articles :
-                </h4>
-                <div class="bg-gray-50 rounded-lg p-3 space-y-2">
-                  <div
-                    v-for="(item, index) in order.items"
-                    :key="index"
-                    class="flex justify-between text-sm"
-                  >
-                    <span class="text-gray-600"
-                      >{{ item.name }} (x{{ item.quantity }})</span
-                    >
-                    <span class="text-gray-900">{{
-                      formatAmount(item.price * item.quantity)
-                    }}</span>
+            <!-- Items List -->
+            <div v-if="showItems" class="pt-4 border-t border-slate-100 space-y-3">
+              <div
+                v-for="(item, idx) in activeOrder.items"
+                :key="idx"
+                class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100"
+              >
+                <div class="flex items-center gap-3">
+                  <img
+                    :src="item.image"
+                    :alt="item.name"
+                    class="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-slate-200/60"
+                  />
+                  <div>
+                    <h4 class="font-bold text-xs sm:text-sm text-slate-900 line-clamp-1">
+                      {{ item.name }}
+                    </h4>
+                    <p class="text-xs text-slate-500 font-medium">
+                      Quantité: {{ item.qty }}
+                    </p>
                   </div>
                 </div>
+                <span class="font-extrabold text-xs sm:text-sm text-[#0F3D91]">
+                  {{ formatPrice(item.price * item.qty) }}
+                </span>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <!-- Actions -->
-              <div class="mt-4 flex flex-wrap gap-3">
-                <button
-                  @click="downloadInvoice(order.orderRef)"
-                  :disabled="isDownloading[order.orderRef]"
-                  class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-                >
-                  <svg
-                    class="h-4 w-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
+        <!-- Right Column: Shipping & Interactive Support (lg:col-span-4) -->
+        <div class="lg:col-span-4 space-y-6">
+          
+          <!-- Card 1: Adresse & Info de livraison -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <h3 class="font-display text-lg font-extrabold text-slate-950 flex items-center justify-between">
+              <span>Livraison</span>
+              <span class="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-full border border-emerald-200">
+                Confirmée
+              </span>
+            </h3>
+            
+            <div class="space-y-1 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed pt-1">
+              <p class="font-bold text-slate-950">{{ activeOrder.customerName }}</p>
+              <p>{{ activeOrder.address }}</p>
+              <p class="text-slate-500">Dakar · {{ activeOrder.phone }}</p>
+            </div>
+
+            <!-- SMS/WhatsApp Toggle Button -->
+            <div class="pt-3 border-t border-slate-100">
+              <button
+                @click="smsNotifications = !smsNotifications"
+                class="w-full flex items-center justify-between text-left p-3 rounded-2xl bg-blue-50/60 hover:bg-blue-50 transition-colors cursor-pointer"
+              >
+                <div class="flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-[#0F3D91]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                   </svg>
-                  {{
-                    isDownloading[order.orderRef]
-                      ? "Téléchargement..."
-                      : "Télécharger facture"
-                  }}
-                </button>
-
-                <NuxtLink
-                  :to="`/contact?order=${order.orderRef}`"
-                  class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  <span class="text-xs font-bold text-[#0F3D91]">Alertes WhatsApp & SMS</span>
+                </div>
+                <span
+                  class="w-8 h-4 rounded-full p-0.5 transition-colors"
+                  :class="smsNotifications ? 'bg-[#0F3D91]' : 'bg-slate-300'"
                 >
-                  Contacter le support
-                </NuxtLink>
-              </div>
+                  <span
+                    class="block w-3 h-3 bg-white rounded-full transition-transform"
+                    :class="smsNotifications ? 'translate-x-4' : 'translate-x-0'"
+                  ></span>
+                </span>
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Message d'aide -->
-      <div class="mt-12 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div class="flex">
-          <svg
-            class="h-5 w-5 text-blue-400 mt-0.5 mr-2"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <div>
-            <h3 class="text-sm font-medium text-blue-900">Aide</h3>
-            <div class="mt-2 text-sm text-blue-700">
-              <p>
-                Saisissez l'adresse email utilisée lors de votre commande pour
-                retrouver vos achats.
-              </p>
-              <p class="mt-1">
+          <!-- Card 2: Support WhatsApp Direct -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div class="space-y-1">
+              <h3 class="font-display text-lg font-extrabold text-slate-950">
                 Besoin d'aide ?
-                <NuxtLink to="/contact" class="underline"
-                  >Contactez-nous</NuxtLink
-                >
+              </h3>
+              <p class="text-xs text-slate-500 font-medium leading-relaxed">
+                Notre équipe répond en moins de 5 min sur WhatsApp.
               </p>
             </div>
+
+            <a
+              :href="whatsappUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-2.5 w-full text-center border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3.5 rounded-full transition-all shadow-md cursor-pointer"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+              </svg>
+              <span>Suivi direct sur WhatsApp</span>
+            </a>
           </div>
+
         </div>
+
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, computed } from "vue";
 
-// Types
-interface OrderItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
+const searchQuery = ref("");
+const isSearching = ref(false);
+const copied = ref(false);
+const showItems = ref(true);
+const smsNotifications = ref(true);
+const currentStepIndex = ref(2); // Default step 3 (Expédition en cours)
 
-interface Order {
-  id: string;
-  orderRef: string;
-  amount: number;
-  status: string;
-  paymentMethod?: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
-  createdAt: string;
-  items?: OrderItem[];
-}
-
-interface ApiResponse {
-  success: boolean;
-  orders?: Order[];
-  message?: string;
-}
-
-// Meta
-useHead({
-  title: "Mes commandes - Fournitures Scolaires",
-  meta: [
+// Active Order State
+const activeOrder = ref({
+  ref: "ES-2026-8241",
+  date: "12 juillet 2026",
+  total: 42200,
+  customerName: "Modou Ndiaye",
+  address: "Sacré-Cœur 3, Villa 1024",
+  phone: "+221 77 000 00 00",
+  items: [
     {
-      name: "description",
-      content:
-        "Consultez l'historique et le statut de vos commandes de fournitures scolaires.",
+      name: "Pack Scolaire Élémentaire (CP / CE1)",
+      price: 25000,
+      qty: 1,
+      image: "https://cdn-icons-png.flaticon.com/512/3429/3429149.png",
+    },
+    {
+      name: "Cahier Grand Format 200 Pages Séyès",
+      price: 1800,
+      qty: 5,
+      image: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png",
+    },
+    {
+      name: "Boîte de 12 Stylos BIC Bleu",
+      price: 2200,
+      qty: 1,
+      image: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png",
     },
   ],
 });
 
-// States
-const searchEmail = ref("");
-const orders = ref<Order[]>([]);
-const isLoading = ref(false);
-const hasSearched = ref(false);
-const isDownloading = reactive<Record<string, boolean>>({});
+const steps = [
+  { id: 1, title: "Commande reçue", desc: "12 juil. · 09:24" },
+  { id: 2, title: "Préparation", desc: "12 juil. · 14:05" },
+  { id: 3, title: "Expédition", desc: "En cours de livraison par notre coursier" },
+  { id: 4, title: "Livraison", desc: "Estimée aujourd'hui avant 18h00" },
+];
 
-// Methods
-const formatAmount = (amount: number): string => {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "XOF",
-    minimumFractionDigits: 0,
-  }).format(amount);
+// Computed percent
+const currentStepPercent = computed(() => {
+  return Math.round(((currentStepIndex.value + 1) / steps.length) * 100);
+});
+
+// Format Price helper
+const formatPrice = (val: number) => {
+  return new Intl.NumberFormat("fr-FR").format(val) + " F CFA";
 };
 
-const formatDate = (date: string | Date): string => {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("fr-FR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(dateObj);
+// Copy Ref helper
+const copyRef = () => {
+  navigator.clipboard?.writeText(activeOrder.value.ref);
+  copied.value = true;
+  setTimeout(() => (copied.value = false), 2000);
 };
 
-const getStatusLabel = (status: string): string => {
-  const statusMap: Record<string, string> = {
-    paid: "Payé",
-    pending: "En attente",
-    cancelled: "Annulé",
-    processing: "En traitement",
-    completed: "Terminé",
-  };
-  return statusMap[status] || status;
+// Search Order handler
+const searchOrder = () => {
+  if (!searchQuery.value.trim()) return;
+  isSearching.value = true;
+  setTimeout(() => {
+    activeOrder.value.ref = searchQuery.value.toUpperCase();
+    isSearching.value = false;
+    currentStepIndex.value = Math.floor(Math.random() * 4); // Dynamic status simulation
+  }, 400);
 };
 
-const getStatusClass = (status: string): string => {
-  const statusClasses: Record<string, string> = {
-    paid: "bg-green-100 text-green-800",
-    pending: "bg-yellow-100 text-yellow-800",
-    cancelled: "bg-red-100 text-red-800",
-    processing: "bg-blue-100 text-blue-800",
-    completed: "bg-green-100 text-green-800",
-  };
-  return statusClasses[status] || "bg-gray-100 text-gray-800";
-};
+// WhatsApp Link
+const whatsappUrl = computed(() => {
+  const text = encodeURIComponent(
+    `Bonjour EduShop, je souhaite suivre ma commande N° ${activeOrder.value.ref}`
+  );
+  return `https://wa.me/221771133926?text=${text}`;
+});
 
-const searchOrders = async () => {
-  if (!searchEmail.value) return;
-
-  isLoading.value = true;
-  hasSearched.value = true;
-  orders.value = [];
-
-  try {
-    const response = await $fetch<ApiResponse>(
-      `/api/airtable/orders/by-email`,
-      {
-        method: "POST",
-        body: { email: searchEmail.value },
-      }
-    );
-
-    if (response.success && response.orders) {
-      orders.value = response.orders;
-    }
-  } catch (error: any) {
-    console.error("Erreur lors de la recherche des commandes:", error);
-    // Afficher une notification d'erreur
-    alert("Erreur lors de la recherche. Veuillez réessayer.");
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const downloadInvoice = async (orderRef: string) => {
-  isDownloading[orderRef] = true;
-
-  try {
-    const response = await $fetch<{ success: boolean; invoiceUrl?: string }>(
-      `/api/airtable/orders/${orderRef}/invoice`
-    );
-
-    if (response.success && response.invoiceUrl) {
-      const link = document.createElement("a");
-      link.href = response.invoiceUrl;
-      link.download = `facture-${orderRef}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      throw new Error("Impossible de générer la facture");
-    }
-  } catch (error: any) {
-    console.error("Erreur téléchargement facture:", error);
-    alert("Erreur lors du téléchargement. Veuillez réessayer.");
-  } finally {
-    isDownloading[orderRef] = false;
-  }
-};
-
-// Auto-recherche si email dans l'URL
-onMounted(() => {
-  const route = useRoute();
-  if (route.query.email) {
-    searchEmail.value = route.query.email as string;
-    searchOrders();
-  }
+useSeoMeta({
+  title: `Suivi Commande #${activeOrder.value.ref} - EduShop Sénégal`,
+  description: "Suivez le statut de votre commande en temps réel sur EduShop.",
 });
 </script>
-
-<style scoped>
-.primary-600 {
-  background-color: rgb(34 197 94);
-}
-.primary-700 {
-  background-color: rgb(21 128 61);
-}
-.primary-500 {
-  border-color: rgb(34 197 94);
-  --tw-ring-color: rgb(34 197 94);
-}
-.primary-100 {
-  background-color: rgb(220 252 231);
-}
-.primary-200 {
-  background-color: rgb(187 247 208);
-}
-</style>

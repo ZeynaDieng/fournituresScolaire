@@ -1,7 +1,7 @@
 <!-- pages/products/[id].vue -->
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
+    class="min-h-screen bg-[#FBFBFA]"
   >
     <!-- Loading State -->
     <div v-if="pending" class="container mx-auto px-4 py-16">
@@ -30,8 +30,8 @@
     <!-- Product Content -->
     <div v-else-if="product" class="container mx-auto px-4 py-8 lg:py-16">
       <!-- Breadcrumb -->
-      <nav class="flex items-center space-x-2 text-sm text-slate-500 mb-8">
-        <NuxtLink to="/" class="hover:text-emerald-600 transition-colors"
+      <nav class="flex items-center space-x-2 text-sm text-slate-500 mb-8 font-medium">
+        <NuxtLink to="/" class="hover:text-[#0F3D91] transition-colors"
           >Accueil</NuxtLink
         >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -43,7 +43,7 @@
         </svg>
         <NuxtLink
           to="/products"
-          class="hover:text-emerald-600 transition-colors"
+          class="hover:text-[#0F3D91] transition-colors"
           >Produits</NuxtLink
         >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -69,7 +69,7 @@
                 class="absolute top-6 left-6 z-20"
               >
                 <div
-                  class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-3 rounded-2xl shadow-xl"
+                  class="bg-[#F4C542] text-slate-950 px-4 py-2 rounded-full shadow-md font-extrabold text-xs"
                 >
                   <div class="flex items-center gap-2">
                     <svg
@@ -116,12 +116,12 @@
 
               <!-- Main Product Image -->
               <div
-                class="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl overflow-hidden shadow-2xl"
+                class="aspect-square bg-[#F8F6F0] rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 flex items-center justify-center p-8"
               >
                 <img
                   :src="selectedImage || product.image"
                   :alt="product.name"
-                  class="w-full h-full object-cover p-8 transition-all duration-700 group-hover:scale-105"
+                  class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             </div>
@@ -132,18 +132,18 @@
                 v-for="(image, index) in productImages"
                 :key="index"
                 @click="selectedImage = image"
-                class="aspect-square bg-slate-100 rounded-2xl overflow-hidden border-2 transition-all duration-300 hover:border-emerald-300 hover:shadow-lg"
+                class="aspect-square bg-[#F8F6F0] rounded-2xl overflow-hidden border-2 transition-all duration-300 flex items-center justify-center p-2"
                 :class="{
-                  'border-emerald-500 shadow-lg':
+                  'border-[#0F3D91] shadow-md':
                     selectedImage === image || (!selectedImage && index === 0),
-                  'border-slate-200':
+                  'border-slate-200/80 hover:border-[#0F3D91]/40':
                     selectedImage !== image && (selectedImage || index !== 0),
                 }"
               >
                 <img
                   :src="image"
                   :alt="`${product.name} - Image ${index + 1}`"
-                  class="w-full h-full object-cover p-2 transition-transform duration-300 hover:scale-110"
+                  class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 hover:scale-105"
                 />
               </button>
             </div>
@@ -154,25 +154,8 @@
               class="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 p-6 shadow-lg"
             >
               <h3
-                class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3"
+                class="font-display text-xl sm:text-2xl font-extrabold text-[#0F3D91] mb-4"
               >
-                <div
-                  class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"
-                >
-                  <svg
-                    class="w-5 h-5 text-emerald-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
                 Caractéristiques
               </h3>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -182,19 +165,9 @@
                   class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100"
                 >
                   <div
-                    class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0"
+                    class="w-6 h-6 bg-[#0F3D91] text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs shadow-xs"
                   >
-                    <svg
-                      class="w-3 h-3 text-emerald-600"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
+                    ✓
                   </div>
                   <div>
                     <div class="font-medium text-slate-900">
@@ -215,22 +188,9 @@
           <div class="sticky top-8 space-y-8">
             <!-- Header -->
             <div>
-              <!-- Category & SKU -->
-              <div class="flex items-center justify-between mb-4">
-                <span
-                  class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-800"
-                >
-                  {{ product.category }}
-                </span>
-                <div class="flex items-center gap-2 text-sm text-slate-500">
-                  <span>SKU:</span>
-                  <span class="font-mono font-medium">{{ product.id }}</span>
-                </div>
-              </div>
-
               <!-- Title -->
               <h1
-                class="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight mb-4"
+                class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F3D91] leading-tight mb-4"
               >
                 {{ product.name }}
               </h1>
@@ -256,7 +216,7 @@
                   <span class="text-slate-500">(127 avis)</span>
                 </div>
                 <button
-                  class="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                  class="text-[#0F3D91] hover:text-[#0b2f70] font-bold text-sm transition-colors"
                 >
                   Voir les avis
                 </button>
@@ -270,67 +230,45 @@
 
             <!-- Pricing -->
             <div
-              class="bg-gradient-to-br from-slate-50 to-emerald-50/50 rounded-3xl p-6 border border-slate-200"
+              class="bg-white rounded-3xl p-6 border-2 border-slate-200/80 shadow-xs space-y-4"
             >
-              <div class="space-y-4">
-                <div class="flex items-end gap-4">
-                  <div class="flex items-baseline gap-3">
-                    <span class="text-4xl font-bold text-slate-900">
-                      {{ formatPrice(product?.price) }}
-                    </span>
-                    <span class="text-lg text-slate-500">TTC</span>
-                  </div>
-                  <div
-                    v-if="product.originalPrice"
-                    class="flex flex-col items-end"
-                  >
-                    <span class="text-lg text-slate-400 line-through">
-                      {{ formatPrice(product?.originalPrice) }}
-                    </span>
-                    <span class="text-sm font-semibold text-red-600">
-                      Économie:
-                      {{
-                        formatPrice(
-                          (product?.originalPrice || 0) - (product?.price || 0)
-                        )
-                      }}
-                    </span>
-                  </div>
-                </div>
+              <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                <span class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F3D91] tracking-tight">
+                  {{ formatPrice(product?.price) }}
+                </span>
+                
+                <span v-if="product.originalPrice" class="text-lg text-slate-400 line-through font-semibold">
+                  {{ formatPrice(product?.originalPrice) }}
+                </span>
 
-                <div class="flex items-center justify-between text-sm">
-                  <div class="flex items-center gap-2 text-slate-600">
-                    <svg
-                      class="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    <span>Livraison gratuite dès 50FCFA</span>
-                  </div>
-                  <div
-                    class="flex items-center gap-2"
+                <span v-if="product.originalPrice" class="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-100/80">
+                  -{{
+                    Math.round(
+                      (1 - product.price / product.originalPrice) * 100
+                    )
+                  }}% DE RÉDUCTION
+                </span>
+              </div>
+
+              <div class="flex items-center justify-between text-xs pt-3 border-t border-slate-100 font-semibold text-slate-600">
+                <span>Livraison rapide partout au Sénégal</span>
+                <div
+                  class="flex items-center gap-1.5"
+                  :class="{
+                    'text-emerald-700 font-bold': product.inStock,
+                    'text-rose-600 font-bold': !product.inStock,
+                  }"
+                >
+                  <span
                     :class="{
-                      'text-green-600': product.inStock,
-                      'text-red-600': !product.inStock,
+                      'w-2 h-2 bg-emerald-500 rounded-full animate-pulse':
+                        product.inStock,
+                      'w-2 h-2 bg-rose-500 rounded-full': !product.inStock,
                     }"
-                  >
-                    <div
-                      :class="{
-                        'w-2 h-2 bg-green-500 rounded-full animate-pulse':
-                          product.inStock,
-                        'w-2 h-2 bg-red-500 rounded-full': !product.inStock,
-                      }"
-                    ></div>
-                    <span class="font-medium">
-                      {{ product.inStock ? "En stock" : "Rupture de stock" }}
-                    </span>
-                  </div>
+                  ></span>
+                  <span>
+                    {{ product.inStock ? "En stock · Expédition 24h" : "Rupture de stock" }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -338,35 +276,23 @@
             <!-- Quantity & Actions -->
             <div class="space-y-6">
               <!-- Quantity Selector -->
-              <div>
-                <label class="block text-lg font-semibold text-slate-900 mb-3">
-                  Quantité
+              <div class="flex items-center gap-4">
+                <label class="text-sm font-bold text-slate-900">
+                  Quantité :
                 </label>
                 <div
-                  class="flex items-center bg-slate-100 rounded-2xl overflow-hidden w-fit"
+                  class="flex items-center bg-white rounded-full border-2 border-slate-200/80 p-1"
                 >
                   <button
                     @click="decreaseQuantity"
                     :disabled="quantity <= 1"
-                    class="p-4 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    class="w-9 h-9 rounded-full bg-slate-100 hover:bg-[#0F3D91] hover:text-white flex items-center justify-center font-bold text-slate-700 disabled:opacity-30 transition-all cursor-pointer"
                   >
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M20 12H4"
-                      />
-                    </svg>
+                    -
                   </button>
 
                   <span
-                    class="px-6 py-4 font-bold text-xl text-slate-900 min-w-[4rem] text-center bg-white"
+                    class="px-5 font-extrabold text-base text-slate-900 min-w-[2.5rem] text-center"
                   >
                     {{ quantity }}
                   </span>
@@ -374,46 +300,31 @@
                   <button
                     @click="increaseQuantity"
                     :disabled="quantity >= maxQuantity"
-                    class="p-4 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    class="w-9 h-9 rounded-full bg-slate-100 hover:bg-[#0F3D91] hover:text-white flex items-center justify-center font-bold text-slate-700 disabled:opacity-30 transition-all cursor-pointer"
                   >
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      />
-                    </svg>
+                    +
                   </button>
                 </div>
               </div>
 
               <!-- Action Buttons -->
-              <div class="space-y-4">
+              <div class="space-y-4 pt-2">
                 <button
                   @click="addToCart"
                   :disabled="!product.inStock || isLoading"
-                  class="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-5 rounded-2xl shadow-xl hover:shadow-2xl transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-full bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-bold text-base py-4 rounded-full shadow-md transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
                 >
-                  <div
-                    class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  ></div>
-                  <div class="relative flex items-center justify-center gap-3">
-                    <div v-if="!isLoading" class="flex items-center gap-3">
-                      <CartIcon :size="24" />
-                      <span class="text-xl">Ajouter au panier</span>
-                    </div>
-                    <div v-else class="flex items-center gap-3">
-                      <div
-                        class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"
-                      ></div>
-                      <span class="text-xl">Ajout en cours...</span>
-                    </div>
+                  <div v-if="!isLoading" class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span>Ajouter au panier</span>
+                  </div>
+                  <div v-else class="flex items-center gap-3">
+                    <div
+                      class="w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"
+                    ></div>
+                    <span>Ajout en cours...</span>
                   </div>
                 </button>
 
@@ -421,7 +332,7 @@
                   <button
                     @click="buyNow"
                     :disabled="!product.inStock"
-                    class="flex items-center justify-center gap-2 py-4 px-6 border-2 border-slate-300 hover:border-emerald-400 text-slate-700 hover:text-emerald-700 font-semibold rounded-2xl transition-all duration-300 hover:bg-emerald-50 disabled:opacity-50"
+                    class="flex items-center justify-center gap-2 py-3.5 px-6 bg-[#0F3D91] hover:bg-[#0b2f70] text-white font-bold text-sm rounded-full transition-all shadow-sm disabled:opacity-50 cursor-pointer"
                   >
                     <svg
                       class="w-5 h-5"
@@ -440,7 +351,7 @@
                   </button>
 
                   <button
-                    class="flex items-center justify-center gap-2 py-4 px-6 border-2 border-slate-300 hover:border-emerald-400 text-slate-700 hover:text-emerald-700 font-semibold rounded-2xl transition-all duration-300 hover:bg-emerald-50"
+                    class="flex items-center justify-center gap-2 py-3.5 px-6 border-2 border-slate-200 hover:border-[#0F3D91] text-slate-700 hover:text-[#0F3D91] font-bold text-sm rounded-full transition-all hover:bg-[#0F3D91]/5 cursor-pointer"
                   >
                     <svg
                       class="w-5 h-5"
@@ -465,45 +376,26 @@
                 v-if="bulkOptions.length > 0"
                 class="bg-white rounded-3xl border border-slate-200 p-6"
               >
-                <div class="flex items-center gap-3 mb-4">
-                  <div
-                    class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"
-                  >
-                    <svg
-                      class="w-5 h-5 text-emerald-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                      />
-                    </svg>
-                  </div>
-                  <h3 class="text-lg font-bold text-slate-900">
-                    Tarifs avec réductions
-                  </h3>
-                </div>
+                <h3 class="font-display text-lg font-extrabold text-[#0F3D91] mb-4">
+                  Tarifs avec réductions
+                </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <button
                     v-for="option in bulkOptions"
                     :key="option.quantity"
                     @click="selectBulkOption(option)"
-                    class="group/bulk p-4 border-2 border-slate-200 hover:border-emerald-300 text-center rounded-2xl transition-all duration-300 hover:bg-emerald-50"
+                    class="group/bulk p-4 border-2 border-slate-200 hover:border-[#0F3D91] text-center rounded-2xl transition-all duration-300 hover:bg-[#0F3D91]/5 cursor-pointer"
                     :class="{
-                      'border-emerald-500 bg-emerald-50':
+                      'border-[#0F3D91] bg-[#0F3D91]/10':
                         quantity === option.quantity,
                     }"
                   >
                     <div
-                      class="text-2xl font-bold text-slate-900 group-hover/bulk:text-emerald-700 mb-1"
+                      class="text-2xl font-bold text-slate-900 group-hover/bulk:text-[#0F3D91] mb-1"
                     >
                       {{ option.quantity }}x
                     </div>
-                    <div class="text-lg font-semibold text-emerald-600 mb-1">
+                    <div class="text-lg font-bold text-[#0F3D91] mb-1">
                       {{ formatPrice(option?.unitPrice) }} /unité
                     </div>
                     <div class="text-sm text-slate-500">
@@ -515,12 +407,12 @@
             </div>
 
             <!-- Trust Indicators -->
-            <div class="bg-slate-50 rounded-3xl p-6 border border-slate-200">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs">
               <h3 class="font-bold text-slate-900 mb-4">Garanties</h3>
               <div class="space-y-3">
                 <div class="flex items-center gap-3">
                   <svg
-                    class="w-5 h-5 text-emerald-600"
+                    class="w-5 h-5 text-[#0F3D91]"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -530,13 +422,13 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  <span class="text-slate-700"
+                  <span class="text-slate-700 font-medium"
                     >Garantie satisfait ou remboursé 30 jours</span
                   >
                 </div>
                 <div class="flex items-center gap-3">
                   <svg
-                    class="w-5 h-5 text-emerald-600"
+                    class="w-5 h-5 text-[#0F3D91]"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -546,11 +438,11 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  <span class="text-slate-700">Expédition sous 24-48h</span>
+                  <span class="text-slate-700 font-medium">Expédition sous 24-48h</span>
                 </div>
                 <div class="flex items-center gap-3">
                   <svg
-                    class="w-5 h-5 text-emerald-600"
+                    class="w-5 h-5 text-[#0F3D91]"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -560,11 +452,11 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  <span class="text-slate-700">Support client 7j/7</span>
+                  <span class="text-slate-700 font-medium">Support client 7j/7</span>
                 </div>
                 <div class="flex items-center gap-3">
                   <svg
-                    class="w-5 h-5 text-emerald-600"
+                    class="w-5 h-5 text-[#0F3D91]"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -574,7 +466,7 @@
                       clip-rule="evenodd"
                     />
                   </svg>
-                  <span class="text-slate-700">Paiement sécurisé SSL</span>
+                  <span class="text-slate-700 font-medium">Paiement sécurisé SSL</span>
                 </div>
               </div>
             </div>
@@ -584,7 +476,7 @@
 
       <!-- Additional Information Tabs -->
       <div
-        class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden mb-16"
+        class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden mb-16"
       >
         <div class="border-b border-slate-200">
           <nav class="flex">
@@ -592,9 +484,9 @@
               v-for="tab in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
-              class="px-8 py-6 font-semibold text-lg transition-all duration-300"
+              class="px-8 py-5 font-bold text-base transition-all duration-300 cursor-pointer"
               :class="{
-                'text-emerald-700 border-b-2 border-emerald-500 bg-emerald-50':
+                'text-[#0F3D91] border-b-2 border-[#0F3D91] bg-[#0F3D91]/5':
                   activeTab === tab.id,
                 'text-slate-600 hover:text-slate-900 hover:bg-slate-50':
                   activeTab !== tab.id,
@@ -611,39 +503,31 @@
             v-if="activeTab === 'description'"
             class="prose prose-lg max-w-none"
           >
-            <h3 class="text-2xl font-bold text-slate-900 mb-6">
+            <h3 class="font-display text-2xl font-extrabold text-[#0F3D91] mb-6">
               Description détaillée
             </h3>
             <div class="text-slate-700 leading-relaxed space-y-4">
               <p>{{ product.description }}</p>
               <p>
                 Ce produit de haute qualité est parfaitement adapté pour un
-                usage scolaire intensive. Fabriqué avec des matériaux durables,
-                il garantit une utilisation optimale tout au long de l'année
-                scolaire.
-              </p>
-              <p>
-                Nos produits sont rigoureusement testés et respectent toutes les
-                normes de sécurité en vigueur. Ils sont conçus pour accompagner
-                les étudiants dans leur parcours éducatif avec fiabilité et
-                efficacité.
+                usage scolaire intensif.
               </p>
             </div>
           </div>
 
           <!-- Specifications Tab -->
           <div v-if="activeTab === 'specs'" class="space-y-6">
-            <h3 class="text-2xl font-bold text-slate-900">
+            <h3 class="font-display text-2xl font-extrabold text-[#0F3D91]">
               Spécifications techniques
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div
                 v-for="spec in productSpecs"
                 :key="spec.label"
-                class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl"
+                class="flex justify-between items-center p-4 bg-[#F8F6F0] rounded-2xl"
               >
-                <span class="font-medium text-slate-900">{{ spec.label }}</span>
-                <span class="text-slate-600">{{ spec.value }}</span>
+                <span class="font-bold text-slate-900">{{ spec.label }}</span>
+                <span class="text-slate-600 font-medium">{{ spec.value }}</span>
               </div>
             </div>
           </div>
@@ -651,9 +535,9 @@
           <!-- Reviews Tab -->
           <div v-if="activeTab === 'reviews'" class="space-y-8">
             <div class="flex items-center justify-between">
-              <h3 class="text-2xl font-bold text-slate-900">Avis clients</h3>
+              <h3 class="font-display text-2xl font-extrabold text-[#0F3D91]">Avis clients</h3>
               <button
-                class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-emerald-700 transition-colors"
+                class="bg-[#0F3D91] text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-[#0b2f70] transition-colors cursor-pointer"
               >
                 Écrire un avis
               </button>
@@ -661,7 +545,7 @@
 
             <!-- Reviews Summary -->
             <div
-              class="bg-gradient-to-br from-slate-50 to-emerald-50/30 rounded-3xl p-8 border border-slate-200"
+              class="bg-white rounded-3xl p-8 border border-slate-200/80"
             >
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="text-center">
@@ -755,38 +639,41 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
 import CartIcon from "~/components/icons/CartIcon.vue";
 import { useCartStore } from "~/stores/cart";
 import { useNotifications } from "~/composables/useNotifications";
+import { useAirtableStore } from "~/stores/airtable";
+import type { Product } from "~/stores/products";
 
 const route = useRoute();
 const router = useRouter();
 const cartStore = useCartStore();
 const { showSuccess } = useNotifications();
+const airtableStore = useAirtableStore();
 
 const pending = ref(true);
-const product = ref(null);
-const selectedImage = ref(null);
+const product = ref<Product | null>(null);
+const selectedImage = ref<string | null>(null);
 const quantity = ref(1);
 const maxQuantity = 10;
 const isWishlisted = ref(false);
 const isLoading = ref(false);
 const activeTab = ref("description");
 
-const productImages = ref([]);
-const productFeatures = ref([]);
-const productSpecs = ref([]);
-const productReviews = ref([]);
+const productImages = ref<string[]>([]);
+const productFeatures = ref<{ label: string; value: string }[]>([]);
+const productSpecs = ref<{ label: string; value: string }[]>([]);
+const productReviews = ref<{ id: number; user: string; rating: number; comment: string; date: string }[]>([]);
 const tabs = ref([
   { id: "description", label: "Description" },
   { id: "specs", label: "Spécifications" },
   { id: "reviews", label: "Avis clients" },
 ]);
-const bulkOptions = ref([]);
+const bulkOptions = ref<{ quantity: number; unitPrice: number; discount: number }[]>([]);
 
 const discountPercentage = computed(() => {
   if (!product.value || !product.value.originalPrice) return 0;
@@ -797,8 +684,9 @@ const discountPercentage = computed(() => {
   );
 });
 
-function formatPrice(price) {
-  if (!price || isNaN(price)) {
+function formatPrice(price: number | undefined) {
+  if (price === undefined || isNaN(price)) {
+
     return "0 FCFA";
   }
   // Utiliser XOF (code ISO pour le franc CFA) ou formatage personnalisé
@@ -851,87 +739,43 @@ function addToCart() {
 }
 
 function buyNow() {
-  if (!product.value.inStock) return;
-  alert(`Achat immédiat de ${quantity.value} ${product.value.name}`);
+  if (!product.value?.inStock) return;
+  cartStore.addItem(
+    {
+      id: product.value.id,
+      name: product.value.name,
+      price: product.value.price,
+      image: product.value.image,
+      type: "product",
+    },
+    quantity.value
+  );
+  navigateTo("/checkout");
 }
 
-function selectBulkOption(option) {
+function selectBulkOption(option: { quantity: number; unitPrice: number; discount: number }) {
   quantity.value = option.quantity;
 }
 
-function getRatingPercentage(star) {
+function getRatingPercentage(star: number) {
   const totalReviews = productReviews.value.length;
   if (totalReviews === 0) return 0;
   const count = productReviews.value.filter((r) => r.rating === star).length;
   return Math.round((count / totalReviews) * 100);
 }
 
-function getRatingCount(star) {
+function getRatingCount(star: number) {
   return productReviews.value.filter((r) => r.rating === star).length;
 }
 
-function transformFeatures(features) {
-  if (!features) return [];
-
-  if (typeof features === "string") {
-    // Essayer de parser comme JSON d'abord
-    try {
-      const parsed = JSON.parse(features);
-      return Array.isArray(parsed) ? parsed : features.split(", ");
-    } catch {
-      // Si ce n'est pas du JSON, traiter comme une chaîne simple
-      return features.split(", ");
-    }
-  }
-
-  return features;
-}
-
-async function fetchProductFromAPI(productId) {
-  try {
-    // Utiliser l'API interne au lieu d'appeler directement Airtable
-    const response = await $fetch(`/api/admin/products/${productId}`);
-
-    // Transformer les données d'Airtable au format attendu par le composant
-    return {
-      id: response.id,
-      name: response.Name,
-      category: response.Category,
-      price: response.Price,
-      originalPrice: response["Original Price"] || null,
-      description: response.Description,
-      features: transformFeatures(response.Features),
-      specs: response.Specs
-        ? typeof response.Specs === "string"
-          ? response.Specs.split(", ")
-          : response.Specs
-        : [],
-      inStock: response["In Stock"],
-      stockAlert: response["Stock Alert"],
-      image: response["Image URL"] || response.image,
-      images: response.images || [response["Image URL"]],
-      isPromotion:
-        response["Original Price"] &&
-        response["Original Price"] > response.Price,
-      discountPercent: response["Original Price"]
-        ? Math.round(
-            ((response["Original Price"] - response.Price) /
-              response["Original Price"]) *
-              100
-          )
-        : 0,
-    };
-  } catch (error) {
-    console.error("Erreur lors de la récupération du produit:", error);
-    return null;
-  }
-}
 
 onMounted(async () => {
   try {
-    const productId = route.params.id;
-    // Fetch le produit depuis l'API interne
-    const foundProduct = await fetchProductFromAPI(productId);
+    const productId = route.params.id as string;
+    
+    // Utiliser le Smart Cache du store
+    const foundProduct = await airtableStore.fetchProductById(productId);
+    
     if (!foundProduct) {
       router.push("/404");
       return;
@@ -1021,7 +865,19 @@ onMounted(async () => {
     pending.value = false;
   }
 });
+
+useHead({
+  title: computed(() => (product.value ? `${product.value.name} - EduShop` : 'Produit - EduShop')),
+  meta: [
+    { name: 'description', content: computed(() => product.value?.description || 'Fournitures scolaires de qualité au Sénégal.') },
+    { property: 'og:title', content: computed(() => (product.value ? `${product.value.name} | EduShop Sénégal` : 'EduShop')) },
+    { property: 'og:description', content: computed(() => product.value?.description || 'Achetez vos fournitures scolaires au meilleur prix au Sénégal.') },
+    { property: 'og:image', content: computed(() => product.value?.image || 'https://www.e-du.shop/og-image.jpg') },
+    { property: 'og:type', content: 'product' },
+  ],
+});
 </script>
+
 
 <style scoped>
 /* Optional: any additional custom styles can go here */

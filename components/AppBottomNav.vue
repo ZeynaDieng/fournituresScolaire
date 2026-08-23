@@ -8,8 +8,8 @@
         :to="item.path"
         class="nav-item flex-1"
         :class="{
-          'text-primary-600': $route.path === item.path,
-          'text-gray-500': $route.path !== item.path,
+          'text-[#0F3D91] font-bold': $route.path === item.path,
+          'text-slate-500': $route.path !== item.path,
         }"
       >
         <component :is="item.icon" class="w-6 h-6 mx-auto mb-1" />
@@ -21,8 +21,8 @@
         @click="cartStore.toggleCart()"
         class="nav-item flex-1 relative"
         :class="{
-          'text-primary-600': cartStore.isOpen,
-          'text-gray-500': !cartStore.isOpen,
+          'text-[#0F3D91] font-bold': cartStore.isOpen,
+          'text-slate-500': !cartStore.isOpen,
         }"
       >
         <div class="relative mx-auto w-6 h-6 mb-1">
@@ -31,7 +31,7 @@
           <!-- Counter Badge -->
           <span
             v-if="cartStore.itemCount > 0"
-            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold animate-pulse"
+            class="absolute -top-2 -right-2 bg-[#F4C542] text-slate-950 text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold"
           >
             {{ cartStore.itemCount > 99 ? "99+" : cartStore.itemCount }}
           </span>
@@ -55,17 +55,17 @@ const { navItems } = useNavigation();
 
 <style scoped>
 .bottom-nav {
-  @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 px-2 py-1;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  @apply fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 px-2 py-1;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .nav-item {
-  @apply flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200;
+  @apply flex flex-col items-center justify-center p-2 rounded-lg hover:bg-slate-50 transition-colors duration-200;
   min-height: 60px;
 }
 
 .nav-item.router-link-active {
-  @apply text-primary-600;
+  @apply text-[#0F3D91] font-bold;
 }
 
 /* Animation pour le badge du panier */

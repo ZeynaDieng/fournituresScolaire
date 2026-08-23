@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <AppHeader />
 
     <main class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
       <div class="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -17,10 +16,11 @@
             <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt class="text-sm font-medium text-gray-500">Éditeur du site</dt>
               <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <p>EduShop Sénégal</p>
-                <p>Ouakam Cité Avion, Dakar</p>
-                <p>Email : contact@edushop.sn</p>
-                <p>Téléphone : +221 78 291 18 44</p>
+                <p class="font-bold text-[#0F3D91]">MATKAM (Société Mère)</p>
+                <p class="font-semibold text-slate-700">Service commercial : EduShop Sénégal</p>
+                <p>Ouakam, Dakar, Sénégal</p>
+                <p>Email : contact@e-du.shop</p>
+                <p>Téléphone / WhatsApp : +221 77 113 39 26</p>
                 <p class="mt-2">RCCM : SN-DKR-2023-B-12345</p>
                 <p>NINEA : 0043212345</p>
               </dd>
@@ -164,8 +164,6 @@
         </div>
       </div>
     </main>
-
-    <AppFooter />
   </div>
 </template>
 

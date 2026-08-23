@@ -4,18 +4,22 @@
  * Script pour forcer le test avec les vraies variables d'environnement
  */
 
-  // Charger les variables d'environnement depuis .env
-  require('dotenv').config();
-  
-  // Vérifier que les variables sont définies
-  if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID || !process.env.AIRTABLE_PACKS_TABLE) {
-    console.error("❌ Variables d'environnement manquantes dans .env");
-    console.log("Assurez-vous que votre .env contient:");
-    console.log("AIRTABLE_API_KEY=votre_token");
-    console.log("AIRTABLE_BASE_ID=appOtYkVavA4MMMnN");
-    console.log("AIRTABLE_PACKS_TABLE=tbl4JVykOdi6YFvfd");
-    process.exit(1);
-  }
+// Charger les variables d'environnement depuis .env
+require("dotenv").config();
+
+// Vérifier que les variables sont définies
+if (
+  !process.env.AIRTABLE_API_KEY ||
+  !process.env.AIRTABLE_BASE_ID ||
+  !process.env.AIRTABLE_PACKS_TABLE
+) {
+  console.error("❌ Variables d'environnement manquantes dans .env");
+  console.log("Assurez-vous que votre .env contient:");
+  console.log("AIRTABLE_API_KEY=votre_token");
+  console.log("AIRTABLE_BASE_ID=appOtYkVavA4MMMnN");
+  console.log("AIRTABLE_PACKS_TABLE=tbl4JVykOdi6YFvfd");
+  process.exit(1);
+}
 
 console.log("🔄 FORÇAGE DES VARIABLES D'ENVIRONNEMENT");
 console.log("=======================================");

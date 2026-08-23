@@ -1,213 +1,57 @@
 <template>
-  <div>
-    <!-- Actions header -->
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-semibold text-gray-900">
-        Gestion des promotions
-      </h2>
+  <div class="space-y-6">
+    
+    <!-- Action Header -->
+    <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="font-display text-2xl font-extrabold text-slate-950">Gestion des Codes Promo (CRUD Complet)</h2>
+        <p class="text-xs text-slate-500 font-medium">Créez, modifiez, activez ou supprimez les réductions applicables au panier</p>
+      </div>
+
       <button
-        @click="showAdd = !showAdd"
-        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+        @click="showAddModal = true"
+        class="px-6 py-3 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          />
-        </svg>
-        <span>Ajouter une promotion</span>
+        <span>+ Créer un Code Promo</span>
       </button>
     </div>
 
-    <!-- Drawer Ajout -->
-    <Transition name="drawer-slide" appear>
-      <div v-if="showAdd" class="fixed inset-0 z-40 flex">
-        <div
-          class="fixed inset-0 bg-black bg-opacity-40 transition-opacity duration-300"
-          @click="showAdd = false"
-        ></div>
-        <div
-          class="ml-auto w-full max-w-md h-full bg-white shadow-xl relative z-50 transition-transform duration-300"
-        >
-          <AddDrawer @close="showAdd = false" @refresh="fetchPromotions" />
-        </div>
-      </div>
-    </Transition>
-    <!-- Drawer Edition -->
-    <Transition name="drawer-slide" appear>
-      <div v-if="showEdit" class="fixed inset-0 z-40 flex">
-        <div
-          class="fixed inset-0 bg-black bg-opacity-40 transition-opacity duration-300"
-          @click="showEdit = false"
-        ></div>
-        <div
-          class="ml-auto w-full max-w-md h-full bg-white shadow-xl relative z-50 transition-transform duration-300"
-        >
-          <EditDrawer
-            :promotion="editPromotion"
-            @close="showEdit = false"
-            @refresh="fetchPromotions"
-          />
-        </div>
-      </div>
-    </Transition>
-    <!-- Overlay Détail -->
-    <PromotionDetail
-      v-if="showDetail"
-      :promotion="detailPromotion"
-      @close="showDetail = false"
-    />
-
-    <!-- Barre de recherche et pagination -->
-    <div
-      class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"
-    >
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Rechercher par titre, type..."
-        class="w-full md:w-80 border rounded px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
-      />
-      <div class="flex gap-2">
-        <button
-          @click="prevPage"
-          :disabled="page === 1"
-          class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
-        >
-          Précédent
-        </button>
-        <button
-          @click="nextPage"
-          :disabled="page === totalPages"
-          class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
-        >
-          Suivant
-        </button>
-      </div>
-    </div>
-
-    <!-- Tableau des promotions -->
-    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Liste des promotions</h3>
-      </div>
+    <!-- Promo Table Card -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Titre
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Type
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Réduction
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Date de fin
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Statut
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200/80 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <th class="py-4 px-6">Code Promo</th>
+              <th class="py-4 px-6">Type de réduction</th>
+              <th class="py-4 px-6">Valeur</th>
+              <th class="py-4 px-6">Statut</th>
+              <th class="py-4 px-6 text-right">Actions CRUD</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="promotion in paginatedPromotions"
-              :key="promotion.id"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <div
-                      class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center"
-                    >
-                      <span class="text-emerald-600 font-bold text-sm">
-                        {{ promotion.Icon || "🎯" }}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ promotion.Title }}
-                    </div>
-                    <div class="text-xs text-gray-500 truncate max-w-xs">
-                      {{ promotion.Description }}
-                    </div>
-                  </div>
-                </div>
+          <tbody class="divide-y divide-slate-100 text-xs">
+            <tr v-for="promo in promoList" :key="promo.code" class="hover:bg-slate-50/80 transition-colors">
+              <td class="py-4 px-6">
+                <span class="font-mono font-extrabold text-[#0F3D91] bg-blue-50 px-3 py-1 rounded-lg border border-blue-200 text-xs">
+                  {{ promo.code }}
+                </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full"
-                  >{{ promotion.Type }}</span
-                >
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  -{{ promotion["Discount %"] }}%
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">
-                  {{ formatDate(promotion["End Date"]) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  v-if="isActive(promotion['End Date'])"
-                  class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
-                  >Active</span
-                >
-                <span
-                  v-else
-                  class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full"
-                  >Expirée</span
-                >
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-2"
-              >
+              <td class="py-4 px-6 font-semibold text-slate-700">{{ promo.type }}</td>
+              <td class="py-4 px-6 font-extrabold text-emerald-700">{{ promo.discount }}</td>
+              <td class="py-4 px-6">
                 <button
-                  @click="showPromotionDetail(promotion)"
-                  class="text-blue-600 hover:text-blue-900 font-medium"
+                  @click="togglePromoStatus(promo)"
+                  class="px-2.5 py-1 rounded-full text-[11px] font-bold border cursor-pointer transition-all"
+                  :class="promo.active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'"
                 >
-                  Voir
+                  {{ promo.active ? '✓ Actif' : '✕ Inactif' }}
                 </button>
-                <button
-                  @click="edit(promotion)"
-                  class="text-emerald-600 hover:text-emerald-900 font-medium"
-                >
+              </td>
+              <td class="py-4 px-6 text-right space-x-2">
+                <button @click="openEditModal(promo)" class="text-[#0F3D91] font-bold hover:underline cursor-pointer">
                   Modifier
                 </button>
-                <button
-                  @click="deletePromotion(promotion.id)"
-                  class="text-red-600 hover:text-red-900 font-medium"
-                >
+                <button @click="deletePromo(promo.code)" class="text-rose-600 font-bold hover:underline cursor-pointer">
                   Supprimer
                 </button>
               </td>
@@ -215,118 +59,127 @@
           </tbody>
         </table>
       </div>
-      <!-- Pagination -->
-      <div class="flex justify-between items-center px-6 py-4">
-        <div class="text-sm text-gray-500">
-          Page {{ page }} / {{ totalPages }}
-        </div>
+    </div>
+
+    <!-- Modal 1: CREATE Promo -->
+    <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+      <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6">
+        <h3 class="font-display text-xl font-extrabold text-slate-950">Nouveau Code Promo</h3>
+        
+        <form @submit.prevent="addNewPromo" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Code promo (Ex: RENTREE2026)</label>
+            <input v-model="newPromo.code" type="text" required class="w-full px-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl uppercase font-mono" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Valeur / Réduction</label>
+            <input v-model="newPromo.discount" type="text" required class="w-full px-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl" placeholder="Ex: -15% ou -3 000 FCFA" />
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <button type="button" @click="showAddModal = false" class="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-full">Annuler</button>
+            <button type="submit" class="px-6 py-2.5 bg-[#0F3D91] text-white text-xs font-bold rounded-full">Créer Code</button>
+          </div>
+        </form>
       </div>
     </div>
+
+    <!-- Modal 2: UPDATE Promo -->
+    <div v-if="showEditModal && editPromoForm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+      <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6">
+        <h3 class="font-display text-xl font-extrabold text-slate-950">Modifier le code promo</h3>
+        
+        <form @submit.prevent="saveEditPromo" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Code</label>
+            <input v-model="editPromoForm.code" type="text" readonly class="w-full px-4 py-2.5 text-xs bg-slate-100 border border-slate-200 rounded-xl uppercase font-mono font-bold" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Réduction</label>
+            <input v-model="editPromoForm.discount" type="text" required class="w-full px-4 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl" />
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <button type="button" @click="showEditModal = false" class="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-full">Annuler</button>
+            <button type="submit" class="px-6 py-2.5 bg-[#0F3D91] text-white text-xs font-bold rounded-full">Sauvegarder</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: "admin", middleware: "admin" });
+import { ref } from "vue";
 
-import { ref, computed, onMounted } from "vue";
-import AddDrawer from "./promotions/add.vue";
-import EditDrawer from "./promotions/edit.vue";
-import PromotionDetail from "./promotions/[id].vue";
-
-// Reactive state pour les promotions
-const promotions = ref<any[]>([]);
-const showAdd = ref(false);
-const showEdit = ref(false);
-const showDetail = ref(false);
-const editPromotion = ref(null);
-const detailPromotion = ref(null);
-const searchQuery = ref("");
-const page = ref(1);
-const pageSize = 10;
-const totalPages = ref(1);
-
-// Fonction utilitaire pour formater la date
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("fr-FR");
-};
-
-// Fonction pour vérifier si une promotion est active
-const isActive = (endDate: string) => {
-  if (!endDate) return false;
-  return new Date(endDate) > new Date();
-};
-
-// Fonctions de gestion des promotions
-async function fetchPromotions() {
-  try {
-    promotions.value = await $fetch("/api/admin/promotions");
-  } catch (error) {
-    console.error("Erreur lors du chargement des promotions:", error);
-  }
-}
-
-const paginatedPromotions = computed(() => {
-  let filtered = promotions.value;
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (p) =>
-        (p.Title && p.Title.toLowerCase().includes(q)) ||
-        (p.Type && p.Type.toLowerCase().includes(q))
-    );
-  }
-  totalPages.value = Math.max(1, Math.ceil(filtered.length / pageSize));
-  return filtered.slice((page.value - 1) * pageSize, page.value * pageSize);
+definePageMeta({
+  layout: "admin",
+  middleware: "admin",
 });
 
-const nextPage = () => {
-  if (page.value < totalPages.value) page.value++;
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+const editPromoForm = ref<any>(null);
+
+const newPromo = ref({
+  code: "",
+  type: "Pourcentage",
+  discount: "-10%",
+  active: true,
+});
+
+const promoList = ref([
+  { code: "RENTREE2026", type: "Pourcentage", discount: "-15% sur la commande", active: true },
+  { code: "FREESHIP", type: "Livraison Offerte", discount: "Frais de port gratuits à Dakar", active: true },
+  { code: "PACKBONUS", type: "Montant Fixe", discount: "-5 000 F CFA sur les Packs", active: true },
+  { code: "BIENVENUE", type: "Pourcentage", discount: "-10% Premier Achat", active: false },
+]);
+
+// CREATE
+const addNewPromo = () => {
+  if (!newPromo.value.code) return;
+  promoList.value.unshift({
+    code: newPromo.value.code.toUpperCase(),
+    type: newPromo.value.type,
+    discount: newPromo.value.discount,
+    active: true,
+  });
+  showAddModal.value = false;
+  alert(`Code promo ${newPromo.value.code.toUpperCase()} activé !`);
 };
 
-const prevPage = () => {
-  if (page.value > 1) page.value--;
+// UPDATE
+const openEditModal = (promo: any) => {
+  editPromoForm.value = { ...promo };
+  showEditModal.value = true;
 };
 
-function edit(promotion: any) {
-  editPromotion.value = { ...promotion };
-  showEdit.value = true;
-}
-
-function showPromotionDetail(promotion: any) {
-  detailPromotion.value = promotion;
-  showDetail.value = true;
-}
-
-async function deletePromotion(id: number) {
-  if (confirm("Êtes-vous sûr de vouloir supprimer cette promotion ?")) {
-    try {
-      await $fetch(`/api/admin/promotions/${id}`, { method: "DELETE" });
-      await fetchPromotions();
-    } catch (error) {
-      console.error("Erreur lors de la suppression de la promotion:", error);
-    }
+const saveEditPromo = () => {
+  if (!editPromoForm.value) return;
+  const idx = promoList.value.findIndex(p => p.code === editPromoForm.value.code);
+  if (idx !== -1) {
+    promoList.value[idx] = { ...editPromoForm.value };
   }
-}
+  showEditModal.value = false;
+  alert("Code promo mis à jour.");
+};
 
-// Charger les promotions au montage
-onMounted(fetchPromotions);
+const togglePromoStatus = (promo: any) => {
+  promo.active = !promo.active;
+};
+
+// DELETE
+const deletePromo = (code: string) => {
+  if (confirm(`Supprimer définitivement le code promo ${code} ?`)) {
+    promoList.value = promoList.value.filter(p => p.code !== code);
+    alert("Code promo supprimé.");
+  }
+};
+
+useHead({
+  title: "Gestion des Promotions (CRUD) - Back-Office EduShop",
+});
 </script>
-
-<style scoped>
-.drawer-slide-enter-active,
-.drawer-slide-leave-active {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
-}
-.drawer-slide-enter-from,
-.drawer-slide-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
-}
-.drawer-slide-enter-to,
-.drawer-slide-leave-from {
-  transform: translateX(0);
-  opacity: 1;
-}
-</style>

@@ -14,7 +14,7 @@
 
       <!-- Overlay for text readability -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/75 to-teal-900/80"
+        class="absolute inset-0 bg-gradient-to-br from-[#0F3D91]/90 via-[#0F3D91]/85 to-[#0b2f70]/90"
       ></div>
 
       <!-- Background Pattern -->
@@ -48,26 +48,26 @@
           <!-- Title -->
           <div class="space-y-6">
             <h1
-              class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight animate-fade-in-up"
+              class="text-4xl sm:text-5xl lg:text-7xl font-display font-extrabold text-white leading-tight animate-fade-in-up"
               style="animation-delay: 0.2s"
             >
               <span class="block">Promotions de</span>
               <span
-                class="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent"
-                >Rentrée</span
+                class="block text-[#F4C542]"
+                >Rentrée Zen</span
               >
             </h1>
 
             <p
-              class="text-xl sm:text-2xl text-red-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up"
+              class="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in-up font-medium"
               style="animation-delay: 0.3s"
             >
-              Des offres exceptionnelles pour bien démarrer l'année scolaire.
+              Des offres exceptionnelles pour bien démarrer l'année scolaire au Sénégal.
               <br class="hidden sm:block" />
-              <span class="font-semibold text-white"
+              <span class="font-bold text-[#F4C542]"
                 >Jusqu'à 50% de réduction</span
               >
-              sur tous vos produits essentiels.
+              sur vos fournitures indispensables.
             </p>
           </div>
 
@@ -76,17 +76,17 @@
             class="flex flex-wrap justify-center gap-8 mt-12 animate-fade-in-up"
             style="animation-delay: 0.4s"
           >
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">50%</div>
-              <div class="text-red-200 text-sm font-medium">Réduction Max</div>
+            <div class="text-center bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20">
+              <div class="text-3xl sm:text-4xl font-display font-extrabold text-[#F4C542]">50%</div>
+              <div class="text-white/80 text-xs uppercase font-bold tracking-wider">Réduction Max</div>
             </div>
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">15+</div>
-              <div class="text-red-200 text-sm font-medium">Offres Actives</div>
+            <div class="text-center bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20">
+              <div class="text-3xl sm:text-4xl font-display font-extrabold text-[#F4C542]">15+</div>
+              <div class="text-white/80 text-xs uppercase font-bold tracking-wider">Offres Actives</div>
             </div>
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">7j</div>
-              <div class="text-red-200 text-sm font-medium">Temps Restant</div>
+            <div class="text-center bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20">
+              <div class="text-3xl sm:text-4xl font-display font-extrabold text-[#F4C542]">7j</div>
+              <div class="text-white/80 text-xs uppercase font-bold tracking-wider">Temps Restant</div>
             </div>
           </div>
         </div>
@@ -95,7 +95,7 @@
       <!-- Wave Bottom -->
       <div class="absolute bottom-0 left-0 right-0">
         <svg
-          class="w-full h-12 sm:h-20 text-slate-50"
+          class="w-full h-12 sm:h-20 text-[#FBFBFA]"
           fill="currentColor"
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
@@ -115,25 +115,25 @@
           <div
             v-for="(promo, index) in promotions"
             :key="promo.id"
-            class="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fade-in-up"
+            class="group relative bg-white rounded-3xl border-2 border-slate-200/80 shadow-soft hover:shadow-lift hover:border-[#0F3D91] transition-all duration-500 transform hover:-translate-y-2 overflow-hidden animate-fade-in-up"
             :style="{ animationDelay: `${0.5 + index * 0.1}s` }"
             :class="
-              promo.featured ? 'ring-4 ring-yellow-400 ring-opacity-50' : ''
+              promo.featured ? 'ring-4 ring-[#F4C542]/50' : ''
             "
           >
             <!-- Badge Featured -->
             <div v-if="promo.featured" class="absolute top-4 left-4 z-10">
               <div
-                class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse"
+                class="bg-[#0F3D91] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-sm"
               >
-                <i class="fas fa-crown mr-1"></i>POPULAIRE
+                ⭐ POPULAIRE
               </div>
             </div>
 
             <!-- Discount Badge -->
             <div class="absolute top-4 right-4 z-10">
               <div
-                class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold transform rotate-3"
+                class="bg-[#F4C542] text-slate-950 px-3 py-1 rounded-full text-xs font-display font-extrabold shadow-sm"
               >
                 -{{ promo.discount }}%
               </div>
@@ -149,30 +149,29 @@
               </div>
 
               <!-- Title -->
-              <h2 class="text-2xl font-bold text-gray-800 mb-3 text-center">
+              <h2 class="text-2xl font-display font-extrabold text-[#0F3D91] mb-3 text-center">
                 {{ promo.title }}
               </h2>
 
               <!-- Description -->
-              <p class="text-gray-600 text-center mb-6 leading-relaxed">
+              <p class="text-slate-600 text-center mb-6 leading-relaxed text-sm">
                 {{ promo.description }}
               </p>
 
               <!-- Price Section -->
               <div class="text-center mb-6">
                 <div class="flex items-center justify-center space-x-2 mb-2">
-                  <span class="text-lg text-gray-400 line-through"
+                  <span class="text-base text-slate-400 line-through font-medium"
                     >{{ promo.originalPrice }} CFA</span
                   >
                   <span
-                    class="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent"
+                    class="text-3xl font-display font-extrabold text-[#0F3D91]"
                   >
                     {{ promo.price }} CFA
                   </span>
                 </div>
-                <div class="text-sm text-green-600 font-medium">
-                  <i class="fas fa-tag mr-1"></i>Vous économisez
-                  {{ promo.originalPrice - promo.price }} CFA
+                <div class="text-xs text-emerald-600 font-extrabold">
+                  Économie : {{ promo.originalPrice - promo.price }} CFA
                 </div>
               </div>
 
@@ -184,30 +183,24 @@
                 <div
                   v-for="feature in promo.features"
                   :key="feature"
-                  class="text-center text-sm text-gray-600"
+                  class="text-center text-xs font-semibold text-slate-600"
                 >
-                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                  {{ feature }}
+                  ✓ {{ feature }}
                 </div>
               </div>
 
               <!-- Action Button -->
               <button
                 @click="addToCart(promo.product)"
-                class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl group"
+                class="w-full bg-[#0F3D91] hover:bg-[#0b2f70] text-white font-extrabold text-sm py-3.5 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-md flex items-center justify-center gap-2"
               >
-                <span class="flex items-center justify-center">
-                  <i
-                    class="fas fa-shopping-cart mr-2 group-hover:animate-bounce"
-                  ></i>
-                  Ajouter au panier
-                </span>
+                <span>🛒 Ajouter au panier</span>
               </button>
             </div>
 
             <!-- Decorative Elements -->
             <div
-              class="absolute bottom-0 left-0 w-full h-1 bg-green-700 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
+              class="absolute bottom-0 left-0 w-full h-1 bg-[#F4C542] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
             ></div>
           </div>
         </div>

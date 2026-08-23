@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (to.path.startsWith("/admin") && to.path !== "/admin/login") {
     let token: string | null = null;
     if (process.client) {
-      token = localStorage.getItem("admin_token");
+      token = localStorage.getItem("admin_token") || localStorage.getItem("admin_authenticated");
     } else if (process.server) {
       // Lecture du cookie côté serveur
       const cookie = useRequestHeaders()["cookie"] || "";

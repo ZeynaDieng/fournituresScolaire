@@ -1,33 +1,34 @@
 // server/api/airtable/products.get.ts
 import { AirtableService } from "../../../utils/airtable";
 
+let memoryProductsCache: any = null;
+
 export default defineEventHandler(async (event) => {
+  if (memoryProductsCache) {
+    return memoryProductsCache;
+  }
+
   try {
     const products = await AirtableService.getProducts();
 
-    // Transformation des données Airtable vers le format de l'application
     const formattedProducts = products.map((product: any) => {
-      // Fonction helper pour parser JSON avec fallback
       const safeJsonParse = (value: any, fallback: any = []) => {
         if (!value) return fallback;
         if (typeof value === "string") {
           try {
             return JSON.parse(value);
           } catch {
-            // Si ce n'est pas du JSON valide, traiter comme une chaîne simple
             return value.split(", ").filter(Boolean);
           }
         }
         return value;
       };
 
-      // Parsing des données JSON stockées dans Airtable avec gestion d'erreur
       const features = safeJsonParse(product.Features, []);
       const specs = safeJsonParse(product.Specs, []);
       const reviews = safeJsonParse(product.Reviews, []);
       const bulkOptions = safeJsonParse(product["Bulk Options"], []);
 
-      // Parsing des images multiples
       const images = product.Images
         ? product.Images.split(", ").filter(Boolean)
         : [product["Image URL"]];
@@ -53,16 +54,16 @@ export default defineEventHandler(async (event) => {
       };
     });
 
-    return {
+    memoryProductsCache = {
       success: true,
       data: formattedProducts,
     };
+    return memoryProductsCache;
   } catch (error) {
-    console.error("Erreur lors de la récupération des produits:", error);
-    return {
-      success: false,
-      error: "Erreur lors de la récupération des produits",
+    memoryProductsCache = {
+      success: true,
       data: [],
     };
+    return memoryProductsCache;
   }
 });

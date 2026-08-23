@@ -1,1213 +1,553 @@
-<!-- pages/index.vue -->
+<!-- pages/index.vue - Lovable Cloned Design -->
 <template>
-  <div class="relative">
-    <!-- Floating Particles - Optimisé -->
-    <FloatingParticles :count="8" />
-
-    <!-- Hero Section with Optimized Background -->
+  <div class="relative bg-[#FBFBFA] min-h-screen text-slate-900 font-sans">
+    <!-- 1. Hero Section (Screenshot 1) -->
     <AppHeroSection />
-    <!-- Popular Packs Section with Optimized Loading -->
-    <section class="section bg-gray-50" id="packs-populaires">
-      <div class="container px-4">
-        <!-- Loading State Moderne et Beau -->
-        <div
-          v-if="
-            airtableStore.loading ||
-            productsStore.loading ||
-            packsFromAirtable.length === 0
-          "
-          class="relative"
+
+    <!-- 2. Sélecteur de Niveau Scolaire (Screenshot 2) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24" id="niveaux">
+      <div class="max-w-3xl mb-12">
+        <span class="text-xs font-bold uppercase tracking-widest text-[#0F3D91]">Étape 1 / 2 minutes</span>
+        <h2 class="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-950 leading-tight">
+          Pour quel niveau préparez-vous <span class="text-[#0F3D91]">la rentrée</span> ?
+        </h2>
+        <p class="mt-3 text-slate-600 text-sm md:text-base leading-relaxed font-normal">
+          Un seul clic. Notre assistant construit ensuite votre liste, s'adapte à l'école, et prépare tout automatiquement.
+        </p>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <NuxtLink
+          v-for="lv in levels"
+          :key="lv.key"
+          :to="`/packs?level=${lv.key}`"
+          class="group relative bg-white/80 rounded-3xl border border-slate-200/90 p-6 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between"
         >
-          <!-- Loading Moderne -->
-          <ModernLoader
-            title="Chargement des packs..."
-            subtitle="Préparation de vos fournitures scolaires"
-            :progress="75"
-          />
+          <!-- Top Card Image Container -->
+          <div class="relative h-44 w-full mb-6 rounded-2xl bg-[#F8F6F0] overflow-hidden flex items-center justify-center p-4">
+            <img :src="lv.image" :alt="lv.title" class="max-h-full max-w-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-300" />
+          </div>
 
-          <!-- Skeleton Cards en arrière-plan -->
-          <div class="pack-grid opacity-30">
-            <div
-              v-for="n in 3"
-              :key="n"
-              class="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col border border-gray-100"
-            >
-              <!-- Image placeholder avec shimmer -->
-              <div
-                class="relative w-full aspect-[4/3] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden"
-              >
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer"
-                ></div>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <div
-                    class="w-16 h-16 bg-gray-300 rounded-full animate-pulse"
-                  ></div>
-                </div>
+          <div>
+            <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
+              {{ lv.sub }}
+            </p>
+            <h3 class="font-display text-2xl font-extrabold text-slate-950 leading-tight">
+              {{ lv.title }}
+            </h3>
+            
+            <div class="mt-4 pt-3 flex items-center justify-between border-t border-slate-100">
+              <span class="text-xs font-semibold text-slate-500">
+                {{ lv.count }} packs disponibles
+              </span>
+              <span class="w-8 h-8 rounded-full bg-[#0F3D91] text-white flex items-center justify-center font-bold text-xs group-hover:bg-[#F4C542] group-hover:text-slate-950 transition-colors">
+                ↗
+              </span>
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
+    </section>
+
+
+
+    <!-- 3. Notre Mission (Screenshot 3) -->
+    <section class="bg-[#FBFBFA] border-y border-slate-200/70 py-16 md:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <!-- Left Column -->
+          <div class="lg:col-span-5 space-y-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-[#0F3D91]">NOTRE MISSION</span>
+            <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950 leading-tight">
+              Rendre la rentrée <span class="text-[#0F3D91]">simple</span>, pour toutes les familles.
+            </h2>
+          </div>
+
+          <!-- Right Column -->
+          <div class="lg:col-span-7 space-y-6">
+            <p class="font-display text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+              Chaque année, plus de 3 millions d'enfants sénégalais font leur rentrée. Pour beaucoup de parents, c'est un mois de stress.
+            </p>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+              Trouver la bonne liste. Comparer les prix. Faire trois marchés différents. Oublier la moitié. Refaire un aller-retour la veille.
+            </p>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+              EduShop existe pour transformer ce marathon en un moment simple. Nous travaillons avec des enseignants sénégalais pour composer des packs exactement conformes aux programmes officiels — et nous livrons partout, jusqu'aux régions.
+            </p>
+
+            <!-- Stats Row -->
+            <div class="pt-6 grid grid-cols-3 gap-6 border-t border-slate-200">
+              <div>
+                <span class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 block">3M+</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mt-1">ENFANTS AU SÉNÉGAL</span>
               </div>
-
-              <div class="p-6 flex-1 flex flex-col">
-                <!-- Badge -->
-                <div
-                  class="h-6 w-20 bg-gradient-to-r from-green-200 to-green-300 rounded-full mb-4 animate-pulse"
-                ></div>
-
-                <!-- Titre -->
-                <div
-                  class="h-6 w-3/4 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-4 animate-pulse"
-                ></div>
-
-                <!-- Description -->
-                <div class="space-y-2 mb-6 flex-grow">
-                  <div
-                    class="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded w-full animate-pulse"
-                  ></div>
-                  <div
-                    class="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded w-5/6 animate-pulse"
-                  ></div>
-                  <div
-                    class="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded w-4/6 animate-pulse"
-                  ></div>
-                </div>
-
-                <!-- Prix et bouton -->
-                <div class="flex items-center justify-between">
-                  <div
-                    class="h-8 w-24 bg-gradient-to-r from-green-200 to-green-300 rounded animate-pulse"
-                  ></div>
-                  <div
-                    class="h-10 w-10 bg-gradient-to-r from-blue-200 to-blue-300 rounded-full animate-pulse"
-                  ></div>
-                </div>
+              <div>
+                <span class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 block">14</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mt-1">RÉGIONS LIVRÉES</span>
+              </div>
+              <div>
+                <span class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 block">82</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mt-1">ENSEIGNANTS PARTENAIRES</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Popular Packs Grid - Optimisé pour les performances -->
-        <div v-else>
-          <div class="text-center mb-12">
-            <h2
-              class="section-title transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up"
-              style="--delay: 0.1s"
-            >
-              Packs Scolaires Populaires
+    <!-- 4. Pack le plus choisi (Screenshot 4) -->
+    <section class="bg-[#0F3D91] text-white py-16 md:py-24 overflow-hidden relative" id="pack-vedette">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <!-- Left Column -->
+          <div class="lg:col-span-6 space-y-6">
+            <span class="text-xs font-bold uppercase tracking-widest text-[#F4C542]">PACK LE PLUS CHOISI</span>
+            <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+              Pack Primaire Complet
             </h2>
-            <p
-              class="text-xl text-gray-600 max-w-2xl mx-auto transform transition-all duration-1000 ease-out translate-y-6 opacity-0 animate-fade-in-up"
-              style="--delay: 0.2s"
-            >
-              Nos packs les plus demandés pour chaque niveau scolaire
+            <p class="text-white/80 text-sm sm:text-base leading-relaxed">
+              Le pack le plus choisi par les parents. Conforme au programme officiel du Ministère de l'Éducation nationale du Sénégal.
+            </p>
+
+            <!-- Stats Grid 2x2 -->
+            <div class="grid grid-cols-2 gap-6 pt-4 border-t border-b border-white/15 py-6">
+              <div>
+                <span class="font-display text-3xl font-extrabold text-[#F4C542] block">32</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-white/70 block">ARTICLES INCLUS</span>
+              </div>
+              <div>
+                <span class="font-display text-3xl font-extrabold text-[#F4C542] block">-21%</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-white/70 block">VS ACHAT SÉPARÉ</span>
+              </div>
+              <div>
+                <span class="font-display text-3xl font-extrabold text-[#F4C542] block">4.9/5</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-white/70 block">587 AVIS</span>
+              </div>
+              <div>
+                <span class="font-display text-3xl font-extrabold text-[#F4C542] block">48h</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-white/70 block">LIVRAISON DAKAR</span>
+              </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="pt-2 flex flex-wrap gap-4 items-center">
+              <NuxtLink
+                to="/configurator"
+                class="inline-flex items-center gap-2 rounded-full bg-[#F4C542] text-slate-950 px-7 py-3.5 text-xs font-extrabold uppercase tracking-wider hover:bg-[#f5cb54] transition-all transform hover:scale-105"
+              >
+                <span>Personnaliser mon pack</span>
+                <span>→</span>
+              </NuxtLink>
+
+              <NuxtLink
+                to="/packs/pack-ce1"
+                class="inline-flex items-center gap-2 rounded-full border border-white/30 text-white px-6 py-3.5 text-xs font-semibold hover:bg-white/10 transition-all"
+              >
+                <span>Voir la liste complète</span>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Right Column Card Image -->
+          <div class="lg:col-span-6 relative">
+            <div class="rounded-3xl overflow-hidden shadow-2xl bg-white p-6 aspect-[4/3] relative flex items-center justify-center">
+              <img
+                :src="packPrimaireImg"
+                alt="Pack Primaire Complet"
+                class="max-h-full max-w-full object-contain mix-blend-multiply transform hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- 5. Compléter votre pack - Un dernier détail ? (Screenshot 5) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24" id="produits">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-[#0F3D91]">COMPLÉTER VOTRE PACK</span>
+          <h2 class="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950 tracking-tight">
+            Un dernier détail ?
+          </h2>
+          <p class="mt-2 text-slate-600 text-sm font-medium">
+            Une calculatrice, une gourde, un sac — ajoutés en un clic à votre pack.
+          </p>
+        </div>
+        <NuxtLink to="/products" class="mt-4 md:mt-0 text-xs font-bold text-[#0F3D91] hover:underline inline-flex items-center gap-1">
+          <span>Tout le catalogue</span>
+          <span>→</span>
+        </NuxtLink>
+      </div>
+
+      <!-- 4 Product Cards Grid (Screenshot 5) -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <NuxtLink
+          v-for="product in catalogueProducts"
+          :key="product.id"
+          :to="`/products/${product.id}`"
+          class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between"
+        >
+          <!-- Product Image Container -->
+          <div class="relative aspect-square bg-[#F8F6F0] p-6 flex items-center justify-center overflow-hidden">
+            <img
+              :src="product.image"
+              :alt="product.name"
+              class="max-h-full max-w-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+
+          <!-- Product Details -->
+          <div class="p-5 space-y-2 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+                {{ product.brand }}
+              </span>
+              <h3 class="font-display text-sm font-bold text-slate-900 group-hover:text-[#0F3D91] transition-colors leading-snug line-clamp-2">
+                {{ product.name }}
+              </h3>
+            </div>
+
+            <div class="pt-3 flex items-center justify-between border-t border-slate-100">
+              <span class="font-display text-base font-extrabold text-slate-950">
+                {{ product.priceFormatted }}
+              </span>
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                <span class="text-[#F4C542]">★</span> {{ product.rating }}
+              </span>
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
+    </section>
+
+    <!-- 6. Fonctionnalités - Bien plus qu'une boutique (Screenshot 1) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-slate-200/60" id="fonctionnalites">
+      <div class="mb-10">
+        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91]">FONCTIONNALITÉS</span>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-950">
+          Bien plus qu'une boutique.
+        </h2>
+      </div>
+
+      <!-- 6 Grid Box Container with Dynamic Hover Highlight -->
+      <div class="bg-white rounded-3xl border-2 border-slate-200/80 overflow-hidden shadow-soft grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200/80">
+        <!-- Card 1 -->
+        <div class="group p-8 md:p-10 space-y-4 bg-white hover:bg-[#EBE3D5] transition-all duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 group-hover:bg-[#0F3D91] border border-blue-100 group-hover:border-[#0F3D91] flex items-center justify-center text-[#0F3D91] group-hover:text-white transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Checklist officielle PDF</h3>
+          <p class="text-slate-500 group-hover:text-slate-800 text-xs sm:text-sm font-medium leading-relaxed transition-colors">
+            Téléchargez la liste imprimable officielle conforme aux programmes sénégalais.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="group p-8 md:p-10 space-y-4 bg-white hover:bg-[#EBE3D5] transition-all duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 group-hover:bg-[#0F3D91] border border-blue-100 group-hover:border-[#0F3D91] flex items-center justify-center text-[#0F3D91] group-hover:text-white transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Rentrée en un clic</h3>
+          <p class="text-slate-500 group-hover:text-slate-800 text-xs sm:text-sm font-medium leading-relaxed transition-colors">
+            Retrouvez le niveau de votre enfant et commandez tout en un seul clic.
+          </p>
+        </div>
+
+        <!-- Card 3: Parrainage -->
+        <div class="group p-8 md:p-10 space-y-4 bg-white hover:bg-[#EBE3D5] transition-all duration-300">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 group-hover:bg-[#0F3D91] border border-blue-100 group-hover:border-[#0F3D91] flex items-center justify-center text-[#0F3D91] group-hover:text-white transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Parrainage</h3>
+          <p class="text-slate-500 group-hover:text-slate-800 text-xs sm:text-sm font-medium leading-relaxed transition-colors">
+            Recommandez EduShop à 3 parents et recevez 5 000 F CFA de bon d'achat.
+          </p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="group p-8 md:p-10 space-y-4 bg-white hover:bg-[#EBE3D5] transition-all duration-300 border-t border-slate-200/80">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 group-hover:bg-[#0F3D91] border border-blue-100 group-hover:border-[#0F3D91] flex items-center justify-center text-[#0F3D91] group-hover:text-white transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Comparateur de packs</h3>
+          <p class="text-slate-500 group-hover:text-slate-800 text-xs sm:text-sm font-medium leading-relaxed transition-colors">
+            Comparez nos différentes formules de packs scolaires côte à côte.
+          </p>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="group p-8 md:p-10 space-y-4 bg-white hover:bg-[#EBE3D5] transition-all duration-300 border-t border-slate-200/80">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 group-hover:bg-[#0F3D91] border border-blue-100 group-hover:border-[#0F3D91] flex items-center justify-center text-[#0F3D91] group-hover:text-white transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Support WhatsApp</h3>
+          <p class="text-slate-500 group-hover:text-slate-800 text-xs sm:text-sm font-medium leading-relaxed transition-colors">
+            Assistance rapide 7j/7 en français et wolof via WhatsApp.
+          </p>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="group p-8 md:p-10 space-y-4 bg-white hover:bg-[#EBE3D5] transition-all duration-300 border-t border-slate-200/80">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 group-hover:bg-[#0F3D91] border border-blue-100 group-hover:border-[#0F3D91] flex items-center justify-center text-[#0F3D91] group-hover:text-white transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Fidélité EduShop</h3>
+          <p class="text-slate-500 group-hover:text-slate-800 text-xs sm:text-sm font-medium leading-relaxed transition-colors">
+            Cumulez des points à chaque achat et profitez de réductions exclusives.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Ce qu'ils disent - Témoignages (Screenshot 2) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-slate-200/60" id="temoignages">
+      <div class="mb-12">
+        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91]">CE QU'ILS DISENT</span>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-950">
+          <span class="text-[#0F3D91]">240</span> familles nous font confiance au Sénégal.
+        </h2>
+      </div>
+
+      <!-- 3 Testimonial Cards Grid -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Card 1 -->
+        <div class="bg-white rounded-3xl border-2 border-slate-200/80 p-8 shadow-soft flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex text-[#F4C542] text-sm gap-1">
+              ★★★★★
+            </div>
+            <p class="font-display text-lg font-bold text-slate-950 leading-snug">
+              En 10 minutes j'avais commandé le pack CM1 de mon fils. Livré à domicile dès le lendemain.
             </p>
           </div>
 
-          <div class="pack-grid">
-            <div
-              v-for="(pack, index) in packsFromAirtable.slice(0, 3)"
-              :key="pack.id"
-              class="group"
-            >
-              <AppPackCard :pack="pack" @add-to-cart="addPackToCart" />
+          <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-xs text-slate-950">Aïssatou D.</p>
+              <p class="text-[11px] text-slate-400 font-semibold">Maman d'élève à Dakar</p>
             </div>
           </div>
         </div>
 
-        <div class="text-center p-4 mt-20" animation="fadeInUp">
+        <!-- Card 2 -->
+        <div class="bg-white rounded-3xl border-2 border-slate-200/80 p-8 shadow-soft flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex text-[#F4C542] text-sm gap-1">
+              ★★★★★
+            </div>
+            <p class="font-display text-lg font-bold text-slate-950 leading-snug">
+              Fini le stress et les allers-retours au marché Sandaga sous la chaleur. Les fournitures sont d'excellente qualité.
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-xs text-slate-950">Moussa S.</p>
+              <p class="text-[11px] text-slate-400 font-semibold">Parent d'élève à Thiès</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white rounded-3xl border-2 border-slate-200/80 p-8 shadow-soft flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex text-[#F4C542] text-sm gap-1">
+              ★★★★★
+            </div>
+            <p class="font-display text-lg font-bold text-slate-950 leading-snug">
+              Je recommande EduShop à tous les parents. Les packs préparés sont 100% conformes au programme scolaire.
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-xs text-slate-950">Fatou N.</p>
+              <p class="text-[11px] text-slate-400 font-semibold">Institutrice à Mbour</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Dark CTA Banner (Screenshot 3) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div class="bg-[#0B132B] rounded-3xl p-8 sm:p-14 text-white relative overflow-hidden shadow-2xl">
+        <!-- Shield Icon -->
+        <div class="w-10 h-10 rounded-full border border-[#F4C542]/40 bg-[#F4C542]/10 flex items-center justify-center text-[#F4C542] mb-6">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
+          La rentrée de votre enfant, <span class="text-[#F4C542]">réglée ce soir.</span>
+        </h2>
+
+        <p class="text-white/70 text-sm sm:text-base font-medium mb-8 max-w-lg">
+          Deux minutes pour choisir le pack de votre enfant. Zéro stress. Livraison rapide partout au Sénégal.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4">
           <NuxtLink
             to="/packs"
-            class="btn-primary inline-flex items-center p-4 space-x-2"
+            class="bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs sm:text-sm px-8 py-4 rounded-full shadow-md hover:scale-105 transition-all inline-flex items-center gap-2"
           >
-            <span>Découvrir tous nos packs</span>
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
+            <span>Commander mon pack</span>
+            <span>→</span>
           </NuxtLink>
-        </div>
-        <!-- View All Button with Animation -->
-      </div>
-    </section>
 
-    <!-- Latest Products Section -->
-    <section class="section bg-white">
-      <div class="container">
-        <div class="text-center mb-12">
-          <h2 class="section-title">Derniers Articles</h2>
-
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-            Découvrez nos nouveaux produits et articles populaires
-          </p>
-        </div>
-
-        <!-- Categories Filter -->
-        <div class="flex flex-wrap justify-center gap-4 mb-12">
-          <button
-            v-for="category in ['Tous', ...productsStore.categories]"
-            :key="category"
-            @click="selectedCategory = category"
-            class="px-4 py-2 rounded-full font-medium transition-all"
-            :class="{
-              'bg-primary-600 text-white': selectedCategory === category,
-              'bg-gray-100 text-gray-700 hover:bg-primary-100':
-                selectedCategory !== category,
-            }"
+          <a
+            href="https://wa.me/221777780456"
+            target="_blank"
+            class="border border-white/25 hover:bg-white/10 text-white font-bold text-xs sm:text-sm px-7 py-4 rounded-full transition-all inline-flex items-center gap-2"
           >
-            {{ category }}
-          </button>
-        </div>
-
-        <!-- Products Grid - Optimisé -->
-        <div v-if="filteredProducts.length > 0" class="product-grid">
-          <AppProductCard
-            v-for="product in filteredProducts"
-            :key="product.id"
-            :product="product"
-          />
-        </div>
-
-        <!-- Loading pour les produits -->
-        <div v-else class="product-grid">
-          <div
-            v-for="n in 6"
-            :key="n"
-            class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100"
-          >
-            <!-- Image placeholder -->
-            <div
-              class="relative w-full aspect-square bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden"
-            >
-              <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer"
-              ></div>
-            </div>
-
-            <div class="p-4">
-              <!-- Titre -->
-              <div
-                class="h-4 w-3/4 bg-gradient-to-r from-gray-200 to-gray-300 rounded mb-3 animate-pulse"
-              ></div>
-              <!-- Prix -->
-              <div
-                class="h-5 w-1/2 bg-gradient-to-r from-green-200 to-green-300 rounded mb-3 animate-pulse"
-              ></div>
-              <!-- Bouton -->
-              <div
-                class="h-8 w-full bg-gradient-to-r from-blue-200 to-blue-300 rounded animate-pulse"
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- View All Button -->
-        <div class="text-center p-4 mt-12">
-          <NuxtLink
-            to="/products"
-            class="btn-primary inline-flex items-center p-4 space-x-2"
-          >
-            <span>Voir tous les articles</span>
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-          </NuxtLink>
+            <span>Parler à un conseiller</span>
+          </a>
         </div>
       </div>
     </section>
-
-    <!-- Features Section - Remplit l'espace avec du contenu attrayant -->
-    <section class="section bg-green-50 py-16">
-      <div class="container px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">
-            Pourquoi choisir nos fournitures scolaires ?
-          </h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Nous offrons des produits de qualité à des prix imbattables pour une
-            rentrée scolaire réussie
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <!-- Feature 1 -->
-          <div class="text-center group">
-            <div
-              class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors duration-300"
-            >
-              <svg
-                class="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
-              Qualité Garantie
-            </h3>
-            <p class="text-gray-600">
-              Produits sélectionnés pour leur durabilité et leur qualité
-            </p>
-          </div>
-
-          <!-- Feature 2 -->
-          <div class="text-center group">
-            <div
-              class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors duration-300"
-            >
-              <svg
-                class="w-8 h-8 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                ></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
-              Prix Imbattables
-            </h3>
-            <p class="text-gray-600">
-              Meilleurs prix du marché pour tous vos besoins scolaires
-            </p>
-          </div>
-
-          <!-- Feature 3 -->
-          <div class="text-center group">
-            <div
-              class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors duration-300"
-            >
-              <svg
-                class="w-8 h-8 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                ></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
-              Livraison Rapide
-            </h3>
-            <p class="text-gray-600">
-              Réception de vos commandes en 24-48h partout au Sénégal
-            </p>
-          </div>
-
-          <!-- Feature 4 -->
-          <div class="text-center group">
-            <div
-              class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors duration-300"
-            >
-              <svg
-                class="w-8 h-8 text-orange-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                ></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">
-              Service Client
-            </h3>
-            <p class="text-gray-600">
-              Support client disponible 7j/7 pour vous accompagner
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="section bg-gray-50 py-16">
-      <div class="container px-4">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <div class="text-3xl font-bold text-green-600 mb-2">100+</div>
-            <div class="text-gray-600">Produits disponibles</div>
-          </div>
-          <div>
-            <div class="text-3xl font-bold text-blue-600 mb-2">200+</div>
-            <div class="text-gray-600">Clients satisfaits</div>
-          </div>
-          <div>
-            <div class="text-3xl font-bold text-purple-600 mb-2">24h</div>
-            <div class="text-gray-600">Livraison express</div>
-          </div>
-          <div>
-            <div class="text-3xl font-bold text-orange-600 mb-2">5.0</div>
-            <div class="text-gray-600">Note moyenne</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Popular Products Section -->
-    <section class="section bg-white py-16">
-      <div class="container px-4">
-        <div class="text-center mt-12">
-          <NuxtLink
-            to="/products"
-            class="btn-primary inline-flex items-center px-8 py-3 text-lg"
-          >
-            <span>Voir tous les produits</span>
-            <svg
-              class="w-5 h-5 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              ></path>
-            </svg>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
-
-    <!-- Promotions Section - Utilise AppPromotionCard avec données de démonstration -->
-
-    <!-- Testimonials Section -->
-    <section class="section bg-gray-50 py-16">
-      <div class="container px-4">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">
-            Ce que disent nos clients
-          </h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Découvrez les témoignages de parents et élèves satisfaits
-          </p>
-        </div>
-
-        <div class="relative overflow-hidden">
-          <div
-            ref="testimonialsContainer"
-            class="testimonials-carousel flex gap-8 transition-transform duration-500 ease-in-out select-none"
-            :style="{
-              transform: `translateX(-${currentInfiniteIndex * 320}px)`,
-            }"
-            @touchstart="handleTouchStart"
-            @touchmove="handleTouchMove"
-            @touchend="handleTouchEnd"
-            @mousedown="handleMouseDown"
-            @mousemove="handleMouseMove"
-            @mouseup="handleMouseUp"
-            @mouseleave="isDragging = false"
-          >
-            <!-- Témoignages infinis -->
-            <div
-              v-for="(testimonial, index) in infiniteTestimonials"
-              :key="`${testimonial.id}-${index}`"
-              @click="!isDragging && (currentInfiniteIndex = index)"
-              class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 flex-shrink-0 w-80 cursor-pointer"
-              :class="{
-                'opacity-50 scale-95': index !== currentInfiniteIndex,
-                'scale-105 shadow-2xl': index === currentInfiniteIndex,
-              }"
-            >
-              <div class="flex items-center mb-4">
-                <div class="flex text-yellow-400">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <p class="text-gray-600 mb-4">"{{ testimonial.text }}"</p>
-              <div class="flex items-center">
-                <div
-                  :class="`w-10 h-10 bg-${testimonial.color}-100 rounded-full flex items-center justify-center mr-3`"
-                >
-                  <span
-                    :class="`text-${testimonial.color}-600 font-semibold`"
-                    >{{ testimonial.initials }}</span
-                  >
-                </div>
-                <div>
-                  <div class="font-semibold text-gray-900">
-                    {{ testimonial.name }}
-                  </div>
-                  <div class="text-sm text-gray-500">
-                    {{ testimonial.role }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Indicateurs de position -->
-        <div class="flex justify-center gap-2 mt-8">
-          <button
-            v-for="(testimonial, index) in testimonials"
-            :key="index"
-            @click="currentIndex = index"
-            :class="[
-              'w-3 h-3 rounded-full transition-all duration-300',
-              index === currentIndex
-                ? 'bg-primary-600 scale-125'
-                : 'bg-gray-300 hover:bg-gray-400',
-            ]"
-          ></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Call to Action Section -->
-    <section class="section bg-gradient-to-b from-green-200 to-green-100 py-16">
-      <div class="container px-4">
-        <div class="text-center">
-          <h2 class="text-3xl text-primary-700 font-bold mb-4">
-            Prêt pour la rentrée scolaire ?
-          </h2>
-          <p class="text-xl mb-8 opacity-90">
-            Commandez maintenant et recevez vos fournitures en 24h
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <NuxtLink
-              to="/products"
-              class="bg-white text-green-600 px-6 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300 inline-flex items-center justify-center"
-            >
-              Voir tous les produits
-            </NuxtLink>
-            <NuxtLink
-              to="/packs"
-              class="border-2 border-primary-700 text-primary-700 px-6 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors duration-300 inline-flex items-center justify-center"
-            >
-              Découvrir les packs
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Panel de test du panier (mode développement) -->
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  computed,
-  onMounted,
-  onUnmounted,
-  defineAsyncComponent,
-} from "vue";
-import { useProductsStore } from "../stores/products";
-import { useAirtableStore } from "../stores/airtable";
-import { useCartStore } from "../stores/cart";
-import type { Product, Pack } from "../stores/products";
-// Lazy loading des composants pour de meilleures performances
-const AnimatedSection = defineAsyncComponent(
-  () => import("../components/AnimatedSection.vue")
-);
-const AnimatedCard = defineAsyncComponent(
-  () => import("../components/AnimatedCard.vue")
-);
-const AnimatedButton = defineAsyncComponent(
-  () => import("../components/AnimatedButton.vue")
-);
-const FloatingParticles = defineAsyncComponent(
-  () => import("../components/FloatingParticles.vue")
-);
-const AppPromotionCard = defineAsyncComponent(
-  () => import("../components/AppPromotionCard.vue")
-);
-const AppProductCard = defineAsyncComponent(
-  () => import("../components/AppProductCard.vue")
-);
-const AppPackCard = defineAsyncComponent(
-  () => import("../components/AppPackCard.vue")
-);
-const ModernLoader = defineAsyncComponent(
-  () => import("../components/ModernLoader.vue")
-);
+import { computed, onMounted } from "vue";
+import { useAirtableStore } from "~/stores/airtable";
+import { useProductsStore } from "~/stores/products";
+import packPrimaireImg from "~/assets/images/pack-primaire.jpg";
+import AppHeroSection from "~/components/AppHeroSection.vue";
 
-// Since AppPackCard, AppProductCard etc. are in components/, Nuxt 3 auto-imports them.
-// We just need to define the props they might expect if not done inside the components themselves.
-
-const productsStore = useProductsStore();
 const airtableStore = useAirtableStore();
-const cartStore = useCartStore();
+const productsStore = useProductsStore();
 
-// Cache simple pour éviter les appels répétés
-const dataLoaded = ref(false);
-
-// Refs pour les témoignages
-const currentIndex = ref(0);
-const isAutoScrolling = ref(true);
-const autoScrollInterval = ref(null);
-const testimonialsContainer = ref(null);
-
-// Refs pour le swipe amélioré
-const startX = ref(0);
-const startY = ref(0);
-const isDragging = ref(false);
-const dragOffset = ref(0);
-const isTransitioning = ref(false);
-
-// Données des témoignages
-const testimonials = ref([
-  {
-    id: 1,
-    name: "Aminata Mbaye",
-    role: "Mère de famille",
-    initials: "AM",
-    color: "green",
-    text: "Excellent service ! J'ai reçu toutes les fournitures de mon fils en 24h. Qualité parfaite et prix très raisonnables.",
-  },
-  {
-    id: 2,
-    name: "Ibrahima Sarr",
-    role: "Père de famille",
-    initials: "IS",
-    color: "blue",
-    text: "Commande facile et rapide. Les packs sont parfaits pour la rentrée. Je recommande vivement !",
-  },
-  {
-    id: 3,
-    name: "Fatou Diop",
-    role: "Mère de famille",
-    initials: "FD",
-    color: "purple",
-    text: "Service client exceptionnel ! Ils m'ont aidé à choisir les bonnes fournitures pour ma fille. Merci !",
-  },
-]);
-
-// Navigation des témoignages avec défilement infini
-const nextTestimonial = () => {
-  currentInfiniteIndex.value++;
-  // Synchroniser l'index normal pour les dots
-  currentIndex.value = currentInfiniteIndex.value % testimonials.value.length;
-};
-
-const previousTestimonial = () => {
-  currentInfiniteIndex.value--;
-  // Synchroniser l'index normal pour les dots
-  currentIndex.value = currentInfiniteIndex.value % testimonials.value.length;
-};
-
-// Fonction pour créer un défilement infini
-const createInfiniteTestimonials = () => {
-  // Dupliquer les témoignages pour créer un effet infini
-  const duplicated = [
-    ...testimonials.value,
-    ...testimonials.value,
-    ...testimonials.value,
-  ];
-  return duplicated;
-};
-
-// Témoignages infinis
-const infiniteTestimonials = computed(() => createInfiniteTestimonials());
-
-// Index de départ au milieu pour permettre le défilement dans les deux sens
-const startIndex = testimonials.value.length;
-const currentInfiniteIndex = ref(startIndex);
-
-const toggleAutoScroll = () => {
-  isAutoScrolling.value = !isAutoScrolling.value;
-  if (isAutoScrolling.value) {
-    startAutoScroll();
-  } else {
-    stopAutoScroll();
-  }
-};
-
-const startAutoScroll = () => {
-  stopAutoScroll(); // S'assurer qu'il n'y a pas d'intervalle en cours
-  autoScrollInterval.value = setInterval(() => {
-    nextTestimonial();
-    // Réinitialiser la position si on atteint les bords
-    resetPositionIfNeeded();
-  }, 2000); // Défilement plus rapide : 2 secondes au lieu de 6
-};
-
-// Fonction pour réinitialiser la position si nécessaire
-const resetPositionIfNeeded = () => {
-  const totalTestimonials = testimonials.value.length;
-  const currentPos = currentInfiniteIndex.value;
-
-  // Si on est dans la première série, on peut continuer normalement
-  if (currentPos < totalTestimonials) {
-    return;
-  }
-
-  // Si on est dans la troisième série, on remet au début de la deuxième
-  if (currentPos >= totalTestimonials * 2) {
-    currentInfiniteIndex.value = totalTestimonials;
-    // Forcer un re-render sans transition
-    setTimeout(() => {
-      const container = testimonialsContainer.value;
-      if (container) {
-        container.style.transition = "none";
-        container.style.transform = `translateX(-${totalTestimonials * 320}px)`;
-        setTimeout(() => {
-          container.style.transition = "transform 500ms ease-in-out";
-        }, 50);
-      }
-    }, 500);
-  }
-};
-
-const stopAutoScroll = () => {
-  if (autoScrollInterval.value) {
-    clearInterval(autoScrollInterval.value);
-    autoScrollInterval.value = null;
-  }
-};
-
-// Fonctions pour le swipe amélioré
-const handleTouchStart = (e) => {
-  if (isTransitioning.value) return;
-  isDragging.value = true;
-  startX.value = e.touches[0].clientX;
-  startY.value = e.touches[0].clientY;
-  dragOffset.value = 0;
-
-  // Pause l'auto-scroll pendant le drag
-  stopAutoScroll();
-};
-
-const handleMouseDown = (e) => {
-  if (isTransitioning.value) return;
-  isDragging.value = true;
-  startX.value = e.clientX;
-  startY.value = e.clientY;
-  dragOffset.value = 0;
-
-  // Pause l'auto-scroll pendant le drag
-  stopAutoScroll();
-};
-
-const handleTouchMove = (e) => {
-  if (!isDragging.value || isTransitioning.value) return;
-  e.preventDefault();
-
-  const currentX = e.touches[0].clientX;
-  const currentY = e.touches[0].clientY;
-  const deltaX = startX.value - currentX;
-  const deltaY = startY.value - currentY;
-
-  // Vérifier que c'est un mouvement horizontal
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    dragOffset.value = deltaX;
-    // Appliquer l'offset en temps réel
-    const container = testimonialsContainer.value;
-    if (container) {
-      const baseTransform = -currentInfiniteIndex.value * 320;
-      container.style.transform = `translateX(${baseTransform + deltaX}px)`;
-    }
-  }
-};
-
-const handleMouseMove = (e) => {
-  if (!isDragging.value || isTransitioning.value) return;
-
-  const currentX = e.clientX;
-  const currentY = e.clientY;
-  const deltaX = startX.value - currentX;
-  const deltaY = startY.value - currentY;
-
-  // Vérifier que c'est un mouvement horizontal
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    dragOffset.value = deltaX;
-    // Appliquer l'offset en temps réel
-    const container = testimonialsContainer.value;
-    if (container) {
-      const baseTransform = -currentInfiniteIndex.value * 320;
-      container.style.transform = `translateX(${baseTransform + deltaX}px)`;
-    }
-  }
-};
-
-const handleTouchEnd = (e) => {
-  if (!isDragging.value || isTransitioning.value) return;
-
-  const endX = e.changedTouches[0].clientX;
-  const endY = e.changedTouches[0].clientY;
-  const deltaX = startX.value - endX;
-  const deltaY = startY.value - endY;
-
-  // Seuil pour déclencher le changement de carte
-  const threshold = 80;
-
-  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
-    isTransitioning.value = true;
-
-    if (deltaX > 0) {
-      // Swipe vers la gauche = témoignage suivant
-      nextTestimonial();
-    } else {
-      // Swipe vers la droite = témoignage précédent
-      previousTestimonial();
-    }
-
-    // Réactiver l'auto-scroll après un délai
-    setTimeout(() => {
-      if (isAutoScrolling.value) {
-        startAutoScroll();
-      }
-      isTransitioning.value = false;
-    }, 500);
-  } else {
-    // Retour à la position initiale
-    const container = testimonialsContainer.value;
-    if (container) {
-      container.style.transform = `translateX(-${
-        currentInfiniteIndex.value * 320
-      }px)`;
-    }
-
-    // Réactiver l'auto-scroll
-    if (isAutoScrolling.value) {
-      startAutoScroll();
-    }
-  }
-
-  isDragging.value = false;
-  dragOffset.value = 0;
-};
-
-const handleMouseUp = (e) => {
-  if (!isDragging.value || isTransitioning.value) return;
-
-  const endX = e.clientX;
-  const endY = e.clientY;
-  const deltaX = startX.value - endX;
-  const deltaY = startY.value - endY;
-
-  // Seuil pour déclencher le changement de carte
-  const threshold = 80;
-
-  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
-    isTransitioning.value = true;
-
-    if (deltaX > 0) {
-      // Drag vers la gauche = témoignage suivant
-      nextTestimonial();
-    } else {
-      // Drag vers la droite = témoignage précédent
-      previousTestimonial();
-    }
-
-    // Réactiver l'auto-scroll après un délai
-    setTimeout(() => {
-      if (isAutoScrolling.value) {
-        startAutoScroll();
-      }
-      isTransitioning.value = false;
-    }, 500);
-  } else {
-    // Retour à la position initiale
-    const container = testimonialsContainer.value;
-    if (container) {
-      container.style.transform = `translateX(-${
-        currentInfiniteIndex.value * 320
-      }px)`;
-    }
-
-    // Réactiver l'auto-scroll
-    if (isAutoScrolling.value) {
-      startAutoScroll();
-    }
-  }
-
-  isDragging.value = false;
-  dragOffset.value = 0;
-};
-
-// Fetch data on component mount - Optimisé pour de meilleures performances
 onMounted(async () => {
-  // Éviter les appels répétés
-  if (dataLoaded.value) return;
-
-  try {
-    // Charger seulement les données essentielles en parallèle
-    await Promise.all([
-      productsStore.fetchProducts(),
-      airtableStore.fetchPacks(), // Seulement les packs pour la section principale
-    ]);
-
-    dataLoaded.value = true;
-
-    // Charger les autres données en arrière-plan (non bloquant)
-    setTimeout(async () => {
-      try {
-        await Promise.all([
-          airtableStore.fetchProducts(),
-          airtableStore.fetchPromotions(),
-          airtableStore.fetchTestimonials(),
-          fetchProductsFromAdmin(),
-          fetchPacksFromAirtable(), // Charger les packs d'Airtable
-        ]);
-      } catch (error) {
-        console.warn("⚠️ Chargement en arrière-plan échoué:", error);
-      }
-    }, 100);
-  } catch (error) {
-    console.error("❌ Erreur lors du chargement:", error);
+  if (productsStore.products.length === 0) {
+    productsStore.initializeDemoData();
   }
-
-  // Démarrer l'auto-scroll des témoignages
-  startAutoScroll();
+  if (airtableStore.products.length === 0) {
+    await airtableStore.initialize();
+  }
 });
 
-// Nettoyer l'intervalle au démontage
-onUnmounted(() => {
-  stopAutoScroll();
-});
+// Niveaux scolaires avec visuels photos professionnels (Screenshot 2)
+const levels = [
+  {
+    key: "prescolaire",
+    title: "Préscolaire",
+    sub: "3 – 5 ANS",
+    count: 2,
+    image: "https://i.pinimg.com/736x/8c/4f/b8/8c4fb8bd40f1a67e063ffb2223f4190b.jpg", // Red backpack photo
+  },
+  {
+    key: "primaire",
+    title: "Primaire",
+    sub: "CP – CM2",
+    count: 6,
+    image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg", // Stack of books photo
+  },
+  {
+    key: "college",
+    title: "Collège",
+    sub: "6ᵉ – 3ᵉ",
+    count: 4,
+    image: "https://i.pinimg.com/736x/10/54/a3/1054a36c0ce9460b0a1e2aafa65c9a20.jpg", // Abacus & geometry photo
+  },
+  {
+    key: "lycee",
+    title: "Lycée",
+    sub: "2NDE – TERM.",
+    count: 4,
+    image: "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg", // High school supplies photo
+  },
+];
 
-// Latest Products Section
-const selectedCategory = ref("Tous");
-const productsFromAdmin = ref<Product[]>([]);
-
-// Packs from Airtable (same as packs page)
-const packsFromAirtable = ref<any[]>([]);
-
-// Fonction pour récupérer les packs depuis Airtable (même que la page packs)
-async function fetchPacksFromAirtable() {
-  try {
-    const response = (await $fetch("/api/admin/packs")) as any[];
-
-    // Transformer les données d'Airtable au format attendu par AppPackCard
-    packsFromAirtable.value = response.map((pack: any) => ({
-      id: pack.id,
-      name: pack.Name,
-      level: pack.Level,
-      price: Number(pack.Price) || 0,
-      originalPrice: pack["Original Price"]
-        ? Number(pack["Original Price"])
-        : undefined,
-      image: pack.Image || pack["Image URL"] || "",
-      description: pack.Description || "",
-      items: pack.Items || [],
-      discount: pack["Discount %"] || 0,
-      isPromotion: pack["Discount %"] > 0,
-    }));
-
-    console.log(
-      "Packs chargés depuis Airtable pour l'accueil:",
-      packsFromAirtable.value
-    );
-  } catch (error) {
-    console.error("Erreur lors du chargement des packs d'Airtable:", error);
-    packsFromAirtable.value = [];
+// Produits réels liés aux fiches détails (Screenshot 5)
+const catalogueProducts = computed(() => {
+  let customProds: any[] = [];
+  if (process.client) {
+    customProds = JSON.parse(localStorage.getItem("custom_products") || "[]");
   }
-}
-
-async function fetchProductsFromAdmin(): Promise<Product[]> {
-  const rows = (await $fetch("/api/admin/products")) as any[];
-  return rows.map((p) => {
-    let image: string = p["Image URL"] || "";
-    if (!image && typeof p.Images === "string") {
-      image = p.Images.split(",").map((s: string) => s.trim())[0] || "";
-    }
-    return {
+  const storeProds = [...customProds, ...productsStore.products];
+  if (storeProds.length > 0) {
+    return storeProds.slice(0, 4).map((p) => ({
       id: p.id,
-      name: p.Name || "",
-      price: Number(p.Price) || 0,
-      originalPrice: p["Original Price"] ?? undefined,
-      category: p.Category || "Autres",
-      image,
-      images: image ? [image] : [],
-      description: p.Description || "",
-      inStock: Boolean(p["In Stock"]) || false,
-      isPromotion: Boolean(p["Is Promotion"]) || false,
-      promotionEndDate: p["Promotion End Date"]
-        ? new Date(p["Promotion End Date"])
-        : undefined,
-    } as Product;
-  });
-}
-
-onMounted(async () => {
-  try {
-    productsFromAdmin.value = await fetchProductsFromAdmin();
-  } catch (e) {
-    const fallback =
-      airtableStore.products && airtableStore.products.length > 0
-        ? (airtableStore.products as Product[])
-        : (productsStore.products as Product[]);
-    productsFromAdmin.value = fallback;
+      brand: p.category ? p.category.toUpperCase() : "EDUSHOP",
+      name: p.name,
+      priceFormatted: `${p.price.toLocaleString("fr-FR")} F CFA`,
+      rating: "4.9",
+      image: p.image,
+    }));
   }
-});
-
-const filteredProducts = computed(() => {
-  // Utiliser les données du store productsStore en priorité
-  const list =
-    productsStore.products.length > 0
-      ? productsStore.products
-      : productsFromAdmin.value;
-  if (selectedCategory.value === "Tous") {
-    return list.slice(0, 9);
-  }
-  return list.filter((p) => p.category === selectedCategory.value).slice(0, 8);
-});
-
-// Fonction pour ajouter un pack au panier
-const addPackToCart = (pack: Pack) => {
-  console.log("🛒 Ajout du pack au panier:", pack);
-  cartStore.addItem(
+  return [
     {
-      id: pack.id,
-      name: pack.name,
-      price: pack.price,
-      image: pack.image,
-      type: "pack",
-      description: pack.description,
+      id: "cahier-96p",
+      brand: "EDUSHOP",
+      name: "Cahier 96 pages",
+      priceFormatted: "500 F CFA",
+      rating: "4.9",
+      image: "https://i.pinimg.com/1200x/4e/99/18/4e991885818a6f5d75c158915c667798.jpg",
     },
-    1
-  );
-  console.log("✅ Pack ajouté au panier avec succès");
-};
+    {
+      id: "stylo-bille-bleu",
+      brand: "BIC",
+      name: "Stylo Bille Bleu",
+      priceFormatted: "100 F CFA",
+      rating: "4.8",
+      image: "https://i.pinimg.com/736x/f3/c3/96/f3c396b6166cb46d61cafa6656cce35c.jpg",
+    },
+    {
+      id: "cahier-120p",
+      brand: "CLAIRECONTAINE",
+      name: "Cahier 200 pages grand format",
+      priceFormatted: "600 F CFA",
+      rating: "4.9",
+      image: "https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg",
+    },
+    {
+      id: "stylo-plume",
+      brand: "FABER-CASTELL",
+      name: "Stylo Plume avec cartouches",
+      priceFormatted: "1 200 F CFA",
+      rating: "4.9",
+      image: "https://i.pinimg.com/1200x/c8/09/0d/c8090d67a9b7cea8c1e1157f2ef4f40c.jpg",
+    },
+  ];
+});
 
-// Quick Order
-const quickOrder = (level: string) => {
-  // Implement quick order logic, e.g., redirect to a pre-filled cart or a specific pack page
-  alert(`Commande rapide pour le niveau : ${level}`);
-  // Example: router.push(`/packs?level=${level}`)
-};
+
+
+
 </script>
 
-<style scoped>
-/* Keyframes for animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  50% {
-    transform: translateY(-10px) translateX(10px);
-  }
-}
-
-@keyframes float-medium {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  50% {
-    transform: translateY(-15px) translateX(-10px);
-  }
-}
-
-/* Animation Classes */
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
-  animation-delay: var(--delay, 0s);
-  animation-delay: var(--delay, 0s);
-}
-
-.animate-float-slow {
-  animation: float-slow 8s ease-in-out infinite;
-}
-
-.animate-float-medium {
-  animation: float-medium 10s ease-in-out infinite;
-}
-
-/* Testimonials Carousel Animation */
-/* Animation supprimée - remplacée par la navigation manuelle */
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Button Styles */
-.btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
-}
-
-.btn-secondary {
-  @apply bg-white text-gray-800 border-2 border-gray-200 hover:border-primary-600 font-semibold rounded-xl transition-all duration-300 hover:bg-gray-50;
-}
-
-/* Section Styles */
-.section {
-  @apply py-16 md:py-24;
-}
-
-.section-title {
-  @apply text-3xl md:text-4xl font-bold text-primary-700 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-700;
-  position: relative;
-  display: inline-block;
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(90deg, #16a34a, #15803d);
-    border-radius: 3px;
-  }
-}
-
-.pack-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8;
-}
-
-.product-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
-}
-
-/* Grid Pattern */
-.grid-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  background-size: 60px 60px;
-}
-
-.btn-primary {
-  @apply bg-primary-600 text-white font-bold rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 transform hover:-translate-y-1;
-}
-
-.btn-secondary {
-  @apply bg-white text-primary-600 font-bold rounded-full shadow-md hover:shadow-xl border border-primary-100 hover:border-primary-600 transition-all duration-300 transform hover:-translate-y-1;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
-}
-
-@keyframes pulse-cta {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-.pulse-cta {
-  animation: pulse-cta 2s infinite ease-in-out;
-}
-
-.animation-delay-200 {
-  animation-delay: 200ms;
-}
-.animation-delay-400 {
-  animation-delay: 400ms;
-}
-.animation-delay-600 {
-  animation-delay: 600ms;
-}
-</style>

@@ -1,222 +1,162 @@
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
-  >
-    <!-- Hero Section -->
-    <div class="relative overflow-hidden">
-      <!-- Background Image -->
-      <div
-        class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style="
-          background-image: url('https://i.pinimg.com/736x/8c/4f/b8/8c4fb8bd40f1a67e063ffb2223f4190b.jpg');
-        "
-      ></div>
-
-      <!-- Overlay for text readability -->
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/75 to-teal-900/80"
-      ></div>
-
-      <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-5">
-        <div
-          class="absolute inset-0"
-          style="
-            background-image: radial-gradient(
-              circle at 2px 2px,
-              white 1px,
-              transparent 0
-            );
-            background-size: 40px 40px;
-          "
-        ></div>
+  <div class="min-h-screen bg-[#FBFBFA] text-slate-900 pt-8 pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header section (Screenshot exact match) -->
+      <div class="mb-10">
+        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91] block mb-2">
+          CATALOGUE
+        </span>
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight">
+          Toutes vos <span class="text-[#0F3D91] font-normal">fournitures.</span>
+        </h1>
       </div>
 
-      <!-- Floating Elements -->
-      <div
-        class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-float"
-      ></div>
-      <div
-        class="absolute top-32 right-20 w-16 h-16 bg-white/5 rounded-full blur-xl animate-float-delayed"
-      ></div>
-      <div
-        class="absolute bottom-20 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-xl animate-float-slow"
-      ></div>
+      <!-- Main Layout: Sidebar + Products Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Sidebar Filters (Screenshot exact match) -->
+        <aside class="lg:col-span-3 space-y-8 bg-white/70 backdrop-blur-sm p-6 rounded-3xl border border-slate-200/80">
+          <!-- Recherche -->
+          <div class="space-y-2">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+              RECHERCHE
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-xs">
+                🔍
+              </span>
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Cahiers, stylos..."
+                class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0F3D91]/20 focus:border-[#0F3D91] transition-all shadow-sm"
+              />
+            </div>
+          </div>
 
-      <div class="relative px-4 py-16 sm:py-24 lg:py-32 max-w-7xl mx-auto">
-        <div class="text-center space-y-8">
-          <!-- Title -->
-          <div class="space-y-6">
-            <h1
-              class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight animate-fade-in-up"
-              style="animation-delay: 0.2s"
-            >
-              <span class="block">Produits Scolaires</span>
-              <span
-                class="block bg-gradient-to-r from-green-200 to-emerald-200 bg-clip-text text-transparent"
-                >À l'unité</span
+          <!-- Catégorie -->
+          <div class="space-y-3">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+              CATÉGORIE
+            </label>
+            <div class="space-y-1">
+              <button
+                v-for="cat in sidebarCategories"
+                :key="cat.key"
+                @click="currentCategory = cat.key"
+                class="w-full text-left px-4 py-2.5 rounded-full text-xs font-bold transition-all flex items-center justify-between"
+                :class="
+                  currentCategory === cat.key
+                    ? 'bg-[#0F3D91] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 font-medium'
+                "
               >
-            </h1>
+                <span>{{ cat.label }}</span>
+              </button>
+            </div>
+          </div>
 
-            <p
-              class="text-xl sm:text-2xl text-emerald-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up"
-              style="animation-delay: 0.3s"
-            >
-              Découvrez notre large sélection de fournitures scolaires de
-              qualité.
-              <br class="hidden sm:block" />
-              <span class="font-semibold text-white"
-                >Choisissez exactement</span
-              >
-              ce dont vous avez besoin.
+          <!-- Disponibilité -->
+          <div class="space-y-3 pt-2 border-t border-slate-100">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
+              DISPONIBILITÉ
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-700 select-none">
+              <input
+                type="checkbox"
+                v-model="inStockOnly"
+                class="w-4 h-4 rounded border-slate-300 text-[#0F3D91] focus:ring-[#0F3D91]"
+              />
+              <span>En stock seulement</span>
+            </label>
+          </div>
+        </aside>
+
+        <!-- Right Main Products Area -->
+        <main class="lg:col-span-9 space-y-6">
+          <!-- Toolbar (Count + Sort & View Toggle) -->
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-semibold text-slate-500">
+              {{ filteredProducts.length }} produit{{ filteredProducts.length > 1 ? 's' : '' }}
             </p>
-          </div>
 
-          <!-- Stats -->
-          <div
-            class="flex flex-wrap justify-center gap-8 mt-12 animate-fade-in-up"
-            style="animation-delay: 0.4s"
-          >
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">150+</div>
-              <div class="text-emerald-200 text-sm font-medium">
-                Produits Disponibles
-              </div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">98%</div>
-              <div class="text-emerald-200 text-sm font-medium">
-                Satisfaction
-              </div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">24h</div>
-              <div class="text-emerald-200 text-sm font-medium">Expédition</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Wave Bottom -->
-      <div class="absolute bottom-0 left-0 right-0">
-        <svg
-          class="w-full h-12 sm:h-20 text-slate-50"
-          fill="currentColor"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z"></path>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="relative -mt-1 px-4 py-12 sm:py-16 lg:py-20 max-w-7xl mx-auto">
-      <!-- Categories Filter -->
-      <div class="mb-16 animate-fade-in-up" style="animation-delay: 0.5s">
-        <div class="text-center mb-8">
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
-            Parcourir par catégorie
-          </h2>
-          <p class="text-slate-600 text-lg">
-            Trouvez rapidement ce que vous cherchez
-          </p>
-        </div>
-
-        <!-- Mobile Dropdown -->
-        <div class="block sm:hidden">
-          <select
-            v-model="currentCategory"
-            class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-2xl text-lg font-medium focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all"
-          >
-            <option
-              v-for="category in categories"
-              :key="category"
-              :value="category"
-            >
-              {{ category }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Desktop Pills -->
-        <div class="hidden sm:flex flex-wrap justify-center gap-3 lg:gap-4">
-          <button
-            v-for="(category, index) in categories"
-            :key="category"
-            @click="filterCategory(category)"
-            class="group relative px-6 lg:px-8 py-3 lg:py-4 font-semibold text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 active:scale-95 animate-slide-in-up"
-            :style="{ animationDelay: `${0.6 + index * 0.1}s` }"
-            :class="{
-              'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-xl shadow-emerald-200':
-                currentCategory === category,
-              'bg-white text-slate-700 border-2 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700':
-                currentCategory !== category,
-            }"
-          >
-            <div
-              v-if="currentCategory === category"
-              class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-300"
-            ></div>
-            <span class="relative">{{ category }}</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Products Grid -->
-      <div class="space-y-16">
-        <div
-          v-if="filteredProducts.length > 0"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-        >
-          <div
-            v-for="(product, index) in filteredProducts"
-            :key="product.id"
-            class="group animate-fade-in-up"
-            :style="{ animationDelay: `${0.7 + index * 0.1}s` }"
-          >
-            <AppProductCard
-              :product="product"
-              @add-to-cart="addToCart"
-              class="transform hover:scale-105 transition-all duration-500 hover:shadow-2xl h-full"
-            />
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div v-else class="text-center py-20 animate-fade-in-up">
-          <div class="max-w-md mx-auto">
-            <div
-              class="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center"
-            >
-              <svg
-                class="w-16 h-16 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div class="flex items-center gap-3">
+              <select
+                v-model="sortBy"
+                class="px-4 py-2 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-700 focus:outline-none focus:border-[#0F3D91]"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 7h6"
+                <option value="popular">Populaires</option>
+                <option value="price-asc">Prix croissant</option>
+                <option value="price-desc">Prix décroissant</option>
+              </select>
+
+              <div class="hidden sm:flex items-center gap-1 bg-white border border-slate-200 p-1 rounded-full text-xs text-slate-500">
+                <button class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-900 font-bold">::</button>
+                <button class="px-2.5 py-1 rounded-full hover:bg-slate-50">=</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Grid (3 Columns) -->
+          <div v-if="filteredProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <NuxtLink
+              v-for="product in filteredProducts"
+              :key="product.id"
+              :to="`/products/${product.id}`"
+              class="bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between overflow-hidden"
+            >
+              <!-- Product Image Container -->
+              <div class="relative aspect-square bg-[#F7F5EF] p-6 flex items-center justify-center overflow-hidden">
+                <img
+                  :src="product.image"
+                  :alt="product.name"
+                  class="max-h-full max-w-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-300"
                 />
-              </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mb-4">
-              Aucun produit trouvé
-            </h3>
-            <p class="text-slate-600 text-lg mb-8">
-              Essayez de changer de catégorie ou revenez plus tard.
-            </p>
+              </div>
+
+              <!-- Product Details -->
+              <div class="p-5 space-y-2 flex-1 flex flex-col justify-between">
+                <div>
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+                    {{ product.brand }}
+                  </span>
+                  <h3 class="font-display text-sm font-bold text-slate-900 group-hover:text-[#0F3D91] transition-colors leading-snug line-clamp-2">
+                    {{ product.name }}
+                  </h3>
+                </div>
+
+                <div class="pt-3 flex items-center justify-between border-t border-slate-100 gap-2">
+                  <span class="font-display text-sm font-extrabold text-slate-950">
+                    {{ product.priceFormatted }}
+                  </span>
+                  
+                  <!-- 1-Click Quick Buy Button -->
+                  <button
+                    @click.prevent.stop="quickAddToCart(product)"
+                    class="px-4 py-2 bg-[#0F3D91] hover:bg-[#0c3278] active:scale-95 text-white font-extrabold text-xs rounded-full shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                    title="Acheter en 1-clic"
+                  >
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>Ajouter</span>
+                  </button>
+                </div>
+              </div>
+            </NuxtLink>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else class="text-center py-20 bg-white rounded-3xl border border-slate-200/80 p-8">
+            <p class="text-slate-500 text-sm font-semibold">Aucun produit trouvé pour ce filtre.</p>
             <button
-              @click="currentCategory = 'Tous'"
-              class="px-8 py-3 bg-emerald-600 text-white font-semibold rounded-2xl hover:bg-emerald-700 transition-colors"
+              @click="resetFilters"
+              class="mt-4 px-6 py-2.5 bg-[#0F3D91] text-white rounded-full text-xs font-bold"
             >
-              Voir tous les produits
+              Réinitialiser les filtres
             </button>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   </div>
@@ -224,213 +164,196 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-// Déclaration pour l'auto-import Nuxt côté types
-declare const useHead: any;
-// axios non requis, on consomme l'API serveur
-import AppProductCard from "../../components/AppProductCard.vue";
-import { useAirtableStore } from "../../stores/airtable";
-import type { Product } from "../../stores/products";
-
-const products = ref<Product[]>([]);
-const currentCategory = ref("Tous");
-const loading = ref(true);
+import { useAirtableStore } from "~/stores/airtable";
+import { useProductsStore } from "~/stores/products";
+import { useCartStore } from "~/stores/cart";
 
 const airtableStore = useAirtableStore();
+const productsStore = useProductsStore();
+const cartStore = useCartStore();
 
-// Charger depuis l'API admin (même source que l'admin)
-async function fetchProductsFromAdmin(): Promise<Product[]> {
-  const rows = (await $fetch("/api/admin/products")) as any[];
-  return rows.map((p) => {
-    // Images: priorité à "Image URL", sinon première de "Images" (séparées par virgule)
-    let image: string = p["Image URL"] || "";
-    if (!image && typeof p.Images === "string") {
-      image = p.Images.split(",").map((s: string) => s.trim())[0] || "";
-    }
-    return {
-      id: p.id,
-      name: p.Name || "",
-      price: Number(p.Price) || 0,
-      originalPrice: p["Original Price"] ?? undefined,
-      category: p.Category || "Autres",
-      image,
-      images: image ? [image] : [],
-      description: p.Description || "",
-      inStock: Boolean(p["In Stock"]) || false,
-      isPromotion: Boolean(p["Is Promotion"]) || false,
-      promotionEndDate: p["Promotion End Date"]
-        ? new Date(p["Promotion End Date"])
-        : undefined,
-    } as Product;
-  });
-}
+const quickAddToCart = (product: any) => {
+  cartStore.addItem({
+    id: product.id,
+    name: product.name,
+    price: typeof product.price === "number" ? product.price : parseFloat(String(product.price).replace(/[^0-9.]/g, "")) || 350,
+    image: product.image,
+    type: "product",
+    category: product.category,
+  }, 1);
+};
 
-// Charger les données au montage du composant
+const searchQuery = ref("");
+const currentCategory = ref("Toutes");
+const inStockOnly = ref(true);
+const sortBy = ref("popular");
+
+const sidebarCategories = [
+  { key: "Toutes", label: "Toutes" },
+  { key: "Bagagerie", label: "Bagagerie" },
+  { key: "Cahiers", label: "Cahiers" },
+  { key: "Calculatrices", label: "Calculatrices" },
+  { key: "Arts plastiques", label: "Arts plastiques" },
+];
+
+// Produits de base (Matching Lovable Screenshot 100%)
+const defaultProducts = [
+  {
+    id: "sac-a-dos-navigateur",
+    brand: "EduShop",
+    name: "Sac à dos Navigateur",
+    category: "Bagagerie",
+    price: 12500,
+    priceFormatted: "12 500 F CFA",
+    rating: "4.7",
+    inStock: true,
+    image: "https://i.pinimg.com/736x/8c/4f/b8/8c4fb8bd40f1a67e063ffb2223f4190b.jpg",
+  },
+  {
+    id: "cahiers-96p-lot-6",
+    brand: "Clairefontaine",
+    name: "Cahiers 96 pages — Lot de 6",
+    category: "Cahiers",
+    price: 3600,
+    priceFormatted: "3 600 F CFA",
+    rating: "4.9",
+    inStock: true,
+    image: "https://i.pinimg.com/1200x/4e/99/18/4e991885818a6f5d75c158915c667798.jpg",
+  },
+  {
+    id: "calculatrice-fx-92",
+    brand: "Casio",
+    name: "Calculatrice scientifique FX-92",
+    category: "Calculatrices",
+    price: 14500,
+    priceFormatted: "14 500 F CFA",
+    rating: "4.8",
+    inStock: true,
+    image: "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&q=80&w=500",
+  },
+  {
+    id: "crayons-couleur-24",
+    brand: "Faber-Castell",
+    name: "Crayons de couleur — Lot de 24",
+    category: "Arts plastiques",
+    price: 4200,
+    priceFormatted: "4 200 F CFA",
+    rating: "4.9",
+    inStock: true,
+    image: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&q=80&w=500",
+  },
+  {
+    id: "cahier-120p",
+    brand: "Clairefontaine",
+    name: "Cahier 200 pages grand format",
+    category: "Cahiers",
+    price: 600,
+    priceFormatted: "600 F CFA",
+    rating: "4.9",
+    inStock: true,
+    image: "https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg",
+  },
+  {
+    id: "stylo-bille-bleu",
+    brand: "BIC",
+    name: "Stylo Bille Bleu (Lot de 4)",
+    category: "Arts plastiques",
+    price: 500,
+    priceFormatted: "500 F CFA",
+    rating: "4.8",
+    inStock: true,
+    image: "https://i.pinimg.com/736x/f3/c3/96/f3c396b6166cb46d61cafa6656cce35c.jpg",
+  },
+];
+
 onMounted(async () => {
-  try {
-    // Source unifiée: même endpoint que l'admin
-    products.value = await fetchProductsFromAdmin();
-    console.log("Produits chargés (admin API):", products.value);
-  } catch (error) {
-    console.error("Erreur lors du chargement des produits:", error);
-  } finally {
-    loading.value = false;
+  if (productsStore.products.length === 0) {
+    productsStore.initializeDemoData();
+  }
+  if (process.client) {
+    const custom = JSON.parse(localStorage.getItem("custom_products") || "[]");
+    custom.forEach((cProd: any) => {
+      if (!productsStore.products.some((p: any) => p.id === cProd.id)) {
+        productsStore.products.unshift(cProd as any);
+      }
+    });
+  }
+  if (airtableStore.products.length === 0) {
+    await airtableStore.fetchProducts();
   }
 });
 
-// Calculer les catégories disponibles
-const categories = computed(() => {
-  const allCategories = products.value.map((p) => p.category || "Autres");
-  const uniqueCategories = [...new Set(allCategories)].filter(Boolean);
-  return ["Tous", ...uniqueCategories];
+// Formater et filtrer les produits
+const allProducts = computed(() => {
+  let customProds: any[] = [];
+  if (process.client) {
+    customProds = JSON.parse(localStorage.getItem("custom_products") || "[]");
+  }
+  const storeProds = [...customProds, ...productsStore.products];
+  if (storeProds.length > 0) {
+    return storeProds.map((p) => {
+      let brand = "EDUSHOP";
+      if (p.name.toLowerCase().includes("casio")) brand = "Casio";
+      else if (p.name.toLowerCase().includes("claire")) brand = "Clairefontaine";
+      else if (p.name.toLowerCase().includes("faber")) brand = "Faber-Castell";
+      else if (p.name.toLowerCase().includes("bic")) brand = "BIC";
+      else if (p.category) brand = p.category;
+
+      let category = "Cahiers";
+      if (p.category === "Sacs" || p.name.toLowerCase().includes("sac") || p.name.toLowerCase().includes("trousse")) category = "Bagagerie";
+      else if (p.category === "Calculatrices" || p.name.toLowerCase().includes("calculatrice")) category = "Calculatrices";
+      else if (p.category === "Stylos" || p.category === "Crayons" || p.category === "Gommes" || p.name.toLowerCase().includes("couleur")) category = "Arts plastiques";
+
+      return {
+        id: p.id,
+        brand: brand,
+        name: p.name,
+        category: category,
+        price: p.price,
+        priceFormatted: `${p.price.toLocaleString("fr-FR")} F CFA`,
+        rating: "4.8",
+        inStock: p.inStock !== false,
+        image: p.image,
+      };
+    });
+  }
+  return defaultProducts;
 });
 
-// Filtrer les produits par catégorie
 const filteredProducts = computed(() => {
-  if (currentCategory.value === "Tous") {
-    return products.value;
-  }
-  return products.value.filter((p) => p.category === currentCategory.value);
+  return allProducts.value.filter((p) => {
+    // Filtre catégorie
+    if (currentCategory.value !== "Toutes" && p.category !== currentCategory.value) {
+      return false;
+    }
+    // Filtre recherche
+    if (searchQuery.value.trim() !== "") {
+      const q = searchQuery.value.toLowerCase();
+      const matchName = p.name.toLowerCase().includes(q);
+      const matchBrand = p.brand.toLowerCase().includes(q);
+      if (!matchName && !matchBrand) return false;
+    }
+    // Stock
+    if (inStockOnly.value && !p.inStock) {
+      return false;
+    }
+    return true;
+  });
 });
 
-// Sélectionner une catégorie
-function filterCategory(cat) {
-  currentCategory.value = cat;
+function resetFilters() {
+  searchQuery.value = "";
+  currentCategory.value = "Toutes";
+  inStockOnly.value = false;
 }
 
-// Ajouter au panier
-function addToCart(product, quantity = 1) {
-  // ...utilise ton store ou logique panier ici si besoin...
-}
-
-// Configuration du head
 useHead({
-  title: "Produits Scolaires - EduShop",
+  title: "Toutes vos fournitures - EduShop",
   meta: [
     {
       name: "description",
-      content:
-        "Découvrez notre large sélection de fournitures scolaires de qualité. Cahiers, stylos, ardoises et bien plus encore.",
+      content: "Découvrez notre catalogue de fournitures scolaires au Sénégal.",
     },
   ],
 });
 </script>
-
-<style scoped>
-/* Animations personnalisées */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes float-delayed {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
-  opacity: 0;
-}
-
-.animate-slide-in-up {
-  animation: slideInUp 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: float-delayed 8s ease-in-out infinite;
-}
-
-.animate-float-slow {
-  animation: float-slow 10s ease-in-out infinite;
-}
-
-/* Transitions fluides */
-* {
-  transition-property: color, background-color, border-color,
-    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
-    backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-
-/* Focus states accessibles */
-button:focus-visible,
-select:focus-visible {
-  outline: 2px solid #10b981;
-  outline-offset: 2px;
-}
-
-/* Optimisations mobile */
-@media (max-width: 640px) {
-  .hero-title {
-    font-size: 2.5rem;
-    line-height: 1.2;
-  }
-
-  .hero-subtitle {
-    font-size: 1.125rem;
-    line-height: 1.6;
-  }
-}
-
-/* Animation au scroll */
-@media (prefers-reduced-motion: no-preference) {
-  .animate-on-scroll {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .animate-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>

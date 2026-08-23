@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <AppHeader />
 
     <main class="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
       <div class="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -20,7 +19,7 @@
                 1. Introduction
               </h2>
               <p class="text-gray-700 mb-4">
-                Chez EduShop, nous prenons la protection de vos données
+                Chez EduShop (service exploité par la société mère MATKAM), nous prenons la protection de vos données
                 personnelles très au sérieux. Cette politique de confidentialité
                 a pour but de vous informer sur la manière dont nous collectons,
                 utilisons, partageons et protégeons vos données personnelles
@@ -234,26 +233,24 @@
                 données, veuillez nous contacter :
               </p>
               <address class="not-italic text-gray-700">
-                <p>EduShop Sénégal</p>
+                <p class="font-bold text-[#0F3D91]">MATKAM (Société Mère) / Service EduShop Sénégal</p>
                 <p>Service Protection des Données</p>
-                <p>Ouakam Cité Avion, Dakar</p>
+                <p>Ouakam, Dakar, Sénégal</p>
                 <p>
                   Email :
                   <a
-                    href="mailto:donnees-personnelles@edushop.sn"
+                    href="mailto:contact@e-du.shop"
                     class="text-primary-600 hover:underline"
-                    >donnees-personnelles@edushop.sn</a
+                    >contact@e-du.shop</a
                   >
                 </p>
-                <p>Téléphone : +221 78 291 18 44</p>
+                <p>Téléphone / WhatsApp : +221 77 113 39 26</p>
               </address>
             </section>
           </div>
         </div>
       </div>
     </main>
-
-    <AppFooter />
   </div>
 </template>
 

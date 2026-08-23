@@ -1,12 +1,12 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-16 px-4"
+    class="min-h-screen bg-[#FBFBFA] py-12 px-4"
   >
     <div class="max-w-7xl mx-auto">
       <!-- Header avec breadcrumb -->
       <div class="mb-12">
-        <nav class="flex items-center space-x-2 text-sm text-slate-500 mb-6">
-          <span>Accueil</span>
+        <nav class="flex items-center space-x-2 text-sm text-slate-500 mb-6 font-medium">
+          <NuxtLink to="/" class="hover:text-[#0F3D91] transition-colors">Accueil</NuxtLink>
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
@@ -14,7 +14,7 @@
               clip-rule="evenodd"
             />
           </svg>
-          <span>Packs</span>
+          <NuxtLink to="/packs" class="hover:text-[#0F3D91] transition-colors">Packs</NuxtLink>
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
@@ -32,32 +32,15 @@
         <div class="lg:col-span-7">
           <div class="relative">
             <!-- Badge promo -->
-            <div v-if="pack?.isPromotion" class="absolute -top-4 -left-4 z-20">
-              <div class="relative">
-                <div
-                  class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-3 rounded-2xl shadow-xl transform -rotate-3"
-                >
-                  <div class="flex items-center gap-2">
-                    <svg
-                      class="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    <span class="font-bold text-sm">PROMOTION</span>
-                  </div>
-                </div>
-              </div>
+            <div v-if="pack?.isPromotion" class="absolute top-4 left-4 z-20">
+              <span class="bg-[#F4C542] text-slate-950 font-extrabold text-xs px-4 py-2 rounded-full shadow-md">
+                PROMOTION
+              </span>
             </div>
 
             <!-- Image principale -->
             <div
-              class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200 aspect-[4/3] shadow-2xl"
+              class="group relative overflow-hidden rounded-3xl bg-[#F8F6F0] aspect-[4/3] shadow-sm border border-slate-200/80 flex items-center justify-center p-8"
             >
               <transition name="image-fade" mode="out-in">
                 <div
@@ -84,7 +67,7 @@
                   :key="pack?.image"
                   :src="pack?.image"
                   :alt="pack?.name || 'Pack éducatif'"
-                  class="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-110"
+                  class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                   @error="handleImageError"
                   @load="
@@ -134,7 +117,7 @@
           <div class="grid grid-cols-1 mt-4 gap-3">
             <button
               @click="sharePack"
-              class="flex items-center justify-center gap-2 py-3 px-4 border-2 shadow-sm border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-medium rounded-xl transition-all duration-300 hover:bg-emerald-50"
+              class="flex items-center justify-center gap-2 py-3.5 px-4 border-2 shadow-xs border-slate-200 hover:border-[#0F3D91] text-slate-700 hover:text-[#0F3D91] font-bold text-sm rounded-full transition-all hover:bg-[#0F3D91]/5 cursor-pointer"
             >
               <svg
                 class="w-5 h-5"
@@ -153,12 +136,12 @@
             </button>
           </div>
           <!-- Informations supplémentaires -->
-          <div class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
-            <h4 class="font-semibold text-slate-900 mb-4">Informations</h4>
-            <div class="space-y-3 text-sm text-slate-600">
+          <div class="mt-8 p-6 bg-white rounded-3xl border border-slate-200/80 shadow-xs">
+            <h4 class="font-bold text-slate-900 mb-4">Informations</h4>
+            <div class="space-y-3 text-sm text-slate-600 font-medium">
               <div class="flex items-center gap-3">
                 <svg
-                  class="w-4 h-4 text-emerald-600"
+                  class="w-4 h-4 text-[#0F3D91]"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -168,11 +151,11 @@
                     clip-rule="evenodd"
                   />
                 </svg>
-                <span>Livraison gratuite a partir de 5packs</span>
+                <span>Livraison gratuite à partir de 5 packs</span>
               </div>
               <div class="flex items-center gap-3">
                 <svg
-                  class="w-4 h-4 text-emerald-600"
+                  class="w-4 h-4 text-[#0F3D91]"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -186,7 +169,7 @@
               </div>
               <div class="flex items-center gap-3">
                 <svg
-                  class="w-4 h-4 text-emerald-600"
+                  class="w-4 h-4 text-[#0F3D91]"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -205,95 +188,53 @@
         <!-- Informations produit -->
         <div class="lg:col-span-5 lg:pl-8">
           <div class="sticky top-8">
-            <!-- En-tête -->
-            <div class="mb-8">
-              <div class="flex items-center gap-3 mb-4">
-                <div
-                  class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium"
+              <!-- En-tête -->
+              <div class="mb-8">
+                <h1
+                  class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0F3D91] leading-tight mb-4"
                 >
-                  Pack Éducatif
-                </div>
-                <div class="flex items-center gap-1">
-                  <span class="text-sm text-slate-500">SKU:</span>
-                  <span class="text-sm font-mono text-slate-600">{{
-                    pack?.id
-                  }}</span>
-                </div>
-              </div>
-
-              <h1
-                class="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-6"
-              >
-                {{ pack?.name }}
-              </h1>
+                  {{ pack?.name }}
+                </h1>
 
               <p class="text-xl text-slate-600 leading-relaxed">
                 {{ pack?.description }}
               </p>
-            </div>
-
-            <!-- Pricing -->
+                     <!-- Pricing -->
             <div
-              class="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl p-6 mb-8"
+              class="bg-white border-2 border-slate-200/80 rounded-3xl p-6 mb-8 shadow-xs space-y-4"
             >
-              <div class="flex items-end gap-4 mb-4">
-                <div class="flex items-baseline gap-2">
-                  <span class="text-4xl font-bold text-slate-900">
-                    {{ formatPrice(pack?.price ?? 0) }}
-                  </span>
-                  <span class="text-lg text-slate-500">TTC</span>
-                </div>
+              <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                <span class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F3D91] tracking-tight">
+                  {{ formatPrice(pack?.price ?? 0) }}
+                </span>
+                
+                <span v-if="pack?.originalPrice" class="text-lg text-slate-400 line-through font-semibold">
+                  {{ formatPrice(pack?.originalPrice ?? 0) }}
+                </span>
 
-                <div v-if="pack?.originalPrice" class="flex flex-col items-end">
-                  <span class="text-sm text-slate-400 line-through">
-                    {{ formatPrice(pack?.originalPrice ?? 0) }}
-                  </span>
-                  <span class="text-sm font-semibold text-red-600">
-                    -{{
-                      pack?.price && pack?.originalPrice
-                        ? Math.round(
-                            (1 - pack.price / pack.originalPrice) * 100
-                          )
-                        : 0
-                    }}%
-                  </span>
-                </div>
+                <span v-if="pack?.originalPrice" class="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-100/80">
+                  -{{
+                    pack?.price && pack?.originalPrice
+                      ? Math.round((1 - pack.price / pack.originalPrice) * 100)
+                      : 0
+                  }}% DE RÉDUCTION
+                </span>
               </div>
 
-              <div class="flex items-center gap-2 text-sm text-slate-500">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                <span>Garantie satisfait ou remboursé 30 jours</span>
+              <div class="flex items-center justify-between text-xs pt-3 border-t border-slate-100 font-semibold text-slate-600">
+                <span>Livraison rapide à Dakar & régions</span>
+                <span class="text-emerald-700 font-bold flex items-center gap-1.5">
+                  <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                  En stock
+                </span>
               </div>
-            </div>
+            </div>      </div>
 
             <!-- Contenu du pack -->
             <div class="mb-8">
               <h3
-                class="text-xl font-semibold text-slate-900 mb-6 flex items-center gap-3"
+                class="font-display text-xl sm:text-2xl font-extrabold text-[#0F3D91] mb-6"
               >
-                <div
-                  class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"
-                >
-                  <svg
-                    class="w-5 h-5 text-emerald-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"
-                    />
-                  </svg>
-                </div>
                 Contenu du pack
               </h3>
 
@@ -301,25 +242,15 @@
                 <div
                   v-for="(item, index) in pack?.contents"
                   :key="index"
-                  class="group flex items-start gap-4 p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all duration-300"
+                  class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-100 hover:border-[#0F3D91]/30 bg-white transition-all duration-300"
                 >
                   <div
-                    class="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mt-0.5"
+                    class="flex-shrink-0 w-6 h-6 bg-[#0F3D91] text-white rounded-full flex items-center justify-center mt-0.5 font-bold text-xs shadow-xs"
                   >
-                    <svg
-                      class="w-3.5 h-3.5 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
+                    ✓
                   </div>
                   <span
-                    class="text-slate-700 font-medium group-hover:text-emerald-800 transition-colors"
+                    class="text-slate-700 font-medium group-hover:text-[#0F3D91] transition-colors"
                   >
                     {{ item }}
                   </span>
@@ -331,27 +262,12 @@
             <div class="space-y-4">
               <button
                 @click="addToCart(pack)"
-                class="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                class="w-full bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-bold text-base py-4 px-6 rounded-full shadow-md transition-all flex items-center justify-center gap-3 cursor-pointer"
               >
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                ></div>
-                <div class="relative flex items-center justify-center gap-3">
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 11-4 0v-6m4 0V9a2 2 0 10-4 0v4.01"
-                    />
-                  </svg>
-                  <span class="text-lg">Ajouter au panier</span>
-                </div>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <span>Ajouter ce pack au panier</span>
               </button>
             </div>
 
@@ -366,15 +282,18 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useHead } from "@unhead/vue";
-import { useProductsStore } from "~/stores/products";
+import { useHead } from "#imports";
+
+import { useAirtableStore } from "~/stores/airtable";
 import { useCartStore } from "~/stores/cart";
 import { useFormatter } from "~/composables/useFormatter";
 import { useNotification } from "~/composables/useNotification";
 
+
 const route = useRoute();
-const productsStore = useProductsStore();
+const airtableStore = useAirtableStore();
 const cartStore = useCartStore();
+
 const { formatPrice } = useFormatter();
 const {
   success: showSuccess,
@@ -394,48 +313,22 @@ const handleImageError = (event: Event) => {
 };
 
 // État pour stocker le pack
-const pack = ref(null);
+const pack = ref<any>(null);
 
-// Charger les données du pack depuis l'API publique (token côté serveur)
+// Charger les données au montage du composant
+
 onMounted(async () => {
   try {
     const packId = route.params.id as string;
-    console.log("🔄 Chargement du pack depuis API publique:", packId);
+    console.log("🔄 Chargement du pack via Smart Cache:", packId);
 
-    // Utiliser l'API publique qui récupère les vraies données Airtable côté serveur
-    const response = await $fetch(`/api/airtable/packs/${packId}`);
+    const foundPack = await airtableStore.fetchPackById(packId);
 
-    if (response.success && response.data) {
-      // Les données sont déjà au bon format depuis l'API publique
-      pack.value = {
-        id: response.data.id,
-        name: response.data.name,
-        level: response.data.level,
-        price: response.data.price,
-        originalPrice: response.data.originalPrice || null,
-        description: response.data.description,
-        contents: response.data.contents || [],
-        isPopular: response.data.isPopular,
-        inStock: response.data.inStock,
-        image: response.data.image,
-        isPromotion: response.data.isPromotion,
-        promotionEndDate: response.data.promotionEndDate
-          ? new Date(response.data.promotionEndDate)
-          : null,
-      };
-
-      // Log de la source des données
-      const source =
-        response.source === "airtable"
-          ? "Airtable en ligne"
-          : "données de fallback";
-      console.log(`✅ Pack récupéré depuis ${source}:`, pack.value.name);
-
-      if (response.warning) {
-        console.warn("⚠️", response.warning);
-      }
+    if (foundPack) {
+      pack.value = foundPack;
+      console.log(`✅ Pack récupéré:`, pack.value.name);
     } else {
-      console.error("❌ Réponse API invalide:", response);
+      console.error("❌ Pack introuvable");
       pack.value = null;
     }
   } catch (error) {
@@ -443,6 +336,7 @@ onMounted(async () => {
     pack.value = null;
   }
 });
+
 
 function addToCart(pack: any) {
   if (!pack) return;
@@ -480,9 +374,17 @@ const sharePack = async () => {
 };
 
 useHead({
-  title: pack.value ? `${pack.value.name} - EduShop` : "Pack - EduShop",
+  title: computed(() => (pack.value ? `${pack.value.name} - EduShop` : "Pack Éducatif - EduShop")),
+  meta: [
+    { name: "description", content: computed(() => pack.value?.description || "Pack scolaire complet au meilleur prix au Sénégal.") },
+    { property: "og:title", content: computed(() => (pack.value ? `${pack.value.name} | EduShop Sénégal` : "Pack Éducatif EduShop")) },
+    { property: "og:description", content: computed(() => pack.value?.description || "Découvrez nos packs scolaires complets pour une rentrée réussie.") },
+    { property: "og:image", content: computed(() => pack.value?.image || "https://www.e-du.shop/og-image.jpg") },
+    { property: "og:type", content: "product" },
+  ],
 });
 </script>
+
 
 <style scoped>
 .image-fade-enter-active,

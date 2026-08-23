@@ -52,7 +52,7 @@
           <div class="mt-6">
             <button
               @click="clearSearch"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-green"
+              class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-extrabold rounded-full shadow-md text-slate-950 bg-[#F4C542] hover:bg-[#f5cb54] cursor-pointer"
             >
               Effacer la recherche
             </button>

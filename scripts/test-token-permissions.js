@@ -7,7 +7,7 @@
 
 require("dotenv").config();
 
-require('dotenv').config();
+require("dotenv").config();
 const NEW_TOKEN = process.env.AIRTABLE_API_KEY;
 const BASE_ID = "appNfAqzPEZYgkBvL";
 const TABLE_ID = "tbl4JVykOdi6YFvfd";

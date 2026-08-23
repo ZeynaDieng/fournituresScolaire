@@ -1,504 +1,72 @@
 <template>
-  <div>
-    <!-- Actions header -->
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-semibold text-gray-900">
-        Gestion des packs scolaires
-      </h2>
+  <div class="space-y-6">
+    
+    <!-- Action Header -->
+    <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="font-display text-2xl font-extrabold text-slate-950">Catalogue Packs Scolaires & Upload Photo</h2>
+        <p class="text-xs text-slate-500 font-medium">Uploadez la photo du pack depuis votre ordinateur ou collez un lien URL</p>
+      </div>
+
       <button
-        @click="
-          () => {
-            console.log('Add button clicked');
-            showAdd = true;
-          }
-        "
-        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+        @click="openAddModal"
+        class="px-6 py-3 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          />
-        </svg>
-        <span>Ajouter un pack</span>
+        <span>+ Ajouter un pack</span>
       </button>
     </div>
 
-    <!-- Drawer Ajout -->
-    <div
-      v-if="showAdd"
-      class="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-40"
-    >
-      <div
-        class="w-full max-w-md bg-white h-full shadow-xl p-8 overflow-y-auto relative flex flex-col"
-      >
-        <button
-          @click="showAdd = false"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-2xl font-bold mb-6 text-gray-900">Ajouter un pack</h2>
-        <form @submit.prevent="addPack" class="flex-1 flex flex-col gap-4">
-          <input
-            v-model="newPack.Name"
-            type="text"
-            placeholder="Nom du pack"
-            class="input"
-            required
-          />
-          <select v-model="newPack.Level" class="input" required>
-            <option value="">Sélectionner un niveau</option>
-            <option value="CP">CP</option>
-            <option value="CE1">CE1</option>
-            <option value="CE2">CE2</option>
-            <option value="CM1">CM1</option>
-            <option value="CM2">CM2</option>
-            <option value="6ème">6ème</option>
-            <option value="5ème">5ème</option>
-            <option value="4ème">4ème</option>
-            <option value="3ème">3ème</option>
-            <option value="2nde">2nde</option>
-            <option value="1ère">1ère</option>
-            <option value="Tle">Tle</option>
-            <option value="1ère">1ère</option>
-            <option value="Terminale">Terminale</option>
-          </select>
-          <input
-            v-model.number="newPack.Price"
-            type="number"
-            placeholder="Prix (FCFA)"
-            class="input"
-            required
-          />
-          <input
-            v-model.number="newPack['Original Price']"
-            type="number"
-            placeholder="Prix d'origine (FCFA)"
-            class="input"
-          />
-          <input
-            v-model="newPack['Image URL']"
-            type="url"
-            placeholder="Image principale (URL)"
-            class="input"
-          />
-          <textarea
-            v-model="newPack.Description"
-            placeholder="Description"
-            class="input"
-            rows="2"
-          ></textarea>
-          <textarea
-            v-model="newPack.Contents"
-            placeholder="Contenu du pack (un élément par ligne)"
-            class="input"
-            rows="4"
-          ></textarea>
-          <input
-            v-model="newPack['Local ID']"
-            type="text"
-            placeholder="ID local"
-            class="input"
-          />
-          <input
-            v-model="newPack['Promotion End Date']"
-            type="date"
-            placeholder="Fin de promo"
-            class="input"
-          />
-          <label class="flex items-center gap-2">
-            <input
-              v-model="newPack['Is Promotion']"
-              type="checkbox"
-              class="accent-emerald-600"
-            />
-            Pack en promotion
-          </label>
-          <label class="flex items-center gap-2">
-            <input
-              v-model="newPack['In Stock']"
-              type="checkbox"
-              class="accent-emerald-600"
-            />
-            En stock
-          </label>
-          <div class="flex gap-2 mt-6">
-            <button
-              type="button"
-              @click="showAdd = false"
-              class="flex-1 py-2 rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              class="flex-1 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-            >
-              Enregistrer
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <!-- Drawer Edition -->
-    <div
-      v-if="showEdit"
-      class="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-40"
-    >
-      <div
-        class="w-full max-w-md bg-white h-full shadow-xl p-8 overflow-y-auto relative flex flex-col"
-      >
-        <button
-          @click="showEdit = false"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-2xl font-bold mb-6 text-gray-900">Modifier le pack</h2>
-        <form
-          @submit.prevent="updatePack"
-          class="flex-1 flex flex-col gap-4"
-          v-if="editPack"
-        >
-          <input
-            v-model="editPack.Name"
-            type="text"
-            placeholder="Nom du pack"
-            class="input"
-            required
-          />
-          <select v-model="editPack.Level" class="input" required>
-            <option value="">Sélectionner un niveau</option>
-            <option value="CP">CP</option>
-            <option value="CE1">CE1</option>
-            <option value="CE2">CE2</option>
-            <option value="CM1">CM1</option>
-            <option value="CM2">CM2</option>
-            <option value="6ème">6ème</option>
-            <option value="5ème">5ème</option>
-            <option value="4ème">4ème</option>
-            <option value="3ème">3ème</option>
-            <option value="2nde">2nde</option>
-            <option value="1ère">1ère</option>
-            <option value="Terminale">Terminale</option>
-          </select>
-          <input
-            v-model.number="editPack.Price"
-            type="number"
-            placeholder="Prix (FCFA)"
-            class="input"
-            required
-          />
-          <input
-            v-model.number="editPack['Original Price']"
-            type="number"
-            placeholder="Prix d'origine (FCFA)"
-            class="input"
-          />
-          <input
-            v-model="editPack['Image URL']"
-            type="url"
-            placeholder="Image principale (URL)"
-            class="input"
-          />
-          <textarea
-            v-model="editPack.Description"
-            placeholder="Description"
-            class="input"
-            rows="2"
-          ></textarea>
-          <textarea
-            v-model="editPack.Contents"
-            placeholder="Contenu du pack (un élément par ligne)"
-            class="input"
-            rows="4"
-          ></textarea>
-          <input
-            v-model="editPack['Local ID']"
-            type="text"
-            placeholder="ID local"
-            class="input"
-          />
-          <input
-            v-model="editPack['Promotion End Date']"
-            type="date"
-            placeholder="Fin de promo"
-            class="input"
-          />
-          <label class="flex items-center gap-2">
-            <input
-              v-model="editPack['Is Promotion']"
-              type="checkbox"
-              class="accent-emerald-600"
-            />
-            Pack en promotion
-          </label>
-          <label class="flex items-center gap-2">
-            <input
-              v-model="editPack['In Stock']"
-              type="checkbox"
-              class="accent-emerald-600"
-            />
-            En stock
-          </label>
-          <div class="flex gap-2 mt-6">
-            <button
-              type="button"
-              @click="showEdit = false"
-              class="flex-1 py-2 rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              class="flex-1 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-            >
-              Enregistrer
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <!-- Overlay Détail -->
-    <div
-      v-if="showDetail"
-      class="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-40"
-    >
-      <div
-        class="w-full max-w-2xl bg-white h-full shadow-xl p-8 overflow-y-auto relative flex flex-col"
-      >
-        <button
-          @click="showDetail = false"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-2xl font-bold mb-6 text-gray-900">Détail du pack</h2>
-        <div class="space-y-4">
-          <div>
-            <h3 class="font-semibold text-lg">{{ detailPack?.Name }}</h3>
-            <p class="text-gray-600">Niveau: {{ detailPack?.Level }}</p>
-            <p class="text-gray-600">Prix: {{ detailPack?.Price }} FCFA</p>
-            <p v-if="detailPack?.['Original Price']" class="text-gray-600">
-              Prix d'origine: {{ detailPack?.["Original Price"] }} FCFA
-            </p>
-          </div>
-          <div v-if="detailPack?.Description">
-            <h4 class="font-semibold">Description:</h4>
-            <p class="text-gray-700">{{ detailPack.Description }}</p>
-          </div>
-          <div v-if="detailPack?.Contents">
-            <h4 class="font-semibold">Contenu:</h4>
-            <p class="text-gray-700">{{ detailPack.Contents }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tableau des packs -->
-    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">
-          Liste des packs scolaires
-        </h3>
-      </div>
+    <!-- Packs Table Card -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Pack
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Niveau
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Prix
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Prix d'origine
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Promo
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Remise
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Statut
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200/80 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <th class="py-4 px-6">Pack & Badge</th>
+              <th class="py-4 px-6">Niveau Assistant</th>
+              <th class="py-4 px-6">Prix Promo / Origine</th>
+              <th class="py-4 px-6">Contenu du Colis (Fournitures)</th>
+              <th class="py-4 px-6">Statut</th>
+              <th class="py-4 px-6 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="pack in packs" :key="pack.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-12 w-12">
-                    <img
-                      v-if="pack['Image URL']"
-                      class="h-12 w-12 rounded-lg object-cover"
-                      :src="pack['Image URL']"
-                      :alt="pack.Name"
-                    />
-                    <div
-                      v-else
-                      class="h-12 w-12 rounded-lg bg-emerald-100 flex items-center justify-center"
-                    >
-                      <svg
-                        class="w-6 h-6 text-emerald-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ pack.Name }}
-                    </div>
-                    <div class="text-xs text-gray-500 truncate max-w-xs">
-                      {{ pack.Description }}
-                    </div>
+          <tbody class="divide-y divide-slate-100 text-xs">
+            <tr v-for="pack in assistantPacks" :key="pack.id" class="hover:bg-slate-50/80 transition-colors">
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <img :src="pack.image || 'https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg'" :alt="pack.name" class="w-11 h-11 object-contain bg-slate-50 rounded-xl p-1 border border-slate-200 shrink-0" />
+                  <div>
+                    <span class="font-bold text-slate-950 block">{{ pack.name }}</span>
+                    <span v-if="pack.badge" class="text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full inline-block mt-0.5">
+                      {{ pack.badge }}
+                    </span>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full"
-                  >{{ pack.Level }}</span
-                >
+              <td class="py-4 px-6">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-[#0F3D91] border border-blue-200">
+                  {{ pack.level }}
+                </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ formatCurrency(pack.Price) }}
+              <td class="py-4 px-6 font-extrabold text-[#0F3D91]">
+                <div>{{ formatPrice(pack.price) }}</div>
+                <div class="text-[10px] text-slate-400 line-through font-normal">
+                  {{ formatPrice(pack.originalPrice || pack.price + 5000) }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500 line-through">
-                  {{ formatCurrency(pack["Original Price"]) }}
-                </div>
+              <td class="py-4 px-6 text-[11px] text-slate-600 max-w-xs truncate">
+                {{ formatContentsText(pack.contents) || pack.description || 'Colis complet' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  v-if="pack['Is Promotion']"
-                  class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full"
-                  >Promo</span
-                >
-                <span
-                  v-else
-                  class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-500 rounded-full"
-                  >-</span
-                >
+              <td class="py-4 px-6">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  ✓ Actif
+                </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  v-if="pack['Discount %'] && pack['Discount %'] > 0"
-                  class="text-green-600 font-semibold"
-                  >-{{ Math.round(pack["Discount %"] * 100) }}%</span
-                >
-                <span v-else class="text-gray-400">-</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  v-if="pack['In Stock']"
-                  class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full"
-                  >En stock</span
-                >
-                <span
-                  v-else
-                  class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full"
-                  >Rupture</span
-                >
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-2"
-              >
-                <button
-                  @click="showPackDetail(pack)"
-                  class="text-blue-600 hover:text-blue-900 font-medium"
-                >
-                  Voir
-                </button>
-                <button
-                  @click="edit(pack)"
-                  class="text-emerald-600 hover:text-emerald-900 font-medium"
-                >
+              <td class="py-4 px-6 text-right space-x-2">
+                <button @click="openEditModal(pack)" class="text-[#0F3D91] font-bold hover:underline cursor-pointer">
                   Modifier
                 </button>
-                <button
-                  @click="deletePack(pack.id)"
-                  class="text-red-600 hover:text-red-900 font-medium"
-                >
+                <button @click="deletePack(pack.id)" class="text-rose-600 font-bold hover:underline cursor-pointer">
                   Supprimer
                 </button>
               </td>
@@ -507,245 +75,321 @@
         </table>
       </div>
     </div>
+
+    <!-- Modal 1: CREATE Pack avec Upload Photo Ordinateur -->
+    <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
+      <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl space-y-5 my-8">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Créer un Pack Scolaire</h3>
+          <p class="text-xs text-slate-400 font-medium">Uploadez une image depuis votre ordinateur ou renseignez une URL</p>
+        </div>
+        
+        <form @submit.prevent="addNewPack" class="space-y-4 text-xs">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2">
+              <label class="block font-bold text-slate-700 uppercase mb-1">Nom du pack *</label>
+              <input v-model="packForm.name" type="text" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Ex: Pack Primaire Excellence 2026" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Niveau scolaire *</label>
+              <select v-model="packForm.level" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                <option value="Préscolaire (3-5 ans)">Préscolaire (3-5 ans)</option>
+                <option value="Primaire (CP-CM2)">Primaire (CP-CM2)</option>
+                <option value="Collège (6ème-3ème)">Collège (6ème-3ème)</option>
+                <option value="Lycée (2nde-Terminale)">Lycée (2nde-Terminale)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Badge spécial (Optionnel)</label>
+              <input v-model="packForm.badge" type="text" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Ex: Le + populaire" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Prix Promo FCFA *</label>
+              <input v-model.number="packForm.price" type="number" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="21000" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Prix d'Origine (Barré FCFA)</label>
+              <input v-model.number="packForm.originalPrice" type="number" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="26000" />
+            </div>
+
+            <!-- Upload Photo Pack depuis ordinateur + URL -->
+            <div class="col-span-2 space-y-2">
+              <label class="block font-bold text-slate-700 uppercase mb-1">Photo du pack (Fichier Ordinateur ou URL)</label>
+              
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <label class="px-4 py-2.5 bg-[#0F3D91]/10 hover:bg-[#0F3D91]/20 text-[#0F3D91] font-bold rounded-xl cursor-pointer text-xs flex items-center justify-center gap-2 border border-[#0F3D91]/30 transition-all shrink-0">
+                  <span>📁 Parcourir mon ordinateur...</span>
+                  <input type="file" accept="image/*" @change="handleFileUpload" class="hidden" />
+                </label>
+
+                <span class="text-slate-400 font-bold text-xs text-center">ou URL</span>
+
+                <input v-model="packForm.image" type="text" class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs" placeholder="https://..." />
+              </div>
+
+              <!-- Miniature Aperçu Photo Pack -->
+              <div v-if="packForm.image" class="flex items-center gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-200">
+                <img :src="packForm.image" class="w-12 h-12 object-contain rounded-xl border border-slate-200 bg-white" />
+                <span class="text-[10px] text-emerald-700 font-bold">✓ Photo du pack chargée avec succès !</span>
+              </div>
+            </div>
+
+            <div class="col-span-2">
+              <label class="block font-bold text-slate-700 uppercase mb-1">Liste des Fournitures Scolaires Incluses (séparées par des virgules) *</label>
+              <textarea v-model="packForm.contentsInput" rows="3" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Ex: 5 Cahiers 200p, 1 Trousse garnie BIC, 1 Boîte de crayons Faber-Castell, 1 Ensemble géométrie"></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <button type="button" @click="showAddModal = false" class="px-5 py-2.5 font-bold text-slate-600 hover:bg-slate-100 rounded-full">Annuler</button>
+            <button type="submit" class="px-6 py-2.5 bg-[#0F3D91] text-white font-bold rounded-full">Publier Pack</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 2: UPDATE Pack avec Upload Photo Ordinateur -->
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs overflow-y-auto">
+      <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl space-y-5 my-8">
+        <div class="border-b border-slate-100 pb-3">
+          <h3 class="font-display text-xl font-extrabold text-slate-950">Modifier Pack — Choisir Photo Ordinateur</h3>
+        </div>
+        
+        <form @submit.prevent="saveEditPack" class="space-y-4 text-xs">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2">
+              <label class="block font-bold text-slate-700 uppercase mb-1">Nom du pack</label>
+              <input v-model="packForm.name" type="text" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Niveau scolaire</label>
+              <select v-model="packForm.level" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                <option value="Préscolaire (3-5 ans)">Préscolaire (3-5 ans)</option>
+                <option value="Primaire (CP-CM2)">Primaire (CP-CM2)</option>
+                <option value="Collège (6ème-3ème)">Collège (6ème-3ème)</option>
+                <option value="Lycée (2nde-Terminale)">Lycée (2nde-Terminale)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Badge</label>
+              <input v-model="packForm.badge" type="text" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Prix Promo FCFA</label>
+              <input v-model.number="packForm.price" type="number" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Prix Origine FCFA</label>
+              <input v-model.number="packForm.originalPrice" type="number" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" />
+            </div>
+
+            <!-- Upload Photo Pack depuis ordinateur + URL -->
+            <div class="col-span-2 space-y-2">
+              <label class="block font-bold text-slate-700 uppercase mb-1">Photo du pack (Fichier Ordinateur ou URL)</label>
+              
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <label class="px-4 py-2.5 bg-[#0F3D91]/10 hover:bg-[#0F3D91]/20 text-[#0F3D91] font-bold rounded-xl cursor-pointer text-xs flex items-center justify-center gap-2 border border-[#0F3D91]/30 transition-all shrink-0">
+                  <span>📁 Choisir une photo sur mon ordinateur...</span>
+                  <input type="file" accept="image/*" @change="handleFileUpload" class="hidden" />
+                </label>
+
+                <span class="text-slate-400 font-bold text-xs text-center">ou URL</span>
+
+                <input v-model="packForm.image" type="text" class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs" />
+              </div>
+
+              <!-- Miniature Aperçu Photo Pack -->
+              <div v-if="packForm.image" class="flex items-center gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-200">
+                <img :src="packForm.image" class="w-12 h-12 object-contain rounded-xl border border-slate-200 bg-white" />
+                <span class="text-[10px] text-emerald-700 font-bold">✓ Photo sélectionnée !</span>
+              </div>
+            </div>
+
+            <div class="col-span-2">
+              <label class="block font-bold text-slate-700 uppercase mb-1">Fournitures Scolaires Incluses (séparées par des virgules)</label>
+              <textarea v-model="packForm.contentsInput" rows="3" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"></textarea>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <button type="button" @click="showEditModal = false" class="px-5 py-2.5 font-bold text-slate-600 hover:bg-slate-100 rounded-full">Annuler</button>
+            <button type="submit" class="px-6 py-2.5 bg-[#0F3D91] text-white font-bold rounded-full">Enregistrer les modifications</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useProductsStore } from "~/stores/products";
 
-definePageMeta({ layout: "admin", middleware: "admin" });
-
-// Reactive state pour les packs
-const packs = ref<any[]>([]);
-const showAdd = ref(false);
-const showEdit = ref(false);
-const showDetail = ref(false);
-const editPack = ref<any>(null);
-const detailPack = ref<any>(null);
-const newPack = ref({
-  Name: "",
-  Level: "",
-  Price: 0,
-  "Original Price": 0,
-  Description: "",
-  Contents: "",
-  "In Stock": true,
-  "Is Promotion": false,
-  "Promotion End Date": "",
-  "Image URL": "",
-  "Local ID": "",
+definePageMeta({
+  layout: "admin",
+  middleware: "admin",
 });
 
-// Fonction utilitaire pour formater le prix
-const formatCurrency = (amount: number) => {
-  return (
-    new Intl.NumberFormat("fr-FR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(amount) + " CFA"
-  );
+const productsStore = useProductsStore();
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+const editingId = ref<string | null>(null);
+
+const packForm = ref({
+  name: "",
+  level: "Primaire (CP-CM2)",
+  badge: "Le + populaire",
+  price: 21000,
+  originalPrice: 26000,
+  image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+  contentsInput: "5 Cahiers 200p, 1 Trousse garnie BIC, 1 Ensemble géométrie",
+});
+
+const assistantDefaultPacks = ref([
+  { id: "pack-prescolaire", name: "Pack Préscolaire (Maternelle)", level: "Préscolaire (3-5 ans)", badge: "Offre Maternelle", price: 16500, originalPrice: 19000, description: "Cahiers de dessin, ardoise Velleda, feutres, trousse garnie.", contents: ["2 Cahiers de dessin", "1 Ardoise Velleda + feutres", "1 Boîte de feutres Faber-Castell", "1 Trousse garnie"], image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg" },
+  { id: "pack-primaire", name: "Pack Primaire Complet (Élémentaire)", level: "Primaire (CP-CM2)", badge: "Le + populaire", price: 21000, originalPrice: 25000, description: "Cahiers grand format, stylos, dictionnaire et sac.", contents: ["5 Cahiers 200p Séyès", "4 Stylos BIC", "1 Ensemble géométrie", "1 Gourde Isotherme"], image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg" },
+  { id: "pack-college", name: "Pack Collège Complet (6ème à 3ème)", level: "Collège (6ème-3ème)", badge: "Spécial Collège", price: 28000, originalPrice: 34000, description: "Cahiers 200 pages, classeur, calculatrice scientifique.", contents: ["1 Calculatrice Casio FX-92", "6 Cahiers 200p", "1 Classeur A4 + intercalaires", "1 Trousse complète"], image: "https://i.pinimg.com/736x/10/54/a3/1054a36c0ce9460b0a1e2aafa65c9a20.jpg" },
+  { id: "pack-lycee", name: "Pack Lycée (2nde à Terminale)", level: "Lycée (2nde-Terminale)", badge: "Recommandé BAC", price: 38500, originalPrice: 45000, description: "Calculatrice graphique, cahiers grands carreaux, trieur.", contents: ["1 Calculatrice Casio Graphique", "8 Cahiers 200p", "1 Trieur 12 positions", "1 Lot de surligneurs"], image: "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg" },
+]);
+
+onMounted(() => {
+  if (productsStore.packs.length === 0) {
+    productsStore.initializeDemoData();
+  }
+});
+
+const assistantPacks = computed(() => {
+  if (productsStore.packs && productsStore.packs.length > 0) {
+    return productsStore.packs;
+  }
+  return assistantDefaultPacks.value;
+});
+
+const formatPrice = (val: number) => {
+  return new Intl.NumberFormat("fr-FR").format(val) + " F CFA";
 };
 
-// Fonctions de gestion des packs
-async function fetchPacks() {
-  try {
-    packs.value = await $fetch("/api/admin/packs");
-  } catch (error) {
-    console.error("Erreur lors du chargement des packs:", error);
-    // Données de test en cas d'erreur
-    packs.value = [
-      {
-        id: "test1",
-        Name: "Pack CP Test",
-        Level: "CP",
-        Price: 15000,
-        "Original Price": 18000,
-        Description: "Pack complet pour CP",
-        Contents: "Cahier, Stylo, Crayon, Gomme",
-        "In Stock": true,
-        "Is Promotion": true,
-        "Discount %": 0.17,
-        "Image URL": "",
-        "Local ID": "PACK_CP_001",
-      },
-      {
-        id: "test2",
-        Name: "Pack CE1 Test",
-        Level: "CE1",
-        Price: 20000,
-        "Original Price": 20000,
-        Description: "Pack complet pour CE1",
-        Contents: "Cahier, Stylo, Crayon, Règle",
-        "In Stock": true,
-        "Is Promotion": false,
-        "Discount %": 0,
-        "Image URL": "",
-        "Local ID": "PACK_CE1_001",
-      },
-    ];
-  }
-}
+const formatContentsText = (contents: any) => {
+  if (!contents || !Array.isArray(contents) || contents.length === 0) return "";
+  return contents.map((c: any) => {
+    if (typeof c === "string") return c;
+    if (typeof c === "object" && c !== null) return c.name || c.label || c.title || JSON.stringify(c);
+    return String(c);
+  }).join(", ");
+};
 
-function edit(pack: any) {
-  console.log("Edit pack:", pack);
-  editPack.value = { ...pack };
-  showEdit.value = true;
-}
-
-function showPackDetail(pack: any) {
-  console.log("Show pack detail:", pack);
-  detailPack.value = pack;
-  showDetail.value = true;
-}
-
-async function addPack() {
-  try {
-    // Transformer Contents en array si c'est une string
-    const body: any = { ...newPack.value };
-
-    // S'assurer qu'il n'y a pas d'ID et de champs calculés dans les données
-    delete body.id;
-    delete body["Discount %"]; // Champ calculé par Airtable
-    delete body["Pack Description Summary"]; // Champ calculé par Airtable
-
-    if (body.Contents && typeof body.Contents === "string") {
-      body.Contents = body.Contents.split("\n").filter((line: string) =>
-        line.trim()
-      );
-    }
-
-    // Nettoyer les champs vides pour Airtable
-    if (!body["Promotion End Date"] || body["Promotion End Date"] === "") {
-      delete body["Promotion End Date"];
-    }
-    if (!body["Image URL"] || body["Image URL"] === "") {
-      delete body["Image URL"];
-    }
-    if (!body["Local ID"] || body["Local ID"] === "") {
-      delete body["Local ID"];
-    }
-
-    console.log("Adding pack with data:", body);
-
-    await $fetch("/api/admin/packs", { method: "POST", body });
-
-    // Réinitialiser le formulaire
-    newPack.value = {
-      Name: "",
-      Level: "",
-      Price: 0,
-      "Original Price": 0,
-      Description: "",
-      Contents: "",
-      "In Stock": true,
-      "Is Promotion": false,
-      "Promotion End Date": "",
-      "Image URL": "",
-      "Local ID": "",
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        packForm.value.image = e.target.result as string;
+      }
     };
-
-    showAdd.value = false;
-    await fetchPacks();
-    alert("Pack ajouté avec succès !");
-  } catch (error: any) {
-    console.error("Erreur lors de l'ajout du pack:", error);
-    const errorMessage =
-      error.data?.message || error.message || "Erreur inconnue";
-    alert(`Erreur lors de l'ajout: ${errorMessage}`);
+    reader.readAsDataURL(file);
   }
-}
+};
 
-async function updatePack() {
-  try {
-    if (!editPack.value) return;
-    const body: any = { ...editPack.value };
+const openAddModal = () => {
+  editingId.value = null;
+  packForm.value = {
+    name: "",
+    level: "Primaire (CP-CM2)",
+    badge: "Offre Rentrée",
+    price: 21000,
+    originalPrice: 26000,
+    image: "",
+    contentsInput: "",
+  };
+  showAddModal.value = true;
+};
 
-    console.log("Updating pack with data:", body);
+// CREATE
+const addNewPack = () => {
+  if (!packForm.value.name) return;
+  const list = packForm.value.contentsInput.split(",").map(s => s.trim()).filter(Boolean);
+  const created = {
+    id: `pack-${Date.now()}`,
+    name: packForm.value.name,
+    level: packForm.value.level,
+    badge: packForm.value.badge,
+    price: packForm.value.price,
+    originalPrice: packForm.value.originalPrice || packForm.value.price + 5000,
+    description: "Colis complet de fournitures scolaires avec sac et accessoires.",
+    contents: list,
+    inStock: true,
+    image: packForm.value.image || "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+  };
+  productsStore.packs.unshift(created as any);
+  assistantDefaultPacks.value.unshift(created);
+  showAddModal.value = false;
+  alert("Pack scolaire structuré et publié avec succès !");
+};
 
-    // Validation côté client
-    if (
-      !body.Name ||
-      !body.Level ||
-      body.Price === undefined ||
-      body.Price === null
-    ) {
-      alert("Veuillez remplir tous les champs requis (Nom, Niveau, Prix)");
-      return;
-    }
+// UPDATE
+const openEditModal = (pack: any) => {
+  editingId.value = pack.id;
+  packForm.value = {
+    name: pack.name,
+    level: pack.level,
+    badge: pack.badge || "",
+    price: pack.price,
+    originalPrice: pack.originalPrice || pack.price + 5000,
+    image: pack.image || "",
+    contentsInput: formatContentsText(pack.contents),
+  };
+  showEditModal.value = true;
+};
 
-    // Exclure l'ID et les champs calculés des données envoyées à Airtable
-    delete body.id;
-    delete body["Discount %"]; // Champ calculé par Airtable
-    delete body["Pack Description Summary"]; // Champ calculé par Airtable
+const saveEditPack = () => {
+  if (!editingId.value) return;
+  const list = packForm.value.contentsInput.split(",").map(s => s.trim()).filter(Boolean);
+  const updated = {
+    id: editingId.value,
+    name: packForm.value.name,
+    level: packForm.value.level,
+    badge: packForm.value.badge,
+    price: packForm.value.price,
+    originalPrice: packForm.value.originalPrice,
+    image: packForm.value.image,
+    contents: list,
+    description: "Colis complet de fournitures scolaires.",
+    inStock: true,
+  };
 
-    // Nettoyer les champs vides pour Airtable
-    if (!body["Promotion End Date"] || body["Promotion End Date"] === "") {
-      delete body["Promotion End Date"];
-    }
-    if (!body["Image URL"] || body["Image URL"] === "") {
-      delete body["Image URL"];
-    }
-    if (!body["Local ID"] || body["Local ID"] === "") {
-      delete body["Local ID"];
-    }
-
-    // S'assurer que les valeurs numériques sont correctes
-    if (body.Price && typeof body.Price === "string") {
-      body.Price = parseFloat(body.Price);
-    }
-    if (body["Original Price"] && typeof body["Original Price"] === "string") {
-      body["Original Price"] = parseFloat(body["Original Price"]);
-    }
-
-    console.log("Cleaned body for Airtable:", body);
-
-    await $fetch(`/api/admin/packs/${editPack.value.id}`, {
-      method: "PUT",
-      body,
-    });
-
-    showEdit.value = false;
-    await fetchPacks();
-    alert("Pack mis à jour avec succès !");
-  } catch (error: any) {
-    console.error("Erreur lors de la mise à jour du pack:", error);
-    const errorMessage =
-      error.data?.message || error.message || "Erreur inconnue";
-    alert(`Erreur lors de la mise à jour: ${errorMessage}`);
+  const idx = assistantDefaultPacks.value.findIndex(p => p.id === editingId.value);
+  if (idx !== -1) {
+    assistantDefaultPacks.value[idx] = updated;
   }
-}
-
-async function deletePack(id: number) {
-  if (confirm("Êtes-vous sûr de vouloir supprimer ce pack ?")) {
-    try {
-      await $fetch(`/api/admin/packs/${id}`, { method: "DELETE" });
-      await fetchPacks();
-    } catch (error) {
-      console.error("Erreur lors de la suppression du pack:", error);
-    }
+  const storeIdx = productsStore.packs.findIndex((p: any) => p.id === editingId.value);
+  if (storeIdx !== -1) {
+    productsStore.packs[storeIdx] = updated as any;
   }
-}
+  showEditModal.value = false;
+  alert("Pack scolaire mis à jour avec la photo locale !");
+};
 
-// Charger les packs au montage
-onMounted(fetchPacks);
+// DELETE
+const deletePack = (id: string) => {
+  if (confirm("Voulez-vous vraiment supprimer ce pack ?")) {
+    productsStore.packs = productsStore.packs.filter((p: any) => p.id !== id);
+    assistantDefaultPacks.value = assistantDefaultPacks.value.filter(p => p.id !== id);
+    alert("Pack supprimé.");
+  }
+};
+
+useHead({
+  title: "Upload Photo Pack - Back-Office EduShop",
+});
 </script>
-
-<style scoped>
-.drawer-slide-enter-active,
-.drawer-slide-leave-active {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
-}
-.drawer-slide-enter-from,
-.drawer-slide-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
-}
-.drawer-slide-enter-to,
-.drawer-slide-leave-from {
-  transform: translateX(0);
-  opacity: 1;
-}
-.input {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500;
-}
-</style>

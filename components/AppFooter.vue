@@ -1,346 +1,136 @@
 <template>
-  <footer class="bg-green-800 text-white pt-10">
-    <div class="container mx-auto px-4 py-12">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <!-- Logo et description -->
-        <div class="space-y-4">
-          <NuxtLink
-            to="/"
-            @click="scrollToTop"
-            class="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            <div
-              class="w-10 h-10 bg-accent-400 rounded-lg flex items-center justify-center"
-            >
-              <svg
-                class="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 20.477 5.754 20 7.5 20s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 20.477 18.247 20 16.5 20c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-            </div>
-            <span class="text-2xl font-bold text-white"
-              >Edu<span class="text-accent-400">Shop</span></span
-            >
+  <footer class="bg-[#FBFBFA] text-slate-900 pt-16 pb-12 border-t border-slate-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+        
+        <!-- Brand Column (lg:col-span-5) -->
+        <div class="lg:col-span-5 space-y-4">
+          <!-- Logo EduShop -->
+          <NuxtLink to="/" class="inline-flex items-center">
+            <img
+              :src="logoImg"
+              alt="EduShop — Tout pour réussir"
+              class="h-10 md:h-12 w-auto object-contain"
+            />
           </NuxtLink>
-          <p class="text-gray-300 text-sm">
-            Votre partenaire de confiance pour toutes les fournitures scolaires
-            de qualité à des prix compétitifs.
+
+          <!-- Description text -->
+          <p class="text-slate-500 text-xs sm:text-sm leading-relaxed font-medium max-w-sm">
+            La meilleure façon de préparer la rentrée scolaire au Sénégal. Livraison partout à Dakar et dans les régions.
           </p>
-        </div>
 
-        <!-- Liens rapides -->
-        <div>
-          <h3
-            class="text-base font-semibold text-white uppercase tracking-wider mb-4"
-          >
-            Liens rapides
-          </h3>
-          <ul class="space-y-3">
-            <li>
-              <NuxtLink
-                to="/"
-                class="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-                Accueil
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink
-                to="/products"
-                class="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                  />
-                </svg>
-                Produits
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink
-                to="/packs"
-                class="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  />
-                </svg>
-                Packs
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink
-                to="/promotions"
-                class="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l7-3 7 3z"
-                  />
-                </svg>
-                Promotions
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink
-                to="/about"
-                class="text-gray-300 hover:text-white transition-colors text-sm flex items-center"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                À propos
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Informations de contact -->
-        <div>
-          <h3
-            class="text-base font-semibold text-white uppercase tracking-wider mb-4"
-          >
-            Contactez-nous
-          </h3>
-          <address class="space-y-3 not-italic">
-            <div class="flex items-start">
-              <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-300 mt-0.5 mr-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
+          <!-- Social Icons (Facebook, Instagram, Twitter) -->
+          <div class="flex items-center space-x-3 pt-2">
+            <a
+              href="https://www.facebook.com/profile.php?id=61591634111260&mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:border-[#0F3D91] hover:bg-[#0F3D91] hover:text-white transition-all bg-white shadow-xs"
+              aria-label="Facebook"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
-              <span class="text-sm text-gray-300"
-                >Ouakam Cité Avion, Dakar, Sénégal</span
-              >
-            </div>
-            <div class="flex items-center">
-              <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-300 mr-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
+            </a>
+            <a
+              href="https://www.instagram.com/matkam_off?igsi=a3gxNmthZ3VtdXFi&utm_source=qr"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:border-[#0F3D91] hover:bg-[#0F3D91] hover:text-white transition-all bg-white shadow-xs"
+              aria-label="Instagram"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
               </svg>
-              <a
-                href="mailto:contact@edushop.sn"
-                class="text-sm text-gray-300 hover:text-white transition-colors"
-                >contact@edushop.sn</a
-              >
-            </div>
-            <div class="flex items-center">
-              <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-300 mr-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                />
+            </a>
+            <a
+              href="https://www.tiktok.com/@matkam01?_r=1&_t=ZS-997cWZ4HFQq"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:border-[#0F3D91] hover:bg-[#0F3D91] hover:text-white transition-all bg-white shadow-xs"
+              aria-label="TikTok"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.68 6.34 6.34 0 0 0 9.34 22a6.33 6.33 0 0 0 6.33-6.32V9.28a8.21 8.21 0 0 0 4.92 1.63v-3.47a4.84 4.84 0 0 1-1-.75z"/>
               </svg>
-              <a
-                href="tel:+221782911844"
-                class="text-sm text-gray-300 hover:text-white transition-colors"
-                >+221 78 291 18 44</a
-              >
-            </div>
-            <div class="flex items-center">
-              <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-300 mr-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span class="text-sm text-gray-300">Lun - Sam: 8h00 - 20h00</span>
-            </div>
-          </address>
-
-          <!-- Newsletter -->
-          <div class="my-10">
-            <h4 class="text-sm font-semibold text-white mb-2">Newsletter</h4>
-            <p class="text-xs text-gray-300 mb-3">
-              Inscrivez-vous pour recevoir nos offres spéciales
-            </p>
-            <form class="flex mb-20">
-              <input
-                type="email"
-                placeholder="Votre email"
-                class="flex-1 px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                required
-              />
-              <button
-                type="submit"
-                class="bg-primary-600 text-white px-4 py-2 text-sm font-medium rounded-r-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-              >
-                S'inscrire
-              </button>
-            </form>
+            </a>
           </div>
+        </div>
+
+        <!-- Links Columns Container (lg:col-span-7) -->
+        <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          
+          <!-- Column 1: Boutique -->
+          <div>
+            <h3 class="font-display text-xs font-extrabold text-slate-950 uppercase tracking-wider mb-4">
+              Boutique
+            </h3>
+            <ul class="space-y-2.5 text-xs text-slate-600 font-medium">
+              <li>
+                <NuxtLink to="/packs" class="hover:text-[#0F3D91] transition-colors">Packs scolaires</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/products" class="hover:text-[#0F3D91] transition-colors">Produits</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/products" class="hover:text-[#0F3D91] transition-colors">Nouveautés</NuxtLink>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Column 2: Aide -->
+          <div>
+            <h3 class="font-display text-xs font-extrabold text-slate-950 uppercase tracking-wider mb-4">
+              Aide
+            </h3>
+            <ul class="space-y-2.5 text-xs text-slate-600 font-medium">
+              <li>
+                <NuxtLink to="/contact" class="hover:text-[#0F3D91] transition-colors">Nous contacter</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/orders" class="hover:text-[#0F3D91] transition-colors">Suivi commande</NuxtLink>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Column 3: EduShop -->
+          <div>
+            <h3 class="font-display text-xs font-extrabold text-slate-950 uppercase tracking-wider mb-4">
+              EduShop
+            </h3>
+            <ul class="space-y-2.5 text-xs text-slate-600 font-medium">
+              <li>
+                <NuxtLink to="/about" class="hover:text-[#0F3D91] transition-colors">À propos</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/blog" class="hover:text-[#0F3D91] transition-colors">Blog</NuxtLink>
+              </li>
+            </ul>
+          </div>
+
         </div>
       </div>
 
-      <!-- Copyright et mentions légales -->
+      <!-- Bottom Legal Bar (Matching exact screenshot) -->
+      <div class="mt-12 pt-8 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 font-medium space-y-4 sm:space-y-0">
+        <p>© 2026 EduShop Sénégal. Tous droits réservés.</p>
+        
+        <div class="flex items-center space-x-6">
+          <NuxtLink to="/confidentialite" class="hover:text-[#0F3D91] transition-colors">
+            Confidentialité
+          </NuxtLink>
+          <NuxtLink to="/cgv" class="hover:text-[#0F3D91] transition-colors">
+            CGV
+          </NuxtLink>
+          <NuxtLink to="/mentions-legales" class="hover:text-[#0F3D91] transition-colors">
+            Mentions légales
+          </NuxtLink>
+        </div>
+      </div>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-// Fonction pour scroller vers le haut de la page
-const scrollToTop = () => {
-  if (process.client) {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-};
+import logoImg from "~/assets/images/edushop-official-logo-transparent.png";
 </script>
-
-<style scoped>
-/* Styles pour les liens actifs */
-.router-link-active {
-  @apply text-white font-medium;
-}
-
-/* Animation pour les liens de navigation */
-a,
-.nuxt-link-active {
-  @apply transition-colors duration-200;
-}
-
-/* Style pour le formulaire de newsletter */
-form:focus-within {
-  @apply ring-2 ring-primary-500 rounded-md;
-}
-
-/* Style pour les icônes de contact */
-.contact-icon {
-  @apply flex-shrink-0 h-5 w-5 text-gray-300;
-}
-
-/* Animation au survol des liens */
-.hover-lift {
-  @apply transition-transform duration-200 hover:-translate-y-0.5;
-}
-
-/* Style pour les séparateurs de liens */
-.link-separator {
-  @apply text-gray-600 mx-1;
-}
-
-/* Style pour le badge de paiement sécurisé */
-.payment-badge {
-  @apply inline-flex items-center bg-gray-800 px-2 py-1 rounded-md transition-all duration-200 hover:bg-gray-700;
-}
-
-/* Style pour les liens du footer */
-.footer-link {
-  @apply text-gray-400 hover:text-white text-xs transition-colors duration-200;
-}
-
-/* Style pour le formulaire de newsletter */
-.newsletter-input {
-  @apply flex-1 px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-l-md focus:ring-2 focus:ring-primary-500 focus:border-transparent;
-}
-
-.newsletter-button {
-  @apply bg-primary-600 text-white px-4 py-2 text-sm font-medium rounded-r-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors;
-}
-
-/* Style pour le copyright */
-.copyright-text {
-  @apply text-xs text-gray-400;
-}
-
-/* Style pour le coeur */
-.heart {
-  @apply inline-block text-red-400 animate-pulse;
-}
-</style>

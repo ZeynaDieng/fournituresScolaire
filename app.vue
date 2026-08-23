@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
+  <div class="min-h-screen flex flex-col bg-[#FBFBFA]">
     <!-- Contenu principal -->
     <main class="flex-grow">
       <NuxtLayout>
@@ -14,20 +14,20 @@
     <Transition name="fade">
       <div
         v-if="isLoading"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-[#FBFBFA]"
       >
         <!-- Overlay avec pattern -->
-        <div class="absolute inset-0 bg-white/80 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-[#0F3D91]/5 backdrop-blur-sm"></div>
 
         <!-- Container principal -->
         <div class="relative z-10 flex flex-col items-center justify-center">
           <!-- Logo ou icône de l'application -->
           <div class="mb-8">
             <div
-              class="w-16 h-16 bg-gradient-to-r from-green-700 to-yellow-400 rounded-2xl flex items-center justify-center shadow-lg animate-logo-glow"
+              class="w-16 h-16 bg-[#0F3D91] rounded-2xl flex items-center justify-center shadow-lg animate-logo-glow"
             >
               <svg
-                class="w-8 h-8 text-white"
+                class="w-8 h-8 text-[#F4C542]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -46,19 +46,19 @@
           <div class="relative mb-8">
             <!-- Particules flottantes -->
             <div
-              class="absolute -top-4 -left-4 w-3 h-3 bg-green-400 rounded-full animate-pulse"
+              class="absolute -top-4 -left-4 w-3 h-3 bg-[#0F3D91] rounded-full animate-pulse"
               style="animation-delay: 0s"
             ></div>
             <div
-              class="absolute -top-2 -right-6 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"
+              class="absolute -top-2 -right-6 w-2 h-2 bg-[#F4C542] rounded-full animate-pulse"
               style="animation-delay: 0.5s"
             ></div>
             <div
-              class="absolute -bottom-4 -left-2 w-2.5 h-2.5 bg-purple-400 rounded-full animate-pulse"
+              class="absolute -bottom-4 -left-2 w-2.5 h-2.5 bg-[#0F3D91]/60 rounded-full animate-pulse"
               style="animation-delay: 1s"
             ></div>
             <div
-              class="absolute -bottom-2 -right-4 w-3 h-3 bg-orange-400 rounded-full animate-pulse"
+              class="absolute -bottom-2 -right-4 w-3 h-3 bg-[#F4C542]/80 rounded-full animate-pulse"
               style="animation-delay: 1.5s"
             ></div>
 
@@ -66,49 +66,49 @@
             <div class="relative">
               <!-- Spinner externe -->
               <div
-                class="w-20 h-20 border-4 border-gray-200 border-t-green-500 rounded-full animate-spin"
+                class="w-20 h-20 border-4 border-slate-200 border-t-[#0F3D91] rounded-full animate-spin"
               ></div>
               <!-- Spinner interne -->
               <div
-                class="absolute top-2 left-2 w-16 h-16 border-4 border-transparent border-t-yellow-500 rounded-full animate-spin"
+                class="absolute top-2 left-2 w-16 h-16 border-4 border-transparent border-t-[#F4C542] rounded-full animate-spin"
                 style="animation-direction: reverse; animation-duration: 1.5s"
               ></div>
               <!-- Spinner central -->
               <div
-                class="absolute top-4 left-4 w-12 h-12 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"
+                class="absolute top-4 left-4 w-12 h-12 border-4 border-transparent border-t-[#0F3D91]/60 rounded-full animate-spin"
                 style="animation-duration: 2s"
               ></div>
               <!-- Point central -->
               <div
-                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-green-400 to-yellow-500 rounded-full animate-pulse"
+                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-[#0F3D91] to-[#F4C542] rounded-full animate-pulse"
               ></div>
             </div>
           </div>
 
           <!-- Texte de chargement -->
           <div class="text-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2 animate-pulse">
-              Fournitures Scolaires
+            <h2 class="text-2xl font-display font-extrabold text-[#0F3D91] mb-2 animate-pulse">
+              Edu<span class="text-[#F4C542]">Shop</span> Sénégal
             </h2>
-            <p class="text-sm text-gray-600 mb-6">
-              Préparation de votre expérience d'achat...
+            <p class="text-sm text-slate-600 mb-6 font-medium">
+              Préparation de votre rentrée scolaire...
             </p>
 
             <!-- Barre de progression dynamique -->
-            <div class="w-80 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div class="w-80 h-2 bg-slate-200 rounded-full overflow-hidden">
               <div
-                class="h-full bg-gradient-to-r from-green-700 to-yellow-500 rounded-full transition-all duration-500 ease-out"
+                class="h-full bg-gradient-to-r from-[#0F3D91] to-[#F4C542] rounded-full transition-all duration-500 ease-out"
                 :style="{ width: loadingProgress + '%' }"
               ></div>
             </div>
 
             <!-- Message de chargement dynamique -->
-            <p class="text-xs text-gray-500 mt-4 transition-all duration-300">
+            <p class="text-xs text-slate-500 mt-4 transition-all duration-300 font-semibold">
               {{ loadingMessage }}
             </p>
 
             <!-- Pourcentage -->
-            <p class="text-xs text-gray-400 mt-2 font-mono">
+            <p class="text-xs text-slate-400 mt-2 font-mono font-bold">
               {{ loadingProgress }}%
             </p>
           </div>
@@ -117,19 +117,19 @@
         <!-- Particules de fond -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
           <div
-            class="absolute top-1/4 left-1/4 w-2 h-2 bg-green-300 rounded-full animate-float opacity-30"
+            class="absolute top-1/4 left-1/4 w-2 h-2 bg-[#0F3D91]/20 rounded-full animate-float opacity-30"
             style="animation-delay: 0s"
           ></div>
           <div
-            class="absolute top-3/4 right-1/4 w-1.5 h-1.5 bg-blue-300 rounded-full animate-float opacity-30"
+            class="absolute top-3/4 right-1/4 w-1.5 h-1.5 bg-[#F4C542]/30 rounded-full animate-float opacity-30"
             style="animation-delay: 1s"
           ></div>
           <div
-            class="absolute top-1/2 right-1/3 w-2.5 h-2.5 bg-purple-300 rounded-full animate-float opacity-30"
+            class="absolute top-1/2 right-1/3 w-2.5 h-2.5 bg-[#0F3D91]/20 rounded-full animate-float opacity-30"
             style="animation-delay: 2s"
           ></div>
           <div
-            class="absolute bottom-1/4 left-1/3 w-1 h-1 bg-orange-300 rounded-full animate-float opacity-30"
+            class="absolute bottom-1/4 left-1/3 w-1 h-1 bg-[#F4C542]/40 rounded-full animate-float opacity-30"
             style="animation-delay: 0.5s"
           ></div>
         </div>
@@ -193,8 +193,7 @@ onMounted(async () => {
 // Gestion des erreurs globales
 onErrorCaptured((err) => {
   console.error("Erreur capturée:", err);
-  // Ici, vous pourriez ajouter une notification d'erreur à l'utilisateur
-  return false; // Empêche la propagation de l'erreur
+  return false;
 });
 
 // Configuration du head
@@ -204,7 +203,7 @@ useHead({
     class: "scroll-smooth",
   },
   bodyAttrs: {
-    class: "antialiased text-gray-800 bg-gray-50",
+    class: "antialiased text-slate-900 bg-[#FBFBFA]",
   },
 });
 </script>

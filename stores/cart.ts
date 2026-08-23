@@ -53,24 +53,28 @@ export const useCartStore = defineStore("cart", {
 
     // Sous-total du panier
     subtotal(state): number {
-      return state.items.reduce(
-        (total: number, item: CartItem) => total + item.price * item.quantity,
-        0
-      );
+      return state.items.reduce((total: number, item: CartItem) => {
+        const rawPrice = typeof item.price === "number" ? item.price : parseFloat(String(item.price).replace(/[^0-9.]/g, "")) || 0;
+        const rawQty = typeof item.quantity === "number" ? item.quantity : parseInt(String(item.quantity), 10) || 1;
+        return total + rawPrice * rawQty;
+      }, 0);
+    },
+
+    totalAmount(state): number {
+      return this.subtotal;
     },
 
     // Frais de livraison
     deliveryFee(state): number {
-      // Logique de calcul des frais de livraison
-      return this.subtotal > 0 ? 0 : 0; //  défaut
+      return this.subtotal > 30000 ? 0 : 2500;
     },
 
     // Total avec livraison et réductions
     total(state): number {
-      const subtotal = this.subtotal;
+      const sub = this.subtotal;
       const delivery = this.deliveryFee;
-      const discount = (subtotal * this.promoDiscount) / 100;
-      return Math.max(0, subtotal + delivery - discount);
+      const discount = (sub * this.promoDiscount) / 100;
+      return Math.max(0, sub + delivery - discount);
     },
 
     // Résumé de la commande

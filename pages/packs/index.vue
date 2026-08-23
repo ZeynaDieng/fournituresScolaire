@@ -14,7 +14,7 @@
 
       <!-- Overlay for text readability -->
       <div
-        class="absolute inset-0 bg-gradient-to-br from-green-900/80 via-green-800/75 to-green-900/80"
+        class="absolute inset-0 bg-gradient-to-br from-[#0F3D91]/90 via-[#0F3D91]/85 to-[#0b2f70]/90"
       ></div>
 
       <!-- Background Pattern -->
@@ -48,49 +48,27 @@
           <!-- Title -->
           <div class="space-y-6">
             <h1
-              class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight animate-fade-in-up"
+              class="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white leading-tight animate-fade-in-up"
               style="animation-delay: 0.2s"
             >
               <span class="block">Packs Scolaires</span>
               <span
-                class="block bg-gradient-to-r from-green-200 to-emerald-200 bg-clip-text text-transparent"
-                >Premium</span
+                class="block text-[#F4C542]"
+                >Complets & Adaptés</span
               >
             </h1>
 
             <p
-              class="text-xl sm:text-2xl text-green-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up"
+              class="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in-up font-medium"
               style="animation-delay: 0.3s"
             >
-              Des solutions complètes et personnalisées pour chaque niveau
-              scolaire.
+              Des solutions complètes et personnalisées pour chaque niveau scolaire au Sénégal.
               <br class="hidden sm:block" />
-              <span class="font-semibold text-white"
+              <span class="font-bold text-[#F4C542]"
                 >Simplifiez votre rentrée</span
               >
-              avec nos packs expertement conçus.
+              avec nos packs officiels.
             </p>
-          </div>
-
-          <!-- Stats -->
-          <div
-            class="flex flex-wrap justify-center gap-8 mt-12 animate-fade-in-up"
-            style="animation-delay: 0.4s"
-          >
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">8+</div>
-              <div class="text-green-200 text-sm font-medium">
-                Packs Disponibles
-              </div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">98%</div>
-              <div class="text-green-200 text-sm font-medium">Satisfaction</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl sm:text-4xl font-bold text-white">24h</div>
-              <div class="text-green-200 text-sm font-medium">Expédition</div>
-            </div>
           </div>
         </div>
       </div>
@@ -98,7 +76,7 @@
       <!-- Wave Bottom -->
       <div class="absolute bottom-0 left-0 right-0">
         <svg
-          class="w-full h-12 sm:h-20 text-slate-50"
+          class="w-full h-12 sm:h-20 text-[#FBFBFA]"
           fill="currentColor"
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
@@ -113,10 +91,10 @@
       <!-- Level Filters -->
       <div class="mb-16 animate-fade-in-up" style="animation-delay: 0.5s">
         <div class="text-center mb-8">
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-[#0F3D91] mb-3">
             Choisissez votre niveau
           </h2>
-          <p class="text-slate-600 text-lg">
+          <p class="text-slate-600 text-base font-medium">
             Filtrez par niveau scolaire pour trouver le pack parfait
           </p>
         </div>
@@ -125,7 +103,7 @@
         <div class="block sm:hidden">
           <select
             v-model="selectedLevel"
-            class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-2xl text-lg font-medium focus:border-primary-green focus:ring-4 focus:ring-green-100 transition-all"
+            class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-2xl text-base font-bold focus:border-[#0F3D91] focus:ring-4 focus:ring-[#0F3D91]/10 transition-all"
           >
             <option v-for="level in packLevels" :key="level" :value="level">
               {{ level }}
@@ -139,19 +117,15 @@
             v-for="(level, index) in packLevels"
             :key="level"
             @click="selectLevel(level)"
-            class="group relative px-6 lg:px-8 py-3 lg:py-4 font-semibold text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 active:scale-95 animate-slide-in-up"
+            class="group relative px-6 lg:px-8 py-3 lg:py-3.5 font-bold text-sm rounded-full transition-all duration-300 transform hover:scale-105"
             :style="{ animationDelay: `${0.6 + index * 0.1}s` }"
             :class="{
-              'bg-primary-green text-white shadow-xl shadow-green-200':
+              'bg-[#0F3D91] text-white shadow-md':
                 selectedLevel === level,
-              'bg-white text-slate-700 border-2 border-slate-200 hover:border-primary-green hover:bg-green-50 hover:text-primary-green':
+              'bg-white text-slate-700 border-2 border-slate-200/80 hover:border-[#0F3D91] hover:text-[#0F3D91]':
                 selectedLevel !== level,
             }"
           >
-            <div
-              v-if="selectedLevel === level"
-              class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-300"
-            ></div>
             <span class="relative">{{ level }}</span>
           </button>
         </div>
@@ -196,7 +170,6 @@
             <AppPackCard
               :pack="pack"
               @add-to-cart="addToCart"
-              class="transform hover:scale-105 transition-all duration-500 hover:shadow-2xl"
             />
           </div>
         </div>
@@ -244,85 +217,76 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useCartStore } from "../stores/cart";
-import { useProductsStore } from "../stores/products";
-import { useFormatter } from "../composables/useFormatter";
-import AppPackCard from "../components/AppPackCard.vue";
+import { useCartStore } from "~/stores/cart";
+import { useAirtableStore } from "~/stores/airtable";
+import { useProductsStore } from "~/stores/products";
+import { useFormatter } from "~/composables/useFormatter";
+import AppPackCard from "~/components/AppPackCard.vue";
 
 const cartStore = useCartStore();
+const airtableStore = useAirtableStore();
+const productsStore = useProductsStore();
 const { formatPrice } = useFormatter();
+const route = useRoute();
 
 const packLevels = [
   "Tous",
+  "Préscolaire",
+  "Primaire",
   "CP",
-  "CE1",
-  "CE2",
-  "CM1",
-  "CM2",
-  "6ème",
-  "Terminale",
+  "CE1-CE2",
+  "Collège",
+  "Lycée",
 ];
 const selectedLevel = ref("Tous");
-const loading = ref(true);
-const packs = ref<any[]>([]);
 
-// Charger les vraies données Airtable via l'API publique (token côté serveur)
-async function fetchPacks() {
-  try {
-    loading.value = true;
+// Données réactives depuis le store
+const packs = computed(() => {
+  if (airtableStore.packs.length > 0) return airtableStore.packs;
+  if (productsStore.packs.length === 0) productsStore.initializeDemoData();
+  return productsStore.packs;
+});
 
-    // Utiliser l'API publique qui récupère les vraies données Airtable côté serveur
-    const response = await $fetch("/api/airtable/packs");
-
-    // Les données sont déjà au bon format depuis l'API publique
-    if (response.success && response.data) {
-      packs.value = response.data.map((pack: any) => ({
-        id: pack.id,
-        name: pack.name,
-        level: pack.level,
-        price: pack.price,
-        originalPrice: pack.originalPrice,
-        image: pack.image,
-        description: pack.description,
-        contents: pack.contents || [],
-        isPopular: pack.isPopular || false,
-        inStock: pack.inStock !== false,
-        isPromotion: pack.isPromotion || false,
-        promotionEndDate: pack.promotionEndDate
-          ? new Date(pack.promotionEndDate)
-          : null,
-      }));
-
-      // Log de la source des données
-      const source =
-        response.source === "airtable"
-          ? "Airtable en ligne"
-          : "données de fallback";
-      console.log(`Packs chargés depuis ${source}:`, packs.value);
-
-      if (response.warning) {
-        console.warn("⚠️", response.warning);
-      }
-    } else {
-      packs.value = [];
-    }
-  } catch (error) {
-    console.error("Erreur lors du chargement des packs:", error);
-    packs.value = [];
-  } finally {
-    loading.value = false;
-  }
-}
+const loading = computed(() => airtableStore.loading && packs.value.length === 0);
 
 // Charger les données au montage du composant
-onMounted(fetchPacks);
+onMounted(async () => {
+  if (productsStore.packs.length === 0) {
+    productsStore.initializeDemoData();
+  }
+  if (airtableStore.packs.length === 0) {
+    await airtableStore.fetchPacks();
+  }
+
+  // Gérer le paramètre de niveau via l'URL (ex: /packs?level=prescolaire ou /packs?level=Coll%C3%A8ge)
+  const urlLevel = route.query.level as string;
+  if (urlLevel) {
+    const levelMap: Record<string, string> = {
+      prescolaire: "Préscolaire",
+      primaire: "Primaire",
+      college: "Collège",
+      lycee: "Lycée",
+      cp: "CP",
+    };
+    if (levelMap[urlLevel.toLowerCase()]) {
+      selectedLevel.value = levelMap[urlLevel.toLowerCase()];
+    } else {
+      selectedLevel.value = urlLevel;
+    }
+  }
+});
 
 // Filtre les packs par niveau
 const filteredPacks = computed(() => {
   if (selectedLevel.value === "Tous") {
     return packs.value;
   }
-  return packs.value.filter((pack) => pack.level === selectedLevel.value);
+  const target = selectedLevel.value.toLowerCase();
+  return packs.value.filter((pack) => {
+    if (!pack.level) return true;
+    const l = pack.level.toLowerCase();
+    return l.includes(target) || target.includes(l);
+  });
 });
 
 // Sélectionner un niveau avec animation
@@ -343,6 +307,7 @@ function addToCart(pack: any) {
     1
   );
 }
+
 
 // Compter les éléments spécifiques dans le contenu
 function countItem(items: string[], keyword: string): number {

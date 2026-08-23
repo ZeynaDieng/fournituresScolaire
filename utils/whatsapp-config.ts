@@ -1,7 +1,7 @@
 // /utils/whatsapp-config.ts
 export const WHATSAPP_CONFIG = {
   // Numéro WhatsApp de l'entreprise (format international sans le +)
-  businessNumber: process.env.WHATSAPP_BUSINESS_NUMBER || "221782911844",
+  businessNumber: process.env.WHATSAPP_BUSINESS_NUMBER || "221771133926",
 
   // Messages prédéfinis
   orderTemplate: {

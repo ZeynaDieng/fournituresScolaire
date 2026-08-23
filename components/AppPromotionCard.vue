@@ -1,15 +1,15 @@
 <template>
-  <section class="relative my-16 bottom-16 bg-green-50">
+  <section class="relative my-16 bottom-16 bg-[#FBFBFA]">
     <!-- Animated Background Elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div
-        class="absolute -top-24 -right-24 w-96 h-96 bg-green-600 rounded-full blur-3xl animate-pulse"
+        class="absolute -top-24 -right-24 w-96 h-96 bg-[#0F3D91]/10 rounded-full blur-3xl animate-pulse"
       ></div>
       <div
-        class="absolute -bottom-32 -left-32 w-80 h-80 bg-green-500 rounded-full blur-3xl animate-pulse delay-1000"
+        class="absolute -bottom-32 -left-32 w-80 h-80 bg-[#0F3D91]/10 rounded-full blur-3xl animate-pulse delay-1000"
       ></div>
       <div
-        class="absolute top-1/2 left-1/3 w-64 h-64 bg-yellow-500 rounded-full blur-2xl animate-bounce-slow"
+        class="absolute top-1/2 left-1/3 w-64 h-64 bg-[#F4C542]/20 rounded-full blur-2xl animate-bounce-slow"
       ></div>
     </div>
 
@@ -17,10 +17,10 @@
       <!-- Enhanced Header -->
       <div class="text-center mb-16">
         <div
-          class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl mb-6 shadow-2xl animate-bounce-gentle"
+          class="inline-flex items-center justify-center w-20 h-20 bg-[#0F3D91] text-[#F4C542] rounded-2xl mb-6 shadow-2xl animate-bounce-gentle"
         >
           <svg
-            class="w-10 h-10 text-white"
+            class="w-10 h-10 text-[#F4C542]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -35,16 +35,16 @@
         </div>
 
         <h2
-          class="text-5xl md:text-6xl font-black mb-6 bg-green-600 bg-clip-text text-transparent animate-fade-in"
+          class="text-4xl md:text-5xl font-display font-extrabold mb-4 text-[#0F3D91] animate-fade-in"
         >
-          Promotions Limitées
+          Promotions <span class="text-[#F4C542]">Limitées</span>
         </h2>
 
         <p
-          class="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8"
+          class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8"
         >
           Profitez de nos offres
-          <span class="font-bold text-red-600">exceptionnelles</span> avant
+          <span class="font-bold text-[#0F3D91]">exceptionnelles</span> avant
           qu'il ne soit trop tard !
         </p>
 
@@ -61,7 +61,7 @@
         <div
           v-for="(promo, index) in activePromotions"
           :key="promo.id"
-          class="group relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 hover:shadow-4xl transition-all duration-500 transform hover:-translate-y-3 hover:rotate-1 animate-fade-in-up"
+          class="group relative bg-white rounded-3xl border-2 border-slate-200/80 shadow-soft p-8 hover:shadow-lift hover:border-[#0F3D91] transition-all duration-500 transform hover:-translate-y-2 animate-fade-in-up"
           :style="{ animationDelay: `${index * 200}ms` }"
         >
           <!-- Badge de réduction (coin supérieur droit) -->
@@ -69,16 +69,12 @@
             <div class="relative">
               <!-- Cercle principal avec le pourcentage de réduction -->
               <div
-                class="w-20 h-20 bg-gradient-to-br from-[#15803d] to-[#15803d] rounded-full flex items-center justify-center shadow-2xl animate-spin-slow"
+                class="w-20 h-20 bg-[#F4C542] rounded-full flex items-center justify-center shadow-lg border-2 border-white"
               >
-                <div class="text-white font-black text-sm">
+                <div class="text-slate-950 font-display font-extrabold text-base">
                   -{{ promo.discount }}%
                 </div>
               </div>
-              <!-- Effet de pulsation autour du badge -->
-              <div
-                class="absolute inset-0 bg-gradient-to-br from-[#15803d] to-[#15803d] rounded-full animate-ping opacity-20"
-              ></div>
             </div>
           </div>
 
@@ -88,10 +84,10 @@
             class="absolute top-0 bottom-8 left-4 z-10"
           >
             <div
-              class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center animate-pulse"
+              class="bg-[#0F3D91] text-white px-4 py-2 rounded-full text-xs font-bold flex items-center shadow-sm"
             >
               <!-- Icône de flamme pour "TENDANCE" -->
-              <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-3 h-3 mr-1 text-[#F4C542]" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
@@ -109,7 +105,7 @@
               <div class="flex-1">
                 <!-- Titre de la promotion -->
                 <h3
-                  class="text-2xl font-bold text-gray-800 mb-1 group-hover:text-green-600 transition-colors"
+                  class="text-2xl font-display font-extrabold text-[#0F3D91] mb-1 group-hover:text-[#0F3D91] transition-colors"
                 >
                   {{ promo.title }}
                 </h3>
@@ -117,13 +113,13 @@
                 <div class="flex items-center space-x-2">
                   <!-- Badge de catégorie -->
                   <span
-                    class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium"
+                    class="text-xs bg-[#0F3D91]/10 text-[#0F3D91] px-3 py-1 rounded-full font-bold uppercase tracking-wider"
                   >
                     {{ promo.category || "Offre spéciale" }}
                   </span>
                   <!-- Étoiles de notation (si disponible) -->
                   <div
-                    class="flex items-center text-yellow-500"
+                    class="flex items-center text-[#F4C542]"
                     v-if="promo.rating"
                   >
                     <svg
@@ -131,7 +127,7 @@
                       :key="i"
                       class="w-4 h-4"
                       :class="
-                        i <= promo.rating ? 'text-yellow-400' : 'text-gray-300'
+                        i <= promo.rating ? 'text-[#F4C542]' : 'text-slate-300'
                       "
                       fill="currentColor"
                       viewBox="0 0 20 20"
@@ -148,7 +144,7 @@
             <!-- Description et caractéristiques principales -->
             <div class="space-y-4 mb-6">
               <!-- Description de la promotion -->
-              <p class="text-gray-700 text-lg leading-relaxed">
+              <p class="text-slate-600 text-base leading-relaxed">
                 {{ promo.description }}
               </p>
 
@@ -157,11 +153,11 @@
                 <div
                   v-for="feature in promo.features"
                   :key="feature"
-                  class="flex items-center text-sm text-gray-600"
+                  class="flex items-center text-xs font-semibold text-slate-700"
                 >
-                  <!-- Icône de validation (coche verte) -->
+                  <!-- Icône de validation -->
                   <svg
-                    class="w-4 h-4 text-green-500 mr-2 flex-shrink-0"
+                    class="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -169,7 +165,7 @@
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      stroke-width="2"
+                      stroke-width="2.5"
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
@@ -187,12 +183,12 @@
                 <!-- Prix barré et prix actuel -->
                 <div class="flex items-center space-x-3">
                   <!-- Prix original barré -->
-                  <span class="text-lg text-gray-400 line-through"
+                  <span class="text-base text-slate-400 line-through font-semibold"
                     >{{ promo.originalPrice }} CFA</span
                   >
                   <!-- Prix promotionnel en grand -->
                   <span
-                    class="text-3xl font-black bg-gradient-to-r from-dark-green to-primary-600 bg-clip-text text-transparent"
+                    class="text-3xl font-display font-extrabold text-[#0F3D91]"
                   >
                     {{
                       promo.currentPrice !== undefined ? promo.currentPrice : ""
@@ -201,7 +197,7 @@
                   </span>
                 </div>
                 <!-- Montant économisé -->
-                <div class="text-sm text-green-600 font-semibold">
+                <div class="text-xs text-emerald-600 font-bold">
                   Économie:
                   <template
                     v-if="
@@ -218,13 +214,13 @@
 
             <!-- Section countdown (temps restant) -->
             <div
-              class="bg-gradient-to-r from-green-50 to-green-50 rounded-2xl p-4 mb-6 border border-red-100"
+              class="bg-[#0F3D91]/5 rounded-2xl p-4 mb-6 border border-[#0F3D91]/10"
             >
               <!-- En-tête du countdown -->
-              <div class="flex items-center mb-2">
+              <div class="flex items-center mb-1">
                 <!-- Icône d'horloge animée -->
                 <svg
-                  class="w-5 h-5 text-green-500 mr-2 animate-pulse"
+                  class="w-4 h-4 text-[#0F3D91] mr-2 animate-pulse"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -236,14 +232,14 @@
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span class="text-sm font-semibold text-green-700"
+                <span class="text-xs font-bold text-[#0F3D91]"
                   >Offre limitée dans le temps</span
                 >
               </div>
               <!-- Affichage du temps restant -->
-              <div class="text-sm text-gray-600">
-                <div class="font-semibold text-red-600">⏰ Offre limitée</div>
-                <div class="text-xs">
+              <div class="text-xs text-slate-600">
+                <div class="font-bold text-[#0F3D91]">⏰ Rentrée scolaire</div>
+                <div class="text-xs font-medium text-slate-500">
                   Expire dans {{ getTimeRemaining(promo.endDate) }}
                 </div>
               </div>
@@ -254,52 +250,42 @@
               <!-- Bouton principal "Profiter de l'offre" -->
               <button
                 @click="handlePromoClick(promo)"
-                class="group/btn w-full bg-gradient-to-r from-[#15803d] via-[#15803d] to-[#15803d] text-white py-4 px-8 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-[#15803d]/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 relative overflow-hidden"
+                class="group/btn w-full bg-[#0F3D91] hover:bg-[#0b2f70] text-white py-3.5 px-6 rounded-2xl font-bold text-sm shadow-md transition-all duration-300 transform hover:scale-[1.02] relative overflow-hidden flex items-center justify-center space-x-2"
               >
-                <!-- Effet de brillance au survol -->
-                <div
-                  class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"
-                ></div>
                 <!-- Contenu du bouton -->
-                <div
-                  class="relative flex items-center justify-center space-x-3"
+                <svg
+                  class="w-5 h-5 text-[#F4C542]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <!-- Icône d'éclair -->
-                  <svg
-                    class="w-6 h-6 group-hover/btn:animate-bounce"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                  <span>Profiter de l'offre maintenant</span>
-                  <!-- Icône de flèche -->
-                  <svg
-                    class="w-5 h-5 group-hover/btn:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </div>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span>Profiter de l'offre maintenant</span>
+                <svg
+                  class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
               </button>
 
               <!-- Bouton secondaire de partage -->
               <button
                 @click="sharePromo(promo)"
-                class="w-full bg-white border-2 border-green-600 text-green-800 py-2 px-4 rounded-xl font-medium hover:bg-green-50 transition-colors flex items-center justify-center space-x-2"
+                class="w-full bg-white border-2 border-slate-200 text-slate-700 py-2.5 px-4 rounded-xl font-bold text-xs hover:border-[#0F3D91] hover:text-[#0F3D91] transition-colors flex items-center justify-center space-x-2"
               >
                 <!-- Icône de partage -->
                 <svg
@@ -319,32 +305,23 @@
               </button>
             </div>
           </div>
-
-          <!-- Éléments décoratifs de la carte -->
-          <!-- Barre de progression au survol (bas de la carte) -->
-          <div
-            class="absolute bottom-0 left-0 w-full h-1 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl"
-          ></div>
-          <!-- Cercle décoratif flou (coin supérieur droit) -->
-          <div
-            class="absolute top-0 right-0 w-32 h-32 bg-dark-green rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"
-          ></div>
         </div>
       </div>
 
       <!-- Message d'état vide (si aucune promotion) -->
       <div v-if="activePromotions.length === 0" class="text-center py-16">
         <div
-          class="bg-white/60 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20"
+          class="bg-white rounded-3xl p-12 shadow-soft border border-slate-200"
         >
-          <!-- Icône d'étiquette -->
-          <div class="text-6xl mb-6">🏷️</div>
-          <!-- Titre du message vide -->
-          <h3 class="text-2xl font-bold text-gray-800 mb-4">
+          <div class="w-16 h-16 mx-auto mb-6 bg-[#0F3D91]/10 text-[#0F3D91] rounded-2xl flex items-center justify-center">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-display font-extrabold text-[#0F3D91] mb-4">
             Aucune promotion disponible
           </h3>
-          <!-- Message explicatif -->
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p class="text-base text-slate-600 max-w-2xl mx-auto">
             Revenez bientôt pour découvrir nos offres exceptionnelles !
           </p>
         </div>
@@ -352,21 +329,15 @@
 
       <!-- Enhanced View All Section -->
       <div class="text-center relative my-16">
-        <!-- Background decoration -->
         <div
-          class="absolute bottom-10 mb-16 inset-0 bg-gradient-to-r from-transparent via-red-100/30 to-transparent rounded-3xl blur-xl"
-        ></div>
-
-        <div
-          class="relative bg-white/60 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20"
+          class="relative bg-white rounded-3xl p-10 shadow-soft border border-slate-200/80"
         >
           <div class="mb-6">
-            <h3 class="text-3xl font-bold text-gray-800 mb-4">
+            <h3 class="text-3xl font-display font-extrabold text-[#0F3D91] mb-3">
               Encore plus d'offres vous attendent !
             </h3>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-              Découvrez notre collection complète de promotions exclusives et
-              d'offres limitées.
+            <p class="text-base text-slate-600 max-w-2xl mx-auto">
+              Découvrez notre collection complète de promotions exclusives et d'offres limitées.
             </p>
           </div>
 
@@ -375,10 +346,10 @@
           >
             <NuxtLink
               to="/promotions"
-              class="group bg-green-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center space-x-3"
+              class="group bg-[#0F3D91] text-white px-8 py-3.5 rounded-2xl font-bold text-base shadow-md hover:bg-[#0b2f70] transition-all transform hover:scale-105 flex items-center space-x-3"
             >
               <svg
-                class="w-6 h-6 group-hover:animate-bounce"
+                class="w-5 h-5 text-[#F4C542]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

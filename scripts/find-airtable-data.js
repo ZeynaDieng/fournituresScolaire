@@ -5,7 +5,7 @@
  * Usage: node scripts/find-airtable-data.js
  */
 
-require('dotenv').config();
+require("dotenv").config();
 const TOKEN = process.env.AIRTABLE_API_KEY;
 
 console.log("🔍 RECHERCHE DES DONNÉES AIRTABLE RÉELLES");

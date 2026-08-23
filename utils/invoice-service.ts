@@ -4,7 +4,7 @@ import {
 } from "./email-service";
 
 // Interface pour les données de facture
-interface InvoiceData {
+export interface InvoiceData {
   orderRef: string;
   customerName: string;
   customerEmail: string;

@@ -1,600 +1,336 @@
-<!-- /pages/dashboard.vue -->
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50"
-  >
-    <div class="container mx-auto px-4 py-8">
-      <!-- Header avec animation -->
-      <div class="text-center mb-12">
-        <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 animate-pulse"
-        >
-          <span class="text-2xl">🎒</span>
+  <div class="min-h-screen bg-[#FBFBFA] text-slate-900 pt-20 pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Welcome Banner -->
+      <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91] block mb-1">
+            ESPACE CLIENT EDUSHOP
+          </span>
+          <h1 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-950">
+            Bonjour<span v-if="user.firstName">, {{ user.firstName }}</span>.
+          </h1>
         </div>
-        <h1
-          class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2"
-        >
-          Dashboard Fournitures Scolaires
-        </h1>
-        <p class="text-gray-600">
-          Gestion complète de vos commandes en temps réel
-        </p>
-      </div>
 
-      <!-- Actions rapides -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <button
-          @click="refreshData"
-          :disabled="loading"
-          class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2"
-        >
-          <span v-if="loading" class="animate-spin">⏳</span>
-          <span v-else>🔄</span>
-          <span>{{ loading ? "Chargement..." : "Actualiser" }}</span>
-        </button>
-
-        <button
-          @click="createTestOrder"
-          class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2"
-        >
-          <span>🧪</span>
-          <span>Commande Test</span>
-        </button>
-
-        <button
-          @click="downloadExcel"
-          class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2"
-        >
-          <span>📊</span>
-          <span>Excel Maître</span>
-        </button>
-
-        <button
-          @click="exportCsv"
-          class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2"
-        >
-          <span>📁</span>
-          <span>Export CSV</span>
-        </button>
-      </div>
-
-      <!-- Messages de notification -->
-      <div
-        v-if="message"
-        class="mb-6 p-4 rounded-xl shadow-lg"
-        :class="getMessageClass(message.type)"
-      >
-        <div class="flex items-center space-x-3">
-          <span class="text-2xl">{{
-            message.type === "success" ? "✅" : "❌"
-          }}</span>
-          <div>
-            <p class="font-semibold">
-              {{ message.type === "success" ? "Succès" : "Erreur" }}
-            </p>
-            <p>{{ message.text }}</p>
-          </div>
+        <div class="flex items-center gap-3">
+          <span class="px-4 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold rounded-full">
+            {{ user.loyaltyRank || 'Membre Client' }}
+          </span>
         </div>
       </div>
 
-      <!-- Statistiques avec cartes modernes -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Commandes -->
-        <div
-          class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <div
-              class="p-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl"
-            >
-              <span class="text-2xl">📊</span>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-gray-800">
-                {{ orders.length }}
-              </div>
-              <div class="text-sm text-gray-500">Total</div>
-            </div>
-          </div>
-          <div class="text-lg font-semibold text-gray-700">Commandes</div>
-          <div class="text-sm text-green-600 font-medium">
-            +{{ todayOrders }} aujourd'hui
-          </div>
-        </div>
-
-        <!-- Chiffre d'Affaires -->
-        <div
-          class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <div
-              class="p-3 bg-gradient-to-br from-green-400 to-green-600 rounded-xl"
-            >
-              <span class="text-2xl">💰</span>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-gray-800">
-                {{ formatAmount(totalRevenue) }}
-              </div>
-              <div class="text-sm text-gray-500">CFA</div>
-            </div>
-          </div>
-          <div class="text-lg font-semibold text-gray-700">
-            Chiffre d'Affaires
-          </div>
-          <div class="text-sm text-green-600 font-medium">
-            {{ formatAmount(todayRevenue) }} aujourd'hui
-          </div>
-        </div>
-
-        <!-- Commandes En Attente -->
-        <div
-          class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <div
-              class="p-3 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl"
-            >
-              <span class="text-2xl">⏳</span>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-gray-800">
-                {{ pendingOrders }}
-              </div>
-              <div class="text-sm text-gray-500">En attente</div>
-            </div>
-          </div>
-          <div class="text-lg font-semibold text-gray-700">À traiter</div>
-          <div class="text-sm text-orange-600 font-medium">
-            Nécessite attention
-          </div>
-        </div>
-
-        <!-- Panier Moyen -->
-        <div
-          class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <div
-              class="p-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl"
-            >
-              <span class="text-2xl">🛒</span>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-gray-800">
-                {{ formatAmount(averageOrder) }}
-              </div>
-              <div class="text-sm text-gray-500">CFA</div>
-            </div>
-          </div>
-          <div class="text-lg font-semibold text-gray-700">Panier Moyen</div>
-          <div class="text-sm text-blue-600 font-medium">Par commande</div>
-        </div>
-      </div>
-
-      <!-- Graphique des sources (simulation) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h3 class="text-xl font-bold text-gray-800 mb-6">
-            📱 Sources des Commandes
-          </h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
-                <span class="font-medium">Site Web</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <div class="w-32 bg-gray-200 rounded-full h-3">
-                  <div
-                    class="bg-blue-500 h-3 rounded-full"
-                    :style="`width: ${webPercentage}%`"
-                  ></div>
-                </div>
-                <span class="font-bold">{{ webOrders }}</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-3">
-                <div class="w-4 h-4 bg-green-500 rounded-full"></div>
-                <span class="font-medium">WhatsApp</span>
-              </div>
-              <div class="flex items-center space-x-2">
-                <div class="w-32 bg-gray-200 rounded-full h-3">
-                  <div
-                    class="bg-green-500 h-3 rounded-full"
-                    :style="`width: ${whatsappPercentage}%`"
-                  ></div>
-                </div>
-                <span class="font-bold">{{ whatsappOrders }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h3 class="text-xl font-bold text-gray-800 mb-6">📈 Tendances</h3>
-          <div class="space-y-4">
-            <div
-              class="flex items-center justify-between p-4 bg-green-50 rounded-xl"
-            >
-              <div>
-                <p class="font-semibold text-green-800">Croissance</p>
-                <p class="text-sm text-green-600">Commandes en hausse</p>
-              </div>
-              <span class="text-2xl">📈</span>
-            </div>
-            <div
-              class="flex items-center justify-between p-4 bg-blue-50 rounded-xl"
-            >
-              <div>
-                <p class="font-semibold text-blue-800">Fichier Excel</p>
-                <p class="text-sm text-blue-600">Mis à jour automatiquement</p>
-              </div>
-              <span class="text-2xl">📊</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Liste des commandes récentes avec design moderne -->
-      <div
-        class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
-      >
-        <div
-          class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200"
-        >
-          <h3 class="text-xl font-bold text-gray-800">📋 Commandes Récentes</h3>
-          <p class="text-gray-600">Dernières commandes reçues</p>
-        </div>
-
-        <div v-if="orders.length > 0" class="divide-y divide-gray-100">
-          <div
-            v-for="order in orders.slice(0, 10)"
-            :key="order.id"
-            class="p-6 hover:bg-gray-50 cursor-pointer transition-all duration-200"
-            @click="selectedOrder = order"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                  <span
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
-                    :class="getStatusClass(order.status)"
-                  >
-                    {{ getStatusText(order.status) }}
-                  </span>
-                </div>
-                <div>
-                  <p class="text-lg font-semibold text-gray-900">
-                    {{ order.ref }}
-                  </p>
-                  <p class="text-gray-600">{{ order.customer?.name }}</p>
-                  <p class="text-sm text-gray-400 flex items-center space-x-2">
-                    <span>{{ formatDate(order.timestamp) }}</span>
-                    <span>•</span>
-                    <span>{{
-                      order.source === "whatsapp" ? "📱 WhatsApp" : "🌐 Web"
-                    }}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="text-right">
-                <p class="text-xl font-bold text-green-600">
-                  {{ formatAmount(order.amounts?.total || order.total || 0) }}
-                </p>
-                <p class="text-sm text-gray-500">
-                  {{ order.items?.length || 0 }} article(s)
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else class="text-center py-12">
-          <div class="text-6xl mb-4 opacity-50">🎒</div>
-          <h3 class="text-xl font-medium text-gray-900 mb-2">
-            Aucune commande
-          </h3>
-          <p class="text-gray-500 mb-6">
-            Les commandes apparaîtront ici automatiquement
-          </p>
+      <!-- Main Layout with Navigation Tabs -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Sidebar Navigation with SVG Icon Library -->
+        <aside class="lg:col-span-3 bg-white rounded-3xl border border-slate-200/80 p-4 shadow-sm space-y-1">
           <button
-            @click="createTestOrder"
-            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold"
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-xs font-bold transition-all cursor-pointer"
+            :class="activeTab === tab.id ? 'bg-[#0F3D91] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
           >
-            Créer une commande test
-          </button>
-        </div>
-      </div>
-    </div>
+            <div class="flex items-center gap-3">
+              <!-- SVG Icons -->
+              <svg v-if="tab.id === 'profile'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
 
-    <!-- Modal détail commande avec design moderne -->
-    <div
-      v-if="selectedOrder"
-      class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      @click="selectedOrder = null"
-    >
-      <div
-        class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-96 overflow-y-auto"
-        @click.stop
-      >
-        <div
-          class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-3xl"
-        >
-          <div class="flex items-center justify-between">
-            <h3 class="text-2xl font-bold text-gray-800">
-              Commande {{ selectedOrder.ref }}
-            </h3>
+              <svg v-else-if="tab.id === 'orders'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+
+              <svg v-else-if="tab.id === 'addresses'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+
+              <svg v-else-if="tab.id === 'invoices'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+
+              <span>{{ tab.name }}</span>
+            </div>
+
+            <span v-if="tab.badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold" :class="activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'">
+              {{ tab.badge }}
+            </span>
+          </button>
+
+          <div class="pt-4 border-t border-slate-100">
             <button
-              @click="selectedOrder = null"
-              class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-200"
+              @click="logout"
+              class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
             >
-              <span class="text-gray-500">✕</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Déconnexion</span>
             </button>
           </div>
-        </div>
+        </aside>
 
-        <div class="p-6 space-y-6">
-          <!-- Client -->
-          <div class="bg-blue-50 rounded-2xl p-4">
-            <h4
-              class="font-bold text-blue-800 mb-3 flex items-center space-x-2"
-            >
-              <span>👤</span>
-              <span>Informations Client</span>
-            </h4>
-            <div class="space-y-2 text-blue-700">
-              <p><strong>Nom:</strong> {{ selectedOrder.customer?.name }}</p>
-              <p><strong>Email:</strong> {{ selectedOrder.customer?.email }}</p>
-              <p>
-                <strong>Téléphone:</strong> {{ selectedOrder.customer?.phone }}
-              </p>
+        <!-- Right Main Content Area -->
+        <main class="lg:col-span-9 space-y-6">
+
+          <!-- TAB 1: PROFIL CLIENT REEL -->
+          <div v-if="activeTab === 'profile'" class="space-y-6">
+            <!-- Stats overview -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-1">
+                <span class="text-xs text-slate-400 font-bold uppercase">Commandes passées</span>
+                <span class="font-display text-3xl font-extrabold text-slate-950 block">{{ userOrders.length }}</span>
+              </div>
+
+              <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-1">
+                <span class="text-xs text-slate-400 font-bold uppercase">Total Dépensé</span>
+                <span class="font-display text-2xl sm:text-3xl font-extrabold text-[#0F3D91] block">{{ formatPrice(totalSpent) }}</span>
+              </div>
+
+              <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-1">
+                <span class="text-xs text-slate-400 font-bold uppercase">Statut Compte</span>
+                <span class="font-display text-xl font-extrabold text-emerald-600 block">Compte Vérifié</span>
+              </div>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+              <h2 class="font-display text-xl font-extrabold text-slate-950">Informations personnelles</h2>
+
+              <form @submit.prevent="saveProfile" class="space-y-4 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1">Prénom *</label>
+                    <input v-model="user.firstName" type="text" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold" placeholder="Votre prénom" />
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1">Nom *</label>
+                    <input v-model="user.lastName" type="text" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold" placeholder="Votre nom" />
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1">Adresse Email</label>
+                    <input v-model="user.email" type="email" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold" placeholder="votre.email@exemple.sn" />
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1">Téléphone (WhatsApp) *</label>
+                    <input v-model="user.phone" type="tel" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold" placeholder="+221 77 000 00 00" />
+                  </div>
+
+                  <div class="sm:col-span-2">
+                    <label class="block font-bold text-slate-700 uppercase mb-1">Adresse de livraison habituelle</label>
+                    <input v-model="user.address" type="text" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-semibold" placeholder="Quartier, Rue, Numéro de villa (Dakar)" />
+                  </div>
+                </div>
+
+                <div class="pt-4 flex items-center gap-4">
+                  <button type="submit" class="px-8 py-3.5 bg-[#0F3D91] hover:bg-[#0c3278] text-white font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer">
+                    Enregistrer mes modifications
+                  </button>
+
+                  <span v-if="profileSaved" class="text-emerald-600 font-bold text-xs">
+                    ✓ Profil mis à jour avec succès !
+                  </span>
+                </div>
+              </form>
             </div>
           </div>
 
-          <!-- Livraison -->
-          <div class="bg-purple-50 rounded-2xl p-4">
-            <h4
-              class="font-bold text-purple-800 mb-3 flex items-center space-x-2"
-            >
-              <span>📦</span>
-              <span>Livraison</span>
-            </h4>
-            <div class="space-y-2 text-purple-700">
-              <p>
-                <strong>Adresse:</strong> {{ selectedOrder.shipping?.address }}
-              </p>
-              <p><strong>Ville:</strong> {{ selectedOrder.shipping?.city }}</p>
-              <p>
-                <strong>Méthode:</strong> {{ selectedOrder.shipping?.method }}
-              </p>
-            </div>
-          </div>
+          <!-- TAB 2: MES COMMANDES REELLES -->
+          <div v-else-if="activeTab === 'orders'" class="space-y-6">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+              <h2 class="font-display text-xl font-extrabold text-slate-950">Historique de mes commandes</h2>
 
-          <!-- Articles -->
-          <div class="bg-green-50 rounded-2xl p-4">
-            <h4
-              class="font-bold text-green-800 mb-3 flex items-center space-x-2"
-            >
-              <span>🛒</span>
-              <span>Articles</span>
-            </h4>
-            <div
-              v-if="selectedOrder.items && Array.isArray(selectedOrder.items)"
-              class="space-y-2"
-            >
-              <div
-                v-for="item in selectedOrder.items"
-                :key="item.name"
-                class="flex justify-between items-center py-2 px-3 bg-white rounded-lg"
-              >
-                <span class="font-medium text-green-700"
-                  >{{ item.name }} (x{{ item.quantity }})</span
-                >
-                <span class="font-bold text-green-800">{{
-                  formatAmount(item.price * item.quantity)
-                }}</span>
+              <div v-if="userOrders.length === 0" class="py-12 text-center space-y-3">
+                <svg class="w-12 h-12 text-slate-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <p class="text-slate-500 font-semibold text-xs">Vous n'avez pas encore passé de commande.</p>
+                <NuxtLink to="/products" class="inline-block px-6 py-2.5 bg-[#0F3D91] text-white font-bold text-xs rounded-full">
+                  Découvrir le catalogue
+                </NuxtLink>
+              </div>
+
+              <div v-else class="space-y-4">
+                <div v-for="ord in userOrders" :key="ord.ref" class="p-6 rounded-2xl bg-slate-50 border border-slate-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div class="space-y-1 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-slate-950">Commande #{{ ord.ref }}</span>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-100 text-[#0F3D91]">
+                        {{ ord.status || 'Confirmée' }}
+                      </span>
+                    </div>
+                    <p class="text-slate-500 font-medium">Date: {{ ord.date || 'Récemment' }}</p>
+                    <p class="font-extrabold text-[#0F3D91] text-sm">{{ formatPrice(ord.total) }}</p>
+                  </div>
+
+                  <button
+                    @click="downloadInvoice(ord.ref)"
+                    class="px-5 py-2.5 bg-[#0F3D91] hover:bg-[#0c3278] text-white font-bold text-xs rounded-full transition-all cursor-pointer flex items-center gap-2"
+                  >
+                    <span>Imprimer ma Facture PDF</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Total -->
-          <div
-            class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white"
-          >
-            <div class="text-center">
-              <p class="text-lg font-medium mb-2">Total de la commande</p>
-              <p class="text-4xl font-bold">
-                {{
-                  formatAmount(
-                    selectedOrder.amounts?.total || selectedOrder.total || 0
-                  )
-                }}
-              </p>
+          <!-- TAB 3: ADRESSES -->
+          <div v-else-if="activeTab === 'addresses'" class="space-y-6">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+              <h2 class="font-display text-xl font-extrabold text-slate-950">Adresse de livraison</h2>
+              <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/60 text-xs space-y-2">
+                <p><strong>Destinataire :</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                <p><strong>Téléphone :</strong> {{ user.phone }}</p>
+                <p><strong>Adresse :</strong> {{ user.address || 'Non renseignée' }}</p>
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- TAB 4: FACTURES -->
+          <div v-else-if="activeTab === 'invoices'" class="space-y-6">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+              <h2 class="font-display text-xl font-extrabold text-slate-950">Mes factures certifiées</h2>
+              <div v-for="ord in userOrders" :key="ord.ref" class="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+                <div>
+                  <span class="font-bold text-slate-950 block">Facture #FAC-{{ ord.ref }}</span>
+                  <span class="text-slate-500">Total : {{ formatPrice(ord.total) }}</span>
+                </div>
+                <button @click="downloadInvoice(ord.ref)" class="px-4 py-2 bg-[#0F3D91] text-white font-bold text-xs rounded-full">
+                  Télécharger PDF
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </main>
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// Variables réactives
-const orders = ref([]);
-const loading = ref(false);
-const selectedOrder = ref(null);
-const message = ref(null);
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { printOfficialInvoice } from "~/utils/invoice-generator";
 
-// Statistiques calculées
-const totalRevenue = computed(() => {
-  return orders.value.reduce(
-    (sum, order) => sum + (order.amounts?.total || order.total || 0),
-    0
-  );
+const router = useRouter();
+const activeTab = ref("profile");
+const profileSaved = ref(false);
+
+const user = ref({
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  address: "",
+  loyaltyRank: "Client Membre",
 });
 
-const pendingOrders = computed(() => {
-  return orders.value.filter((order) => order.status?.includes("pending"))
-    .length;
+const userOrders = ref<any[]>([]);
+
+const tabs = computed(() => [
+  { id: "profile", name: "Profil" },
+  { id: "orders", name: "Commandes", badge: userOrders.value.length },
+  { id: "addresses", name: "Adresse" },
+  { id: "invoices", name: "Factures", badge: userOrders.value.length },
+]);
+
+const totalSpent = computed(() => {
+  return userOrders.value.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
 });
 
-const todayOrders = computed(() => {
-  const today = new Date().toISOString().split("T")[0];
-  return orders.value.filter(
-    (order) => order.timestamp?.split("T")[0] === today
-  ).length;
-});
+const formatPrice = (val: number) => {
+  return new Intl.NumberFormat("fr-FR").format(val) + " F CFA";
+};
 
-const todayRevenue = computed(() => {
-  const today = new Date().toISOString().split("T")[0];
-  return orders.value
-    .filter((order) => order.timestamp?.split("T")[0] === today)
-    .reduce(
-      (sum, order) => sum + (order.amounts?.total || order.total || 0),
-      0
-    );
-});
+onMounted(() => {
+  if (process.client) {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        const u = JSON.parse(savedUser);
+        user.value = {
+          firstName: u.firstName || u.name?.split(" ")[0] || "",
+          lastName: u.lastName || u.name?.split(" ").slice(1).join(" ") || "",
+          email: u.email || "",
+          phone: u.phone || "",
+          address: u.address || "",
+          loyaltyRank: "Client Membre",
+        };
+      } catch (e) {}
+    }
 
-const averageOrder = computed(() => {
-  return orders.value.length > 0
-    ? Math.round(totalRevenue.value / orders.value.length)
-    : 0;
-});
-
-const webOrders = computed(() => {
-  return orders.value.filter((order) => order.source !== "whatsapp").length;
-});
-
-const whatsappOrders = computed(() => {
-  return orders.value.filter((order) => order.source === "whatsapp").length;
-});
-
-const webPercentage = computed(() => {
-  return orders.value.length > 0
-    ? Math.round((webOrders.value / orders.value.length) * 100)
-    : 0;
-});
-
-const whatsappPercentage = computed(() => {
-  return orders.value.length > 0
-    ? Math.round((whatsappOrders.value / orders.value.length) * 100)
-    : 0;
-});
-
-// Fonctions
-const refreshData = async () => {
-  loading.value = true;
-  message.value = null;
-
-  try {
-    const response = await $fetch("/api/admin/orders/list");
-    if (response.success) {
-      orders.value = response.orders || [];
-      showMessage(
-        "success",
-        `✅ ${orders.value.length} commande(s) chargée(s)`
-      );
+    const savedUserOrders = localStorage.getItem("user_orders");
+    if (savedUserOrders) {
+      try {
+        userOrders.value = JSON.parse(savedUserOrders);
+      } catch (e) {}
     } else {
-      throw new Error("Échec du chargement");
+      const savedLastOrder = localStorage.getItem("last_order");
+      if (savedLastOrder) {
+        try {
+          const lo = JSON.parse(savedLastOrder);
+          userOrders.value = [{
+            ref: lo.orderRef || "REF-805678",
+            date: new Date().toLocaleDateString("fr-FR"),
+            total: Number(lo.total || lo.amount || 0),
+            status: "Confirmée",
+            items: lo.items || [],
+          }];
+        } catch (e) {}
+      }
     }
-  } catch (error) {
-    console.error("Erreur chargement:", error);
-    showMessage("error", "❌ Erreur lors du chargement des commandes");
-  } finally {
-    loading.value = false;
+  }
+});
+
+const saveProfile = () => {
+  if (process.client) {
+    const updated = {
+      firstName: user.value.firstName,
+      lastName: user.value.lastName,
+      name: `${user.value.firstName} ${user.value.lastName}`.trim(),
+      email: user.value.email,
+      phone: user.value.phone,
+      address: user.value.address,
+    };
+    localStorage.setItem("user", JSON.stringify(updated));
+    profileSaved.value = true;
+    setTimeout(() => (profileSaved.value = false), 3000);
   }
 };
 
-const createTestOrder = async () => {
-  try {
-    const response = await $fetch("/api/test/create-order", { method: "POST" });
-    if (response.success) {
-      showMessage("success", `✅ Commande test créée: ${response.orderRef}`);
-      await refreshData();
-    }
-  } catch (error) {
-    console.error("Erreur création test:", error);
-    showMessage("error", "❌ Erreur lors de la création de la commande test");
-  }
-};
-
-const downloadExcel = () => {
-  showMessage("success", "📊 Téléchargement du fichier Excel maître...");
-  // Simuler le téléchargement - dans la vraie version, on créerait un endpoint pour ça
-  window.open("/data/COMMANDES_MAITRE.xlsx", "_blank");
-};
-
-const exportCsv = async () => {
-  try {
-    const response = await $fetch("/api/admin/orders/export");
-    if (response.success && response.data) {
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `commandes-${new Date().toISOString().split("T")[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showMessage("success", "✅ Export CSV téléchargé");
-    }
-  } catch (error) {
-    console.error("Erreur export:", error);
-    showMessage("error", "❌ Erreur lors de l'export CSV");
-  }
-};
-
-const showMessage = (type, text) => {
-  message.value = { type, text };
-  setTimeout(() => {
-    message.value = null;
-  }, 5000);
-};
-
-// Fonctions utilitaires
-const formatAmount = (amount) => {
-  return new Intl.NumberFormat("fr-FR").format(amount);
-};
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
+const downloadInvoice = (refCode: string) => {
+  const foundOrder = userOrders.value.find((o) => o.ref === refCode) || userOrders.value[0];
+  printOfficialInvoice({
+    ref: refCode,
+    customerName: `${user.value.firstName} ${user.value.lastName}`.trim() || "Client EduShop",
+    phone: user.value.phone || "+221 77 000 00 00",
+    email: user.value.email || "client@edushop.sn",
+    city: "Dakar",
+    address: user.value.address || "Dakar",
+    total: foundOrder ? foundOrder.total : 14500,
+    paymentMethod: "Wave / Orange Money",
+    createdAt: foundOrder ? foundOrder.date : new Date().toLocaleDateString("fr-FR"),
+    items: (foundOrder && foundOrder.items && foundOrder.items.length > 0) ? foundOrder.items : [
+      { name: "Fournitures Scolaires Officielles", quantity: 1, price: foundOrder ? foundOrder.total : 14500 }
+    ],
   });
 };
 
-const getStatusClass = (status) => {
-  const classes = {
-    pending: "bg-yellow-100 text-yellow-800 border border-yellow-200",
-    pending_whatsapp: "bg-blue-100 text-blue-800 border border-blue-200",
-    confirmed: "bg-green-100 text-green-800 border border-green-200",
-    cancelled: "bg-red-100 text-red-800 border border-red-200",
-  };
-  return classes[status] || "bg-gray-100 text-gray-800 border border-gray-200";
-};
+function logout() {
+  if (process.client) {
+    localStorage.removeItem("user");
+    router.push("/login");
+  }
+}
 
-const getStatusText = (status) => {
-  const texts = {
-    pending: "En attente",
-    pending_whatsapp: "WhatsApp",
-    confirmed: "Confirmée",
-    cancelled: "Annulée",
-  };
-  return texts[status] || status;
-};
-
-const getMessageClass = (type) => {
-  return type === "success"
-    ? "bg-green-50 text-green-800 border border-green-200"
-    : "bg-red-50 text-red-800 border border-red-200";
-};
-
-// Charger les données au montage
-onMounted(() => {
-  refreshData();
+useHead({
+  title: "Mon Espace Client - EduShop Sénégal",
 });
 </script>

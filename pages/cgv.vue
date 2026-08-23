@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <AppHeader />
 
     <main class="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
       <div class="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -28,8 +27,7 @@
                   class="text-primary-600 hover:underline"
                   >https://edushop.sn</a
                 >
-                (ci-après le "Site"), exploité par la société EduShop Sénégal,
-                ci-après dénommée "EduShop".
+                (ci-après le "Site"), édité et exploité par la société mère MATKAM (service commercial EduShop Sénégal, ci-après dénommée "EduShop").
               </p>
               <p class="text-gray-700 mt-4">
                 Toute commande implique l'adhésion sans réserve de l'acheteur
@@ -291,18 +289,18 @@
                 vente, vous pouvez nous contacter :
               </p>
               <address class="not-italic text-gray-700">
-                <p>EduShop Sénégal</p>
+                <p class="font-bold text-[#0F3D91]">MATKAM (Société Mère) / Service EduShop Sénégal</p>
                 <p>Service Client</p>
-                <p>Ouakam Cité Avion, Dakar</p>
+                <p>Ouakam, Dakar, Sénégal</p>
                 <p>
                   Email :
                   <a
-                    href="mailto:contact@edushop.sn"
+                    href="mailto:contact@e-du.shop"
                     class="text-primary-600 hover:underline"
-                    >contact@edushop.sn</a
+                    >contact@e-du.shop</a
                   >
                 </p>
-                <p>Téléphone : +221 78 291 18 44</p>
+                <p>Téléphone / WhatsApp : +221 77 113 39 26</p>
                 <p>
                   Horaires d'ouverture : Du lundi au samedi, de 8h00 à 20h00
                 </p>
@@ -312,8 +310,6 @@
         </div>
       </div>
     </main>
-
-    <AppFooter />
   </div>
 </template>
 

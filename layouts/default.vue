@@ -1,21 +1,17 @@
 <!-- layouts/default.vue -->
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col overflow-hidden">
+  <div class="min-h-screen bg-[#FBFBFA] flex flex-col overflow-hidden">
     <!-- Header -->
     <AppHeader />
 
     <!-- Main Content -->
-    <main class="flex-grow pt-16 pb-20 md:pb-0">
-      <div class="">
-        <slot />
-      </div>
+    <main class="flex-grow pt-16 md:pt-20">
+      <slot />
     </main>
+
 
     <!-- Footer -->
     <AppFooter />
-
-    <!-- Bottom Navigation (Mobile) -->
-    <AppBottomNav class="md:hidden" />
 
     <!-- Cart Sidebar -->
     <CartSidebar />
@@ -28,6 +24,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useCartStore, useCartAutoSave } from "~/stores/cart";
+import { useAirtableStore } from "~/stores/airtable";
 import { useRoute, navigateTo, useHead, createError } from "nuxt/app";
 
 // Protection : empêcher l'utilisation du layout par défaut sur les routes admin (sauf login)
@@ -46,12 +43,23 @@ if (route.path.startsWith("/admin") && route.path !== "/admin/login") {
 
 // Initialisation des stores
 const cartStore = useCartStore();
+const airtableStore = useAirtableStore();
 
 // Charger les données au montage
 onMounted(async () => {
-  // Charger le panier depuis localStorage
-  // cartStore.loadFromStorage() // Assuming this method exists
+  // Purger tout Service Worker ou cache offline résiduel du navigateur
+  if (process.client && "serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+
+  // Initialiser les données Airtable (Smart Cache)
+  await airtableStore.initialize();
 });
+
 
 // Meta tags génériques
 useHead({

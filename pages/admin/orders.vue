@@ -1,590 +1,638 @@
 <template>
-  <div>
-    <!-- Actions header -->
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-semibold text-gray-900">Gestion des commandes</h2>
-      <div class="flex space-x-3">
+  <div class="space-y-6">
+    
+    <!-- Action Header -->
+    <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="font-display text-2xl font-extrabold text-slate-950">Gestion des Commandes Clients</h2>
+        <p class="text-xs text-slate-500 font-medium">Inspectez les choix des clients du commencement à la fin et suivez la livraison</p>
+      </div>
+
+      <div class="flex items-center gap-3">
         <button
-          @click="refreshOrders"
-          class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+          @click="exportOrdersCSV"
+          class="px-5 py-2.5 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          <span>Actualiser</span>
+          <span>📥 Exporter en CSV / Excel</span>
+        </button>
+
+        <button
+          @click="fetchOrders"
+          class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-full transition-all cursor-pointer flex items-center gap-2"
+        >
+          <span>🔄 Actualiser</span>
         </button>
       </div>
     </div>
 
-    <!-- Filtres et statistiques rapides -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow-sm border p-4">
-        <div class="text-sm font-medium text-gray-500">Total des commandes</div>
-        <div class="text-2xl font-bold text-gray-900">{{ orders.length }}</div>
+    <!-- Stats summary boxes -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+        <span class="text-xs text-slate-400 font-bold uppercase">Total Commandes</span>
+        <span class="font-display text-2xl font-extrabold text-slate-950 block">{{ orders.length }}</span>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border p-4">
-        <div class="text-sm font-medium text-gray-500">En attente</div>
-        <div class="text-2xl font-bold text-orange-600">
-          {{ getPendingOrdersCount() }}
-        </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+        <span class="text-xs text-slate-400 font-bold uppercase">En attente</span>
+        <span class="font-display text-2xl font-extrabold text-amber-600 block">{{ getPendingOrdersCount() }}</span>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border p-4">
-        <div class="text-sm font-medium text-gray-500">Confirmées</div>
-        <div class="text-2xl font-bold text-green-600">
-          {{ getConfirmedOrdersCount() }}
-        </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+        <span class="text-xs text-slate-400 font-bold uppercase">En livraison / Validées</span>
+        <span class="font-display text-2xl font-extrabold text-blue-600 block">{{ getConfirmedOrdersCount() }}</span>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border p-4">
-        <div class="text-sm font-medium text-gray-500">Chiffre d'affaires</div>
-        <div class="text-2xl font-bold text-emerald-600">
-          {{ formatCurrency(getTotalRevenue()) }}
-        </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+        <span class="text-xs text-slate-400 font-bold uppercase">Chiffre d'Affaires</span>
+        <span class="font-display text-2xl font-extrabold text-[#0F3D91] block">{{ formatCurrency(getTotalRevenue()) }}</span>
       </div>
     </div>
 
-    <!-- Formulaire de modification -->
-    <div v-if="showEdit" class="mb-6 bg-white rounded-lg shadow-sm border p-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">
-        Modifier la commande #{{ editOrder.ref }}
-      </h3>
-      <form @submit.prevent="updateOrder" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >Statut de la commande</label
-          >
-          <select
-            v-model="editOrder.status"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            required
-          >
-            <option value="pending">En attente</option>
-            <option value="confirmed">Confirmée</option>
-            <option value="shipped">Expédiée</option>
-            <option value="delivered">Livrée</option>
-            <option value="cancelled">Annulée</option>
-          </select>
-        </div>
-        <div class="flex justify-end space-x-3">
-          <button
-            type="button"
-            @click="cancelEdit"
-            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors"
-          >
-            Mettre à jour
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Barre de recherche et pagination -->
-    <div
-      class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"
-    >
+    <!-- Search & Filter Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Rechercher par référence, email, statut..."
-        class="w-full md:w-80 border rounded px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+        placeholder="Rechercher par référence, client, téléphone, ville..."
+        class="w-full sm:w-80 px-4 py-3 text-xs font-semibold bg-white border border-slate-200 rounded-full focus:outline-none focus:border-[#0F3D91]"
       />
-      <div class="flex items-center gap-2">
-        <button
-          @click="prevPage"
-          :disabled="page === 1"
-          class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
-        >
-          Précédent
-        </button>
-        <span class="text-sm">Page {{ page }} / {{ totalPages }}</span>
-        <button
-          @click="nextPage"
-          :disabled="page === totalPages"
-          class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
-        >
-          Suivant
-        </button>
-      </div>
+      <span class="text-xs font-bold text-slate-500">
+        {{ filteredOrders.length }} commande(s) répertoriée(s)
+      </span>
     </div>
 
-    <!-- Tableau des commandes -->
-    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Liste des commandes</h3>
-      </div>
+    <!-- Orders Table -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Référence
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Client
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Total
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Statut
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Date de création
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200/80 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <th class="py-4 px-6">Référence</th>
+              <th class="py-4 px-6">Client & Contact</th>
+              <th class="py-4 px-6">Articles & Fournitures Commandées</th>
+              <th class="py-4 px-6">Mode Obtention</th>
+              <th class="py-4 px-6">Montant Total</th>
+              <th class="py-4 px-6">Statut</th>
+              <th class="py-4 px-6 text-right">Inspection 360°</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="order in paginatedOrders"
-              :key="order.id"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  #{{ order.ref }}
+          <tbody class="divide-y divide-slate-100 text-xs">
+            <tr v-for="order in filteredOrders" :key="order.ref" class="hover:bg-slate-50/80 transition-colors">
+              <td class="py-4 px-6 font-display font-extrabold text-slate-950">#{{ order.ref }}</td>
+              <td class="py-4 px-6">
+                <div class="space-y-0.5">
+                  <span class="font-bold text-slate-900 block">{{ order.customerName || order.customerPhone || 'Client' }}</span>
+                  <span class="text-slate-400 font-medium block">{{ order.phone || order.customerPhone }} · {{ order.city || order.address || 'Dakar' }}</span>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-8 w-8">
-                    <div
-                      class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center"
-                    >
-                      <svg
-                        class="w-4 h-4 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
-                    </div>
+              <td class="py-4 px-6">
+                <div class="space-y-1 max-w-xs">
+                  <div v-for="(it, idx) in (order.items || [])" :key="idx" class="flex items-center justify-between gap-2 text-[11px]">
+                    <span class="font-semibold text-slate-800 line-clamp-1">
+                      <strong class="text-[#0F3D91]">{{ it.quantity || 1 }}x</strong> {{ it.name || it.title }}
+                    </span>
+                    <span class="text-slate-500 font-medium shrink-0">{{ formatCurrency(it.price || 0) }}</span>
                   </div>
-                  <div class="ml-3">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ order.user?.email || "Client anonyme" }}
-                    </div>
+                  <div v-if="!order.items || order.items.length === 0" class="text-slate-400 italic text-[11px]">
+                    Pack Fournitures Scolaires (1x)
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ formatCurrency(order.total) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusBadgeClass(order.status)">
-                  {{ getStatusLabel(order.status) }}
+              <td class="py-4 px-6">
+                <span 
+                  class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase border inline-block"
+                  :class="(order.deliveryType === 'store' || order.address?.toLowerCase().includes('retrait')) ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-[#0F3D91] border-blue-200'"
+                >
+                  {{ (order.deliveryType === 'store' || order.address?.toLowerCase().includes('retrait')) ? '🏬 Retrait Magasin' : '🚚 Livraison Domicile' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ formatDate(order.createdAt) }}
-                </div>
+              <td class="py-4 px-6 font-extrabold text-[#0F3D91]">{{ formatCurrency(order.total || order.amount) }}</td>
+              <td class="py-4 px-6">
+                <select
+                  v-model="order.status"
+                  @change="updateOrderStatus(order)"
+                  class="px-3 py-1.5 rounded-full text-[11px] font-bold border focus:outline-none cursor-pointer"
+                  :class="getStatusBadgeClass(order.status)"
+                >
+                  <option value="pending">🟡 En attente</option>
+                  <option value="confirmed">🔵 Confirmée</option>
+                  <option value="shipped">🚚 En livraison</option>
+                  <option value="delivered">🟢 Livrée</option>
+                  <option value="cancelled">🔴 Annulée</option>
+                </select>
               </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-              >
+              <td class="py-4 px-6 text-right space-x-2">
                 <button
-                  @click="showOrderDetail(order)"
-                  class="text-blue-600 hover:text-blue-900 mr-3 transition-colors"
+                  @click="openInspectionModal(order)"
+                  class="px-3 py-1.5 bg-[#0F3D91] hover:bg-[#0c3278] text-white font-bold text-[11px] rounded-full transition-all cursor-pointer shrink-0"
                 >
-                  Voir
-                </button>
-                <button
-                  @click="edit(order)"
-                  class="text-emerald-600 hover:text-emerald-900 mr-3 transition-colors"
-                >
-                  Modifier
-                </button>
-                <button
-                  @click="deleteOrder(order.id)"
-                  class="text-red-600 hover:text-red-900 transition-colors"
-                >
-                  Supprimer
+                  👁️ Inspecter (360°)
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-
-        <!-- Message si aucune commande -->
-        <div v-if="orders.length === 0" class="text-center py-12">
-          <svg
-            class="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">
-            Aucune commande
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Aucune commande n'a encore été passée.
-          </p>
-        </div>
       </div>
     </div>
 
-    <!-- Overlay fiche détail commande -->
-    <div
-      v-if="showDetail"
-      class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center"
-    >
-      <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative">
-        <button
-          @click="showDetail = false"
-          class="absolute top-2 right-2 text-gray-400 hover:text-gray-700"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h2 class="text-2xl font-bold mb-4">Détail de la commande</h2>
-        <div v-if="detailOrder">
-          <div class="mb-4 flex flex-wrap gap-4">
-            <div class="flex-1">
-              <div class="text-sm text-gray-500">Référence</div>
-              <div class="text-lg font-semibold text-gray-900">
-                #{{ detailOrder.ref }}
-              </div>
+    <!-- MODAL INSPECTION 360° DU CHOIX CLIENT DU COMMENCEMENT À LA FIN -->
+    <div v-if="showDetail && detailOrder" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-3xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto relative">
+        
+        <!-- Modal Top Header -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#0F3D91] block">
+              RAPPORT D'INSPECTION COMMANDE 360°
+            </span>
+            <h3 class="font-display text-2xl font-extrabold text-slate-950">
+              Commande #{{ detailOrder.ref }}
+            </h3>
+          </div>
+          <button @click="showDetail = false" class="p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Section 1: Parcours & Choix de l'Assistant Rentrée (Du commencement à la fin) -->
+        <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-200/60 space-y-3">
+          <h4 class="font-display text-sm font-extrabold text-[#0F3D91] flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <span>✨</span>
+              <span>Détails & Choix Personnalisés du Client</span>
+            </span>
+            <span class="text-xs font-extrabold px-3 py-1 bg-[#0F3D91] text-white rounded-full">
+              Couleur : {{ extractPackColor(detailOrder) }}
+            </span>
+          </h4>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="bg-white p-3 rounded-xl border border-slate-200/60 space-y-1">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">1. Niveau Scolaire</span>
+              <span class="font-bold text-slate-900 block">{{ extractPackLevel(detailOrder) }}</span>
             </div>
-            <div class="flex-1">
-              <div class="text-sm text-gray-500">Client</div>
-              <div class="text-lg font-semibold text-gray-900">
-                {{ detailOrder.user?.email || "Client anonyme" }}
-              </div>
+
+            <div class="bg-white p-3 rounded-xl border border-slate-200/60 space-y-1">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">2. Profil Enfant</span>
+              <span class="font-bold text-slate-900 block">{{ detailOrder.configuratorChoice?.gender === 'girl' ? '👧 Fille' : (detailOrder.configuratorChoice?.gender === 'boy' ? '👦 Garçon' : 'Élève') }}</span>
             </div>
-            <div class="flex-1">
-              <div class="text-sm text-gray-500">Statut</div>
-              <span :class="getStatusBadgeClass(detailOrder.status)">{{
-                getStatusLabel(detailOrder.status)
-              }}</span>
+
+            <div class="bg-white p-3 rounded-xl border border-slate-200/60 space-y-1">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">3. Sac à Dos</span>
+              <span class="font-bold text-slate-900 block">{{ (detailOrder.configuratorChoice?.bag || isBagIncluded(detailOrder)) ? '🎒 Sac Navigateur Inclus' : 'Non requis' }}</span>
             </div>
-            <div class="flex-1">
-              <div class="text-sm text-gray-500">Total</div>
-              <div class="text-lg font-semibold text-emerald-700">
-                {{ formatCurrency(detailOrder.total) }}
-              </div>
+
+            <div class="bg-white p-3 rounded-xl border border-slate-200/60 space-y-1">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">4. Couleur Sélectionnée</span>
+              <span class="font-bold text-[#0F3D91] block">{{ extractPackColor(detailOrder) }}</span>
             </div>
           </div>
-          <div class="mb-4">
-            <div class="text-sm text-gray-500">Date de création</div>
-            <div class="text-base text-gray-900">
-              {{ formatDate(detailOrder.createdAt) }}
-            </div>
+        </div>
+
+        <!-- Section 2: Informations de Livraison & Contact -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-2">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Coordonnées du Client</span>
+            <p class="font-bold text-slate-900 text-sm">{{ detailOrder.customerName || detailOrder.phone }}</p>
+            <p class="text-slate-600 font-medium">📞 {{ detailOrder.phone || detailOrder.customerPhone }}</p>
+            <p class="text-slate-600 font-medium">✉️ {{ detailOrder.email || detailOrder.customerEmail || 'client@edushop.sn' }}</p>
           </div>
-          <div class="mb-4">
-            <div class="text-sm text-gray-500">Produits</div>
-            <ul class="list-disc list-inside text-gray-700">
-              <li v-for="item in detailOrder.items || []" :key="item.id">
-                {{ item.name }}
-                <span class="text-xs text-gray-400">x{{ item.quantity }}</span>
-              </li>
-            </ul>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-2">
+            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Mode d'Obtention & Paiement</span>
+            <p class="font-bold text-[#0F3D91]">
+              {{ (detailOrder.deliveryType === 'store' || detailOrder.address?.toLowerCase().includes('retrait')) ? '🏬 Retrait en Magasin (Ouakam, Dakar) — GRATUIT' : `🚚 Livraison à Domicile : ${detailOrder.address}, ${detailOrder.city}` }}
+            </p>
+            <p class="text-slate-600 font-medium">Mode Règlement: <strong class="text-emerald-700 font-bold">{{ detailOrder.paymentMethod }}</strong></p>
+            <p class="text-slate-600 font-medium">Date Commande: {{ detailOrder.createdAt || detailOrder.date }}</p>
           </div>
-          <div class="flex gap-2 mt-6">
-            <button
-              @click="copyOrderId(detailOrder.id)"
-              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium flex items-center gap-2"
+        </div>
+
+        <!-- Section 3: FICHE DE PRÉPARATION COLIS - Liste Intégrale des Fournitures à Mettre dans le Sac -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-display text-sm font-extrabold text-slate-950 flex items-center gap-2">
+              <span>📋</span>
+              <span>Fiche de Préparation Colis & Détail des Fournitures à Emballer</span>
+            </h4>
+            <span class="text-[11px] font-bold text-slate-500">
+              Couleur à mettre dans le sac : <strong class="text-[#0F3D91]">{{ extractPackColor(detailOrder) }}</strong>
+            </span>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5">
+            <div 
+              v-for="(item, idx) in getDetailedPackingList(detailOrder)" 
+              :key="idx" 
+              class="flex items-center justify-between text-xs p-2.5 bg-white rounded-xl border border-slate-200/60"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8 16h8M8 12h8m-8-4h8M4 6h16M4 10h16M4 14h16M4 18h16"
-                />
-              </svg>
-              Copier l'ID
+              <div class="flex items-center gap-3">
+                <span class="px-2 py-1 rounded-lg bg-blue-100 text-[#0F3D91] font-extrabold text-xs">
+                  {{ item.qty }}
+                </span>
+                <div>
+                  <span class="font-extrabold text-slate-900 block">{{ item.name }}</span>
+                  <span v-if="item.note" class="text-[11px] text-slate-500 font-medium block">{{ item.note }}</span>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                ✓ Prêt à emballer
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Bottom Actions & WhatsApp Direct Contact -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
+          <div class="text-xs">
+            <span class="text-slate-400 font-medium">Total Commande: </span>
+            <span class="font-display text-lg font-extrabold text-[#0F3D91] ml-1">{{ formatCurrency(detailOrder.total) }}</span>
+          </div>
+
+          <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+            <button
+              @click="sendOrderEmailAdmin(detailOrder)"
+              :disabled="isSendingEmail"
+              class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-full transition-all cursor-pointer flex items-center gap-2"
+            >
+              <span v-if="isSendingEmail" class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span>📧 Envoyer à zeynash1@gmail.com</span>
             </button>
+
             <button
               @click="downloadOrderPDF(detailOrder)"
-              class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium flex items-center gap-2"
+              class="px-4 py-2.5 bg-[#0F3D91] hover:bg-[#0c3278] text-white font-bold text-xs rounded-full transition-all cursor-pointer flex items-center gap-2"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Télécharger PDF
+              <span>📄 Télécharger PDF</span>
+            </button>
+
+            <a
+              :href="`https://wa.me/${(detailOrder.phone || detailOrder.customerPhone || '').replace(/[^0-9]/g, '')}?text=Bonjour%20${detailOrder.customerName},%20nous%20sommes%20l'équipe%20EduShop.%20Votre%20commande%20%23${detailOrder.ref}%20est%20en%20cours%20de%20traitement.`"
+              target="_blank"
+              class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-full transition-all cursor-pointer flex items-center gap-2"
+            >
+              <span>💬 Contacter sur WhatsApp</span>
+            </a>
+
+            <button
+              @click="showDetail = false"
+              class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-full cursor-pointer"
+            >
+              Fermer
             </button>
           </div>
         </div>
+
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: "admin", middleware: "admin" });
+import { ref, computed } from "vue";
+import { printOfficialInvoice } from "~/utils/invoice-generator";
 
-import { computed, ref, onMounted, watch } from "vue";
-import { useClipboard } from "@vueuse/core";
-
-// ✅ Typage des données
-interface User {
-  id: number;
-  email: string;
-}
-
-interface Order {
-  id: number;
-  ref: string;
-  total: number;
-  status: string;
-  createdAt: string;
-  user?: User;
-}
-
-// ✅ States
-const orders = ref<Order[]>([]);
-const showEdit = ref(false);
-const editOrder = ref<{ id: number | null; status: string; ref?: string }>({
-  id: null,
-  status: "",
-  ref: "",
+definePageMeta({
+  layout: "admin",
+  middleware: "admin",
 });
+
 const searchQuery = ref("");
-const page = ref(1);
-const pageSize = 10;
-const totalPages = ref(1);
 const showDetail = ref(false);
 const detailOrder = ref<any>(null);
+const isSendingEmail = ref(false);
 
-// Fonctions utilitaires pour le formatage
-const formatCurrency = (amount: number) => {
-  return (
-    new Intl.NumberFormat("fr-FR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(amount) + " CFA"
+const sendOrderEmailAdmin = async (order: any) => {
+  if (!order) return;
+  isSendingEmail.value = true;
+  try {
+    const res: any = await $fetch("/api/admin/send-order-email", {
+      method: "POST",
+      body: {
+        targetEmail: "zeynash1@gmail.com",
+        order: order,
+      },
+    });
+
+    if (res && res.success) {
+      alert("✅ E-mail envoyé avec succès à zeynash1@gmail.com !");
+    } else {
+      alert("⚠️ Service e-mail : " + (res?.error || "Erreur d'envoi. Veuillez vérifier la connexion SMTP."));
+    }
+  } catch (e: any) {
+    alert("❌ Erreur lors de l'envoi de l'e-mail: " + e.message);
+  } finally {
+    isSendingEmail.value = false;
+  }
+};
+
+const orders = ref([
+  {
+    id: 1,
+    ref: "ES-2026-8241",
+    customerName: "Modou Ndiaye",
+    phone: "+221 77 123 45 67",
+    email: "modou.ndiaye@gmail.com",
+    city: "Dakar (Sacré-Cœur)",
+    address: "Villa 1024, Sacré-Cœur 3",
+    total: 42200,
+    status: "shipped",
+    paymentMethod: "Orange Money / Wave",
+    createdAt: "2026-07-12 10:30",
+    configuratorChoice: {
+      level: "Primaire (CP - CM2)",
+      gender: "boy",
+      bag: true,
+      color: "Bleu Profond (#0F3D91)",
+      school: "École Éléphant Sacré-Cœur",
+    },
+    items: [
+      { name: "Pack Scolaire Élémentaire (CP / CE1)", quantity: 1, price: 25000 },
+      { name: "Sac à Dos Scolaire Ergonomique Navigateur", quantity: 1, price: 12500 },
+      { name: "Gourde Isotherme Inox 500ml", quantity: 1, price: 4700 },
+    ],
+  },
+  {
+    id: 2,
+    ref: "ES-2026-7130",
+    customerName: "Aïssatou Diop",
+    phone: "+221 78 987 65 43",
+    email: "aissatou.diop@gmail.com",
+    city: "Dakar (Plateau)",
+    address: "Avenue Léopold Sédar Senghor",
+    total: 14500,
+    status: "delivered",
+    paymentMethod: "PayTech / Card",
+    createdAt: "2026-07-03 14:15",
+    configuratorChoice: {
+      level: "Collège (6ème - 3ème)",
+      gender: "girl",
+      bag: false,
+      color: "Rose Poudré",
+      school: "Collège Sainte Marie de Hann",
+    },
+    items: [
+      { name: "Calculatrice scientifique FX-92 Casio", quantity: 1, price: 14500 },
+    ],
+  },
+  {
+    id: 3,
+    ref: "ES-2026-6014",
+    customerName: "Cheikh Seck",
+    phone: "+221 70 456 78 90",
+    email: "cheikh.seck@yahoo.fr",
+    city: "Thiès",
+    address: "Quartier Dixième",
+    total: 28900,
+    status: "delivered",
+    paymentMethod: "Paiement à la livraison",
+    createdAt: "2026-06-22 09:00",
+    configuratorChoice: {
+      level: "Lycée (2nde - Term.)",
+      gender: "boy",
+      bag: true,
+      color: "Noir Élégant",
+      school: "Lycée Malick Sy Thiès",
+    },
+    items: [
+      { name: "Pack Lycée Scientifique 2nde à Terminale", quantity: 1, price: 28900 },
+    ],
+  },
+  {
+    id: 4,
+    ref: "ES-2026-5509",
+    customerName: "Fatou Sow",
+    phone: "+221 76 555 44 33",
+    email: "fatou.sow@gmail.com",
+    city: "Saint-Louis",
+    address: "Île de Saint-Louis",
+    total: 35000,
+    status: "confirmed",
+    paymentMethod: "Wave Sénégal",
+    createdAt: "2026-06-18 16:45",
+    configuratorChoice: {
+      level: "Préscolaire (3-5 ans)",
+      gender: "girl",
+      bag: true,
+      color: "Jaune Soleil",
+      school: "Maternelle Saint-Louis",
+    },
+    items: [
+      { name: "Pack Préscolaire Maternelle Complet", quantity: 1, price: 16500 },
+      { name: "Sac à Dos Enfant Motif Jaune", quantity: 1, price: 12500 },
+      { name: "Kit Dessin & Peinture Gouache", quantity: 1, price: 6000 },
+    ],
+  },
+]);
+
+const filteredOrders = computed(() => {
+  if (!searchQuery.value.trim()) return orders.value;
+  const q = searchQuery.value.toLowerCase();
+  return orders.value.filter(
+    (o) =>
+      o.ref.toLowerCase().includes(q) ||
+      o.customerName.toLowerCase().includes(q) ||
+      o.phone.toLowerCase().includes(q) ||
+      o.city.toLowerCase().includes(q)
   );
-};
+});
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+const getPendingOrdersCount = () => orders.value.filter((o) => o.status === "pending").length;
+const getConfirmedOrdersCount = () => orders.value.filter((o) => ["confirmed", "shipped", "delivered"].includes(o.status)).length;
+const getTotalRevenue = () => orders.value.reduce((total, o) => total + o.total, 0);
 
-const getStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    pending: "En attente",
-    confirmed: "Confirmée",
-    shipped: "Expédiée",
-    delivered: "Livrée",
-    cancelled: "Annulée",
-  };
-  return labels[status] || status;
+const formatCurrency = (val: number) => {
+  return new Intl.NumberFormat("fr-FR").format(val) + " F CFA";
 };
 
 const getStatusBadgeClass = (status: string) => {
-  const classes: Record<string, string> = {
-    pending:
-      "px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full",
-    confirmed:
-      "px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full",
-    shipped:
-      "px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full",
-    delivered:
-      "px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full",
-    cancelled:
-      "px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full",
-  };
-  return (
-    classes[status] ||
-    "px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full"
-  );
-};
-
-// Fonctions de statistiques
-const getPendingOrdersCount = () => {
-  return orders.value.filter((order) => order.status === "pending").length;
-};
-
-const getConfirmedOrdersCount = () => {
-  return orders.value.filter((order) =>
-    ["confirmed", "shipped", "delivered"].includes(order.status)
-  ).length;
-};
-
-const getTotalRevenue = () => {
-  return orders.value
-    .filter((order) =>
-      ["confirmed", "shipped", "delivered"].includes(order.status)
-    )
-    .reduce((total, order) => total + order.total, 0);
-};
-
-// ✅ Récupérer les commandes
-async function fetchOrders() {
-  try {
-    orders.value = await $fetch<Order[]>("/api/admin/orders");
-  } catch (error) {
-    console.error("Erreur lors du chargement des commandes:", error);
+  switch (status) {
+    case "pending": return "bg-amber-50 text-amber-800 border-amber-200";
+    case "confirmed": return "bg-blue-50 text-[#0F3D91] border-blue-200";
+    case "shipped": return "bg-purple-50 text-purple-800 border-purple-200";
+    case "delivered": return "bg-emerald-50 text-emerald-800 border-emerald-200";
+    case "cancelled": return "bg-rose-50 text-rose-800 border-rose-200";
+    default: return "bg-slate-50 text-slate-800 border-slate-200";
   }
-}
-
-// Fonction pour actualiser les commandes
-const refreshOrders = async () => {
-  await fetchOrders();
 };
 
-// ✅ Modifier une commande
-function edit(order: Order) {
-  editOrder.value = {
-    id: order.id,
-    status: order.status,
-    ref: order.ref,
-  };
-  showEdit.value = true;
-}
+const openInspectionModal = (order: any) => {
+  detailOrder.value = order;
+  showDetail.value = true;
+};
 
-// ✅ Mettre à jour une commande
-async function updateOrder() {
-  if (!editOrder.value.id) return;
+const extractPackColor = (order: any) => {
+  if (!order) return "Bleu Profond";
+  if (order.configuratorChoice?.color) return order.configuratorChoice.color;
+  if (order.items) {
+    for (const item of order.items) {
+      const name = item.name || item.title || "";
+      const match = name.match(/\(([^)]+)\)/);
+      if (match && match[1] && !match[1].toLowerCase().includes("cp") && !match[1].toLowerCase().includes("ce")) {
+        return match[1];
+      }
+      if (item.description && item.description.includes("Couleur:")) {
+        const cMatch = item.description.match(/Couleur:\s*([^·\n]+)/);
+        if (cMatch) return cMatch[1].trim();
+      }
+    }
+  }
+  return "Bleu Profond (#0F3D91)";
+};
 
-  try {
-    await $fetch(`/api/admin/orders/${editOrder.value.id}`, {
-      method: "PUT",
-      body: { status: editOrder.value.status },
+const extractPackLevel = (order: any) => {
+  if (!order) return "Primaire (CP - CM2)";
+  if (order.configuratorChoice?.level) return order.configuratorChoice.level;
+  if (order.items) {
+    for (const item of order.items) {
+      const name = (item.name || item.title || "").toLowerCase();
+      if (name.includes("ce1") || name.includes("ce2") || name.includes("primaire")) return "Primaire (CP - CM2)";
+      if (name.includes("prescolaire") || name.includes("maternelle")) return "Préscolaire (3-5 ans)";
+      if (name.includes("college") || name.includes("6eme")) return "Collège (6ème - 3ème)";
+      if (name.includes("lycee") || name.includes("2nde")) return "Lycée (2nde - Terminale)";
+    }
+  }
+  return "Primaire (CP - CM2)";
+};
+
+const isBagIncluded = (order: any) => {
+  if (!order) return false;
+  if (order.configuratorChoice?.bag) return true;
+  if (order.items) {
+    return order.items.some((i: any) => {
+      const name = (i.name || i.title || "").toLowerCase();
+      return name.includes("sac") || name.includes("navigateur");
     });
-
-    showEdit.value = false;
-    editOrder.value = { id: null, status: "", ref: "" };
-    await fetchOrders();
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour de la commande:", error);
   }
-}
+  return false;
+};
 
-// ✅ Annuler l'édition
-function cancelEdit() {
-  showEdit.value = false;
-  editOrder.value = { id: null, status: "", ref: "" };
-}
+const getDetailedPackingList = (order: any) => {
+  if (!order) return [];
+  const list: { name: string; qty: string; note?: string }[] = [];
+  const color = extractPackColor(order);
 
-// ✅ Supprimer une commande
-async function deleteOrder(id: number) {
-  if (confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) {
-    try {
-      await $fetch(`/api/admin/orders/${id}`, {
-        method: "DELETE",
-      });
-      await fetchOrders();
-    } catch (error) {
-      console.error("Erreur lors de la suppression de la commande:", error);
+  if (!order.items || order.items.length === 0) {
+    list.push({ name: "Cahiers 48 pages (Clairefontaine)", qty: "10x", note: `Couleur : ${color}` });
+    list.push({ name: "Stylos Bille BIC (Lot de 4)", qty: "2x" });
+    list.push({ name: "Trousse scolaire 2 compartiments", qty: "1x", note: `Couleur : ${color}` });
+    return list;
+  }
+
+  order.items.forEach((item: any) => {
+    const itemName = item.name || item.title || "";
+    const lower = itemName.toLowerCase();
+    const q = item.quantity || 1;
+
+    if (lower.includes("pack") || lower.includes("sur-mesure")) {
+      if (lower.includes("primaire") || lower.includes("ce1") || lower.includes("ce2") || lower.includes("cp") || lower.includes("cm1") || lower.includes("cm2")) {
+        list.push({ name: `Cahiers 48 pages (Format Standard 24x32)`, qty: `${10 * q}x`, note: "Marque Clairefontaine / Oxford" });
+        list.push({ name: `Cahiers 100 pages grand format`, qty: `${4 * q}x`, note: "Couverture renforcée" });
+        list.push({ name: `Stylos Bille BIC (2 Bleus, 1 Rouge, 1 Vert)`, qty: `${4 * q}x` });
+        list.push({ name: `Crayons à papier HB2 avec gomme`, qty: `${2 * q}x` });
+        list.push({ name: `Règle graduée 30cm incassable`, qty: `${1 * q}x` });
+        list.push({ name: `Gomme blanche & Taille-crayon à réservoir`, qty: `${1 * q}x` });
+        list.push({ name: `Boîte de 12 Crayons de couleur`, qty: `${1 * q}x` });
+        list.push({ name: `Trousse scolaire 2 compartiments`, qty: `${1 * q}x`, note: `Couleur choisie : ${color}` });
+      } else if (lower.includes("prescolaire") || lower.includes("maternelle")) {
+        list.push({ name: `Cahiers de dessin & coloriage 48p`, qty: `${4 * q}x` });
+        list.push({ name: `Boîte de 12 feutres lavables pointe moyenne`, qty: `${1 * q}x` });
+        list.push({ name: `Boîte de crayons de cire ergocolor`, qty: `${1 * q}x` });
+        list.push({ name: `Bâtons de colle 21g & Ciseau sécurité`, qty: `${2 * q}x` });
+        list.push({ name: `Tablier de peinture imperméable`, qty: `${1 * q}x` });
+      } else if (lower.includes("college") || lower.includes("lycee")) {
+        list.push({ name: `Cahiers 200 pages grand format 24x32`, qty: `${10 * q}x` });
+        list.push({ name: `Calculatrice scientifique / graphique (Casio)`, qty: `${1 * q}x`, note: "Piles incluses" });
+        list.push({ name: `Kit de géométrie (Règle, Rapporteur, Équerre, Compas)`, qty: `${1 * q}x` });
+        list.push({ name: `Lot de 4 Stylos Bille & Surligneurs Fluo`, qty: `${6 * q}x` });
+        list.push({ name: `Classeur A4 à leviers + 200 poches transparentes`, qty: `${1 * q}x` });
+      } else {
+        list.push({ name: itemName, qty: `${q}x`, note: `Couleur : ${color}` });
+      }
+
+      if (order.configuratorChoice?.bag || isBagIncluded(order)) {
+        list.push({ name: `Sac à dos scolaire renforcé Navigateur`, qty: `${1 * q}x`, note: `Couleur choisie : ${color}` });
+      }
+    } else {
+      list.push({ name: itemName, qty: `${q}x`, note: item.description || `Prix: ${item.price} F CFA` });
+    }
+  });
+
+  return list;
+};
+
+const updateOrderStatus = (order: any) => {
+  alert(`Le statut de la commande #${order.ref} a été mis à jour.`);
+};
+
+const deleteOrder = (ref: string) => {
+  if (confirm(`Voulez-vous vraiment supprimer la commande #${ref} ?`)) {
+    orders.value = orders.value.filter((o) => o.ref !== ref);
+    alert(`Commande #${ref} supprimée.`);
+  }
+};
+
+const exportOrdersCSV = () => {
+  let csvContent = "data:text/csv;charset=utf-8,Reference,Client,Telephone,Ville,Montant_FCFA,Statut,Date\n";
+  orders.value.forEach((o) => {
+    csvContent += `"${o.ref}","${o.customerName}","${o.phone}","${o.city}",${o.total},"${o.status}","${o.createdAt}"\n`;
+  });
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `edushop_commandes_${new Date().toISOString().split("T")[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const downloadOrderPDF = (order: any) => {
+  printOfficialInvoice(order);
+};
+
+onMounted(() => {
+  fetchOrders();
+});
+
+function fetchOrders() {
+  if (process.client) {
+    const savedUserOrders = localStorage.getItem("user_orders");
+    if (savedUserOrders) {
+      try {
+        const parsed = JSON.parse(savedUserOrders);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Fusionner les vraies commandes en haut du tableau
+          const realOrders = parsed.map((o: any, idx: number) => ({
+            id: `real-${idx}`,
+            ref: o.orderRef || o.ref || `REF-${idx}`,
+            customerName: o.customerName || o.name || "Client EduShop",
+            phone: o.phone || o.customerPhone || "+221 77 000 00 00",
+            email: o.email || o.customerEmail || "client@edushop.sn",
+            city: o.city || "Dakar",
+            address: o.address || "Dakar",
+            deliveryType: o.deliveryType || "home",
+            total: Number(o.total || o.amount || 0),
+            status: o.status || "confirmed",
+            paymentMethod: o.paymentMethod || "Wave / Orange Money",
+            createdAt: o.createdAt || o.date || new Date().toLocaleDateString("fr-FR"),
+            configuratorChoice: o.configuratorChoice || undefined,
+            items: o.items || [],
+          }));
+
+          // Conserver également les démos si nécessaire mais mettre les vraies commandes en premier
+          const existingRefs = new Set(realOrders.map((r: any) => r.ref));
+          const nonDuplicateDemos = orders.value.filter((d: any) => !existingRefs.has(d.ref));
+          orders.value = [...realOrders, ...nonDuplicateDemos];
+        }
+      } catch (e) {
+        console.error("Erreur chargement commandes admin:", e);
+      }
     }
   }
 }
 
-// Pagination et recherche
-const paginatedOrders = computed(() => {
-  let filtered = orders.value;
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (order) =>
-        (order.ref && order.ref.toLowerCase().includes(q)) ||
-        (order.user?.email && order.user.email.toLowerCase().includes(q)) ||
-        (order.status && getStatusLabel(order.status).toLowerCase().includes(q))
-    );
-  }
-  totalPages.value = Math.max(1, Math.ceil(filtered.length / pageSize));
-  return filtered.slice((page.value - 1) * pageSize, page.value * pageSize);
+useHead({
+  title: "Gestion des Commandes - Back-Office EduShop",
 });
-const nextPage = () => {
-  if (page.value < totalPages.value) page.value++;
-};
-const prevPage = () => {
-  if (page.value > 1) page.value--;
-};
-watch([orders, searchQuery], () => {
-  page.value = 1;
-});
-
-// Charger les commandes au montage
-onMounted(fetchOrders);
-
-// Détails de la commande
-const copyOrderId = (id: any) => {
-  useClipboard().copy(id + "");
-  alert("ID de la commande copié !");
-};
-const downloadOrderPDF = (order: any) => {
-  alert("Fonction de téléchargement PDF à implémenter.");
-};
-const showOrderDetail = (order: any) => {
-  detailOrder.value = order;
-  showDetail.value = true;
-};
 </script>

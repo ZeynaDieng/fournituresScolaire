@@ -3,34 +3,41 @@
 
 import { getAirtableBase } from "~/utils/airtable-base";
 
+import { senegalesePacks } from "~/data/products-senegal";
+
 // Données de fallback au cas où Airtable ne fonctionne pas
-const fallbackPacksData = [
-  {
-    id: "pack-cp",
-    name: "Pack Essentiel CP",
-    level: "CP",
-    price: 16500,
-    originalPrice: 19000,
-    image:
-      "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
-    description:
-      "Le nécessaire pour bien démarrer le Cours Préparatoire (CI/CP).",
-    contents: [
-      "5 Cahiers 96 pages (17x22cm)",
-      "2 Cahiers de dessin 48 pages",
-      "1 Ardoise Velleda + 2 feutres + 1 chiffon",
-      "1 Trousse garnie (2 stylos bleus, 1 stylo vert, 1 crayon noir, 1 gomme, 1 taille-crayon)",
-      "1 Boîte de 12 crayons de couleur",
-      "1 Règle plate 20cm",
-      "5 Protège-cahiers (couleurs assorties)",
-      "1 Paquet de 100 étiquettes",
-    ],
-    isPopular: true,
+const fallbackPacksData: any[] = [
+  ...senegalesePacks.primaire.map((p: any, i: number) => ({
+    id: `fb-pri-${i}`,
+    name: p.name,
+    level: p.level,
+    price: p.price,
+    originalPrice: p.originalPrice,
+    image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+    description: `Pack complet pour le niveau ${p.level}.`,
+    contents: p.contents,
+    isPopular: p.isPopular,
     inStock: true,
-    isPromotion: true,
-    promotionEndDate: new Date("2024-12-31"),
-  },
+    isPromotion: !!p.originalPrice,
+    promotionEndDate: new Date("2025-12-31"),
+  })),
+  ...senegalesePacks.college.map((p: any, i: number) => ({
+    id: `fb-col-${i}`,
+    name: p.name,
+    level: p.level,
+    price: p.price,
+    originalPrice: p.originalPrice,
+    image: "https://i.pinimg.com/1200x/1d/c1/de/1dc1de98d4ae9813ed13b1c17dc3043e.jpg",
+    description: `Pack complet pour le niveau ${p.level}.`,
+    contents: p.contents,
+    isPopular: p.isPopular,
+    inStock: true,
+    isPromotion: !!p.originalPrice,
+    promotionEndDate: new Date("2025-12-31"),
+  })),
 ];
+
+
 
 function transformAirtableToPublicFormat(
   airtableRecord: any,
@@ -60,50 +67,45 @@ function transformAirtableToPublicFormat(
   };
 }
 
+let memoryPacksCache: any = null;
+
 export default defineEventHandler(async (event) => {
+  if (memoryPacksCache) {
+    return memoryPacksCache;
+  }
+
   try {
-    console.log("📦 API publique des packs - tentative Airtable");
+    const base = getAirtableBase();
+    const records = await base(process.env.AIRTABLE_PACKS_TABLE!)
+      .select()
+      .all();
 
-    // Essayer d'abord de récupérer depuis Airtable
-    try {
-      const base = getAirtableBase();
-      const records = await base(process.env.AIRTABLE_PACKS_TABLE!)
-        .select()
-        .all();
-
-      console.log(`✅ ${records.length} packs récupérés depuis Airtable`);
-
+    if (records && records.length > 0) {
       const transformedPacks = records.map((record) =>
         transformAirtableToPublicFormat(record.fields, record.id)
       );
 
-      return {
+      memoryPacksCache = {
         success: true,
         data: transformedPacks,
         source: "airtable",
       };
-    } catch (airtableError: any) {
-      console.warn(
-        "⚠️ Erreur Airtable, utilisation des données de fallback:",
-        airtableError.message
-      );
-
-      // En cas d'erreur Airtable, utiliser les données de fallback
-      return {
-        success: true,
-        data: fallbackPacksData,
-        source: "fallback",
-        warning: "Données de fallback utilisées - Airtable indisponible",
-      };
+      return memoryPacksCache;
     }
-  } catch (error: any) {
-    console.error("❌ Erreur générale API packs:", error);
-
-    return {
-      success: false,
-      error: error.message || "Erreur inconnue",
+  } catch (airtableError: any) {
+    // En cas d'erreur ou 429 Airtable, utiliser les données de fallback en cache mémoire
+    memoryPacksCache = {
+      success: true,
       data: fallbackPacksData,
       source: "fallback",
     };
+    return memoryPacksCache;
   }
+
+  memoryPacksCache = {
+    success: true,
+    data: fallbackPacksData,
+    source: "fallback",
+  };
+  return memoryPacksCache;
 });

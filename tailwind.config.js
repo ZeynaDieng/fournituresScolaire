@@ -52,8 +52,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["Poppins", ...defaultTheme.fontFamily.sans],
-        heading: ["Poppins", ...defaultTheme.fontFamily.sans],
+        sans: ["Plus Jakarta Sans", "Inter", ...defaultTheme.fontFamily.sans],
+        heading: ["Montserrat", "Plus Jakarta Sans", ...defaultTheme.fontFamily.sans],
+        display: ["Montserrat", "Plus Jakarta Sans", ...defaultTheme.fontFamily.sans],
       },
       spacing: {
         18: "4.5rem",

@@ -1,21 +1,9 @@
-// /server/api/admin/system-status.get.ts
 import { getAllOrders } from "../../../utils/local-storage";
-import { getMasterExcelPath } from "../../../utils/excel-master";
-import { promises as fs } from "fs";
 
 export default defineEventHandler(async (event) => {
   try {
     // Vérifier le stockage local
     const orders = await getAllOrders();
-
-    // Vérifier le fichier Excel
-    let excelExists = false;
-    try {
-      await fs.access(getMasterExcelPath());
-      excelExists = true;
-    } catch {
-      excelExists = false;
-    }
 
     // Statistiques des commandes
     const stats = {
@@ -35,9 +23,9 @@ export default defineEventHandler(async (event) => {
           ordersCount: orders.length,
         },
         excel: {
-          configured: excelExists,
-          status: excelExists ? "operational" : "missing",
-          filePath: getMasterExcelPath(),
+          configured: false,
+          status: "disabled",
+          filePath: null,
         },
       },
       stats,
