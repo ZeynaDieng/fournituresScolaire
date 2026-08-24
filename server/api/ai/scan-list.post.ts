@@ -179,8 +179,6 @@ function generateFallbackExtraction() {
         confidenceScore: 88,
         suggestedCategory: 'trousse',
       },
-        suggestedCategory: 'trousse',
-      },
       {
         rawText: '1 Boîte de 12 crayons de couleur',
         normalizedName: 'Boîte de 12 Crayons de Couleur Maped',
