@@ -193,6 +193,28 @@ export async function sendWhatsAppNotifications(
   return { client, admin };
 }
 
+// Envoyer une notification WhatsApp de confirmation pour une demande de liste scolaire (SchoolListRequest)
+export async function sendSchoolListConfirmationWhatsApp(
+  request: { id: string; customerName?: string; customerPhone?: string; availableTotal: number; exactMatchesCount: number; equivalentMatchesCount: number; sourcingItemsCount: number }
+): Promise<boolean> {
+  const phone = request.customerPhone || WHATSAPP_CONFIG.businessNumber;
+  const name = request.customerName || "Parent d'élève";
+
+  const message =
+    `📸 *ASSISTANT IA EDUSHOP - LISTE SCOLAIRE REÇUE*\n\n` +
+    `Bonjour ${name},\n\n` +
+    `Nous avons bien reçu l'analyse de votre liste scolaire !\n` +
+    `📋 *Référence :* ${request.id}\n\n` +
+    `✅ *Articles disponibles immédiatement :* ${request.exactMatchesCount + request.equivalentMatchesCount} article(s)\n` +
+    `🔍 *Articles en cours de recherche fournisseur :* ${request.sourcingItemsCount} article(s)\n` +
+    `💰 *Montant des articles disponibles :* ${request.availableTotal.toLocaleString()} FCFA\n\n` +
+    `✅ Les articles disponibles sont prêts à être commandés immédiatement.\n` +
+    `🔍 Les autres articles sont déjà en cours de recherche auprès de nos fournisseurs.\n\n` +
+    `Merci de faire confiance à EduShop ! 📚`;
+
+  return await sendWhatsAppMessage(phone, message);
+}
+
 // Alias pour compatibilité
 export const sendInvoiceService = sendInvoiceToWhatsApp;
 export const sendInvoiceReal = sendInvoiceToWhatsApp;

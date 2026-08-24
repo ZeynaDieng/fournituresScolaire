@@ -255,6 +255,17 @@ async function submitOrder() {
       }
     }
 
+    let activeSchoolListRef: string | undefined = undefined;
+    if (process.client) {
+      const savedSLR = localStorage.getItem("active_school_list_request");
+      if (savedSLR) {
+        try {
+          const parsedSLR = JSON.parse(savedSLR);
+          activeSchoolListRef = parsedSLR.id;
+        } catch (e) {}
+      }
+    }
+
     const orderPayload = {
       customerName: `${form.value.firstName} ${form.value.lastName}`.trim(),
       customerPhone: form.value.phone,
@@ -267,6 +278,7 @@ async function submitOrder() {
       total: totalPrice.value,
       paymentMethod: selectedPayment.value,
       configuratorChoice: activeConfigurator,
+      schoolListRef: activeSchoolListRef,
       orderRef: `REF-${Date.now().toString().slice(-6)}`,
     };
 
@@ -274,7 +286,28 @@ async function submitOrder() {
       // 1. Sauvegarde dernière commande pour facture automatique
       localStorage.setItem("last_order", JSON.stringify(orderPayload));
 
-      // 2. Envoi automatique par mail de chaque commande en détail à zeynash1@gmail.com
+      // 2. Notification WhatsApp automatique pour la demande de liste scolaire si présente
+      if (activeSchoolListRef) {
+        const savedSLRStr = localStorage.getItem("active_school_list_request");
+        if (savedSLRStr) {
+          try {
+            const slrObj = JSON.parse(savedSLRStr);
+            slrObj.customerName = orderPayload.customerName;
+            slrObj.customerPhone = orderPayload.customerPhone;
+            slrObj.orderRef = orderPayload.orderRef;
+
+            $fetch("/api/orders/whatsapp", {
+              method: "POST",
+              body: {
+                type: "school_list_confirmation",
+                schoolListRequest: slrObj,
+              },
+            }).catch((err) => console.error("Erreur notification WhatsApp liste scolaire:", err));
+          } catch (e) {}
+        }
+      }
+
+      // 3. Envoi automatique par mail de chaque commande en détail à zeynash1@gmail.com
       $fetch("/api/admin/send-order-email", {
         method: "POST",
         body: {

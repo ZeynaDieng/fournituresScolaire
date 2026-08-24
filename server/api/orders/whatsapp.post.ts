@@ -13,7 +13,15 @@ export default defineEventHandler(async (event) => {
 
     console.log("📱 Nouvelle commande WhatsApp:", body);
 
-    // Validation des données
+    // Traitement spécifique pour les demandes de listes scolaires
+    if (body.type === "school_list_confirmation" && body.schoolListRequest) {
+      const slr = body.schoolListRequest;
+      const { sendSchoolListConfirmationWhatsApp } = await import("../../../utils/whatsapp");
+      const sent = await sendSchoolListConfirmationWhatsApp(slr);
+      return { success: true, message: "Notification WhatsApp envoyée pour la liste scolaire", sent, ref: slr.id };
+    }
+
+    // Validation des données pour commande standard
     const { customer, items, totalAmount, phoneNumber } = body;
 
     if (!customer?.name || !customer?.phone || !items || !totalAmount) {

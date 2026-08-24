@@ -154,6 +154,26 @@
           </button>
         </div>
 
+        <!-- Section 0: Demande de Liste Scolaire IA (Si associée à la commande) -->
+        <div v-if="detailOrder.schoolListRef" class="bg-gradient-to-r from-[#0F3D91] to-[#0B132B] p-5 rounded-2xl text-white space-y-3 shadow-md">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="bg-[#F4C542] text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                📸 SCANNER IA
+              </span>
+              <span class="font-display font-extrabold text-sm text-[#F4C542]">
+                Référence : {{ detailOrder.schoolListRef }}
+              </span>
+            </div>
+            <span class="text-xs font-extrabold bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-3 py-1 rounded-full">
+              Traitement IA prêt
+            </span>
+          </div>
+          <p class="text-xs text-slate-200 font-medium">
+            Cette commande a été générée via l'assistant IA de scan de liste scolaire. Seuls les articles disponibles ont été facturés.
+          </p>
+        </div>
+
         <!-- Section 1: Parcours & Choix de l'Assistant Rentrée (Du commencement à la fin) -->
         <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-200/60 space-y-3">
           <h4 class="font-display text-sm font-extrabold text-[#0F3D91] flex items-center justify-between">

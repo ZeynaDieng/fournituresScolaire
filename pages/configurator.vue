@@ -22,7 +22,149 @@
 
     <!-- Conteneur de l'assistant -->
     <section class="container-edu py-10 md:py-16 max-w-4xl">
-      <div class="eyebrow mb-3">Étape {{ currentStep + 1 }} — {{ steps[currentStep] }}</div>
+      <ClientOnly>
+        <!-- 📸 Bannières Scanner IA de Liste Scolaire (Placée en haut de l'assistant) -->
+      <div class="bg-gradient-to-br from-[#0F3D91] to-[#0B132B] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-10 relative overflow-hidden">
+        <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-[#F4C542]/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="relative z-10 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="bg-[#F4C542] text-slate-950 font-extrabold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full">
+              NOUVEAU · ASSISTANT IA
+            </span>
+            <span v-if="scannedRequest" class="bg-emerald-500/20 text-emerald-300 font-extrabold text-xs px-3 py-1 rounded-full border border-emerald-400/30">
+              Réf : {{ scannedRequest.id }}
+            </span>
+          </div>
+
+          <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+            📸 Photographiez votre <span class="text-[#F4C542]">liste scolaire</span>
+          </h2>
+          <p class="text-slate-200 text-xs sm:text-sm font-medium max-w-xl leading-relaxed">
+            Importez la photo ou le PDF de votre liste de fournitures. L'assistant IA analyse le document, associe les produits disponibles et prépare votre commande.
+          </p>
+
+          <!-- Zone d'upload / Analyse -->
+          <div v-if="!isScanning && !scannedRequest" class="pt-2">
+            <label class="cursor-pointer inline-flex items-center gap-3 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs sm:text-sm px-6 py-3.5 rounded-full shadow-md hover:scale-105 transition-all">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Importer ou prendre en photo ma liste (JPG, PNG, PDF)</span>
+              <input type="file" accept="image/*,application/pdf" class="hidden" @change="handleFileUpload" />
+            </label>
+          </div>
+
+          <!-- Spinner d'analyse IA -->
+          <div v-if="isScanning" class="py-6 flex items-center gap-4 bg-white/10 p-5 rounded-2xl border border-white/15">
+            <div class="w-8 h-8 border-3 border-white/30 border-t-[#F4C542] rounded-full animate-spin"></div>
+            <div>
+              <p class="font-bold text-sm text-white">Analyse de la liste par l'assistant IA...</p>
+              <p class="text-xs text-slate-300">Matching 3 niveaux avec le catalogue EduShop</p>
+            </div>
+          </div>
+
+          <!-- Résultat de l'analyse IA -->
+          <div v-if="scannedRequest && !isScanning" class="pt-4 space-y-6 bg-white text-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xl">
+            <!-- Badge score de confiance qualitatif global -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <span class="text-[11px] uppercase tracking-widest text-slate-400 font-extrabold block">RÉFÉRENCE UNIQUE</span>
+                <span class="font-display font-extrabold text-xl text-[#0F3D91]">{{ scannedRequest.id }}</span>
+              </div>
+              <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 text-xs font-extrabold px-4 py-2 rounded-full border border-emerald-200">
+                <span>✅ Liste analysée — Confiance {{ scannedRequest.overallConfidenceLevel }}</span>
+              </div>
+            </div>
+
+            <!-- Messages d'information recommandés -->
+            <div class="space-y-2 text-xs sm:text-sm font-semibold">
+              <p class="text-emerald-800 flex items-center gap-2">
+                <span>✅</span>
+                <span>Les articles disponibles sont prêts à être commandés immédiatement.</span>
+              </p>
+              <p class="text-amber-800 flex items-center gap-2">
+                <span>🔍</span>
+                <span>Les autres articles sont déjà en cours de recherche auprès de nos fournisseurs.</span>
+              </p>
+            </div>
+
+            <!-- Liste des articles extraits (Matchs + Sourcing) -->
+            <div class="space-y-3 pt-2">
+              <h4 class="font-display text-sm font-extrabold text-slate-900 uppercase tracking-wider">
+                Articles détectés dans votre liste ({{ scannedRequest.extractedItems.length }})
+              </h4>
+
+              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-80 overflow-y-auto">
+                <div
+                  v-for="item in scannedRequest.extractedItems"
+                  :key="item.id"
+                  class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white hover:bg-slate-50 transition-colors"
+                >
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-bold text-slate-900 text-sm">
+                        {{ item.quantity }}x {{ item.normalizedName }}
+                      </span>
+
+                      <!-- Badge affiché uniquement pour les articles en cours de recherche fournisseur -->
+                      <span
+                        v-if="item.matchType === 'sourcing'"
+                        class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full"
+                      >
+                        🔍 En cours de recherche auprès de nos fournisseurs
+                      </span>
+                    </div>
+
+                    <p v-if="item.matchedProductName" class="text-xs text-slate-500 font-medium">
+                      Article retenu : {{ item.matchedProductName }}
+                    </p>
+                  </div>
+
+                  <div class="text-right shrink-0">
+                    <span v-if="item.matchedProductPrice" class="font-extrabold text-sm text-[#0F3D91]">
+                      {{ useFormatter().formatPrice(item.matchedProductPrice * item.quantity) }}
+                    </span>
+                    <span v-else class="text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full inline-block">
+                      Recherche fournisseur
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer & Bouton de commande des articles disponibles -->
+            <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <p class="text-xs uppercase tracking-widest text-slate-400 font-extrabold">Montant disponible maintenant</p>
+                <p class="font-display text-3xl font-extrabold text-[#0F3D91]">
+                  {{ useFormatter().formatPrice(scannedRequest.availableTotal) }}
+                </p>
+              </div>
+
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button
+                  @click="scannedRequest = null"
+                  class="text-xs font-bold text-slate-500 hover:text-slate-900 px-4 py-3 border border-slate-200 rounded-full"
+                >
+                  Scanner une autre photo
+                </button>
+
+                <button
+                  @click="orderScannedAvailableItems"
+                  class="bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-sm px-8 py-3.5 rounded-full shadow-md hover:scale-105 transition-all flex-1 sm:flex-initial text-center"
+                >
+                  🛒 Commander les articles disponibles ({{ useFormatter().formatPrice(scannedRequest.availableTotal) }}) →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </ClientOnly>
+
+      <div class="eyebrow mb-3">Ou préparez votre pack manuellement — Étape {{ currentStep + 1 }} sur {{ steps.length }}</div>
 
       <!-- Étape 0 : Niveau -->
       <div v-if="currentStep === 0" class="space-y-6 animate-fade-in">
@@ -303,12 +445,74 @@ import { useCartStore } from "~/stores/cart";
 import { useAirtableStore } from "~/stores/airtable";
 import { useProductsStore } from "~/stores/products";
 import { useFormatter } from "~/composables/useFormatter";
+import { saveSchoolListRequest, type SchoolListRequest } from "~/utils/school-list-service";
 
 const route = useRoute();
 const router = useRouter();
 const cartStore = useCartStore();
 const airtableStore = useAirtableStore();
 const productsStore = useProductsStore();
+
+const isScanning = ref(false);
+const scannedRequest = ref<SchoolListRequest | null>(null);
+
+async function handleFileUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+
+  const file = input.files[0];
+  isScanning.value = true;
+
+  try {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target?.result as string;
+
+      const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
+        method: "POST",
+        body: { image: base64, fileName: file.name },
+      });
+
+      if (res && res.success && res.data) {
+        scannedRequest.value = res.data;
+        saveSchoolListRequest(res.data);
+      } else {
+        alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");
+      }
+      isScanning.value = false;
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    console.error("Erreur d'upload de la liste:", err);
+    alert("Impossible de lire le fichier.");
+    isScanning.value = false;
+  }
+}
+
+function orderScannedAvailableItems() {
+  if (!scannedRequest.value) return;
+
+  const req = scannedRequest.value;
+  saveSchoolListRequest(req);
+
+  req.extractedItems.forEach((item) => {
+    if ((item.matchType === 'exact' || item.matchType === 'equivalent') && item.matchedProductId && item.matchedProductPrice) {
+      cartStore.addItem(
+        {
+          id: item.matchedProductId,
+          name: item.matchedProductName || item.normalizedName,
+          price: item.matchedProductPrice,
+          image: item.matchedProductImage || "https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop",
+          type: "product",
+          schoolListRef: req.id,
+        },
+        item.quantity || 1
+      );
+    }
+  });
+
+  router.push("/cart");
+}
 
 onMounted(async () => {
   if (productsStore.products.length === 0) {
