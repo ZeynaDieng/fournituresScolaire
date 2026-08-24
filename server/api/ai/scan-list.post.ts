@@ -49,15 +49,15 @@ export default defineEventHandler(async (event) => {
 
     // 3. Charger le catalogue local / Airtable pour le matching à 3 niveaux
     const catalogueProducts = [
-      { id: 'prod-cahier-100', name: 'Paquet de Cahiers 100 pages (Lot de 4)', price: 2400, category: 'cahier', keywords: ['cahier', '100p', '100 pages', 'paquet'], image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop' },
-      { id: 'prod-tp-100', name: 'Cahier de Travaux Pratiques Grand Format 100p', price: 1200, category: 'cahier', keywords: ['travaux pratiques', 'tp', '100 pages', 'grand format'], image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&fit=crop' },
-      { id: 'prod-copies-doubles', name: 'Paquet de Copies Doubles Petit Modèle (PM)', price: 1500, category: 'papier', keywords: ['copie', 'copies', 'doubles', 'pm', 'petit modèle'], image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=200&fit=crop' },
-      { id: 'prod-cahier-dessin', name: 'Cahier de Dessin Petit Modèle (PM)', price: 800, category: 'dessin', keywords: ['dessin', 'cahier de dessin', 'pm'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
-      { id: 'prod-tracer-règle', name: 'Matériels / Kit de Géométrie complet (Règle, Équerre, Rapporteur)', price: 2200, category: 'geometrie', keywords: ['géométrie', 'matériels', 'matériel', 'règle', 'équerre', 'rapporteur'], image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=200&fit=crop' },
+      { id: 'prod-cahier-100', name: 'Paquet de Cahiers 100 pages (Lot de 4)', price: 2400, category: 'cahier', keywords: ['cahier 100', 'cahiers 100', '100p', '100 pages'], image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop' },
+      { id: 'prod-tp-100', name: 'Cahier de Travaux Pratiques Grand Format 100p', price: 1200, category: 'cahier', keywords: ['travaux pratiques', 'tp 100', 'tp grand format', 'cahier tp'], image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&fit=crop' },
+      { id: 'prod-copies-doubles', name: 'Paquet de Copies Doubles Petit Modèle (PM)', price: 1500, category: 'papier', keywords: ['copie double', 'copies doubles', 'copie pm', 'copies pm'], image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=200&fit=crop' },
+      { id: 'prod-cahier-dessin', name: 'Cahier de Dessin Petit Modèle (PM)', price: 800, category: 'dessin', keywords: ['dessin pm', 'cahier de dessin', 'cahier dessin'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
+      { id: 'prod-tracer-règle', name: 'Matériels / Kit de Géométrie complet (Règle, Équerre, Rapporteur)', price: 2200, category: 'geometrie', keywords: ['géométrie', 'matériels de géométrie', 'matériel de géométrie', 'règle', 'équerre', 'rapporteur'], image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=200&fit=crop' },
       { id: 'prod-stylo-bic', name: 'Boîte de 10 Stylos Bille Bleus Bic Cristal', price: 1500, category: 'stylo', keywords: ['stylo', 'bleu', 'bic', 'bille'], image: 'https://images.unsplash.com/photo-1585336261026-6757c5bca618?w=200&fit=crop' },
       { id: 'prod-trousse-double', name: 'Trousse Scolaire Double Compartiment', price: 3500, category: 'trousse', keywords: ['trousse', 'sac', 'étui'], image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=200&fit=crop' },
       { id: 'prod-crayons-couleur', name: 'Boîte de 12 Crayons de Couleur Maped', price: 1800, category: 'crayon', keywords: ['crayons', 'couleur', 'maped'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
-      { id: 'prod-gourde-isotherme', name: 'Gourde Isotherme Écolier 500ml', price: 4500, category: 'gourde', keywords: ['gourde', 'bouteille', 'eau'], image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&fit=crop' },
+      { id: 'prod-gourde-isotherme', name: 'Gourde Isotherme Écolier 500ml', price: 4500, category: 'gourde', keywords: ['gourde', 'bouteille d\'eau', 'gourde isotherme'], image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&fit=crop' },
     ];
 
     // 4. Traiter chaque article extrait pour le matching à 3 niveaux
