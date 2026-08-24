@@ -108,8 +108,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    geminiApiKey: process.env.GEMINI_API_KEY || "",
-    openaiApiKey: process.env.OPENAI_API_KEY || "",
+    geminiApiKey: process.env.GEMINI_API_KEY,
+    openaiApiKey: process.env.OPENAI_API_KEY,
     airtableApiKey: process.env.AIRTABLE_API_KEY,
     airtableBaseId: process.env.AIRTABLE_BASE_ID,
     paytech: {

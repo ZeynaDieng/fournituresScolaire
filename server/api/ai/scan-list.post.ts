@@ -25,8 +25,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const config = useRuntimeConfig();
-    const openAiKey = config.openaiApiKey || process.env.OPENAI_API_KEY;
-    const geminiKey = config.geminiApiKey || process.env.GEMINI_API_KEY;
+    const openAiKey = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.NUXT_GEMINI_API_KEY || config.geminiApiKey;
 
     let extractedData: {
       overallConfidenceScore: number;
