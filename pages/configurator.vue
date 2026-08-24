@@ -511,9 +511,16 @@ async function handleFileUpload(event: Event) {
 
   const file = input.files[0];
   isScanning.value = true;
+  scannedRequest.value = null;
 
   try {
     const base64 = await compressImage(file);
+    if (!base64) {
+      alert("Le fichier choisi est vide ou illisible.");
+      isScanning.value = false;
+      input.value = "";
+      return;
+    }
 
     const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
       method: "POST",
@@ -526,11 +533,12 @@ async function handleFileUpload(event: Event) {
     } else {
       alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error("Erreur d'upload de la liste:", err);
-    alert("Impossible de lire le fichier.");
+    alert(err?.data?.message || err?.message || "Impossible d'analyser le fichier. Réessayez avec un fichier JPG ou PNG.");
   } finally {
     isScanning.value = false;
+    input.value = "";
   }
 }
 
