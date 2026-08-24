@@ -47,18 +47,51 @@ export default defineEventHandler(async (event) => {
       extractedData = generateFallbackExtraction();
     }
 
-    // 3. Charger le catalogue local / Airtable pour le matching à 3 niveaux
-    const catalogueProducts = [
-      { id: 'prod-cahier-100', name: 'Paquet de Cahiers 100 pages (Lot de 4)', price: 2400, category: 'cahier', keywords: ['cahier 100', 'cahiers 100', '100p', '100 pages'], image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop' },
-      { id: 'prod-tp-100', name: 'Cahier de Travaux Pratiques Grand Format 100p', price: 1200, category: 'cahier', keywords: ['travaux pratiques', 'tp 100', 'tp grand format', 'cahier tp'], image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&fit=crop' },
-      { id: 'prod-copies-doubles', name: 'Paquet de Copies Doubles Petit Modèle (PM)', price: 1500, category: 'papier', keywords: ['copie double', 'copies doubles', 'copie pm', 'copies pm'], image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=200&fit=crop' },
-      { id: 'prod-cahier-dessin', name: 'Cahier de Dessin Petit Modèle (PM)', price: 800, category: 'dessin', keywords: ['dessin pm', 'cahier de dessin', 'cahier dessin'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
-      { id: 'prod-tracer-règle', name: 'Matériels / Kit de Géométrie complet (Règle, Équerre, Rapporteur)', price: 2200, category: 'geometrie', keywords: ['géométrie', 'matériels de géométrie', 'matériel de géométrie', 'règle', 'équerre', 'rapporteur'], image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=200&fit=crop' },
-      { id: 'prod-stylo-bic', name: 'Boîte de 10 Stylos Bille Bleus Bic Cristal', price: 1500, category: 'stylo', keywords: ['stylo', 'bleu', 'bic', 'bille'], image: 'https://images.unsplash.com/photo-1585336261026-6757c5bca618?w=200&fit=crop' },
-      { id: 'prod-trousse-double', name: 'Trousse Scolaire Double Compartiment', price: 3500, category: 'trousse', keywords: ['trousse', 'sac', 'étui'], image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=200&fit=crop' },
-      { id: 'prod-crayons-couleur', name: 'Boîte de 12 Crayons de Couleur Maped', price: 1800, category: 'crayon', keywords: ['crayons', 'couleur', 'maped'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
-      { id: 'prod-gourde-isotherme', name: 'Gourde Isotherme Écolier 500ml', price: 4500, category: 'gourde', keywords: ['gourde', 'bouteille d\'eau', 'gourde isotherme'], image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&fit=crop' },
-    ];
+    // 3. Charger le catalogue RÉEL d'EduShop depuis Airtable ou la liste exacte des 21 produits du site
+    let catalogueProducts: Array<{ id: string; name: string; price: number; category: string; keywords: string[]; image: string }> = [];
+
+    try {
+      const { getAirtableBase } = await import('~/utils/airtable-base');
+      const base = getAirtableBase();
+      const tableId = process.env.AIRTABLE_PRODUCTS_TABLE;
+      if (base && tableId) {
+        const records = await base(tableId).select().all();
+        if (records && records.length > 0) {
+          catalogueProducts = records.map((r: any) => {
+            const name = r.fields.Name || r.fields.name || 'Produit';
+            const price = Number(r.fields.Price || r.fields.price || 0);
+            const category = r.fields.Category || r.fields.category || '';
+            const image = typeof r.fields.Image === 'string' ? r.fields.Image : (r.fields.Image?.[0]?.url || 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop');
+            return {
+              id: r.id,
+              name,
+              price,
+              category,
+              keywords: name.toLowerCase().split(/\s+/).filter((w: string) => w.length > 2),
+              image,
+            };
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Airtable non accessible, utilisation du catalogue exact des 21 produits EduShop.');
+    }
+
+    if (catalogueProducts.length === 0) {
+      catalogueProducts = [
+        { id: 'cahier-32p', name: 'Cahier 32 pages', price: 300, category: 'Cahiers', keywords: ['cahier 32', '32 pages', '32p'], image: 'https://i.pinimg.com/1200x/a9/ee/92/a9ee9212b025b90fd7d2a14529c7c6c5.jpg' },
+        { id: 'cahier-48p', name: 'Cahier 48 pages', price: 350, category: 'Cahiers', keywords: ['cahier 48', '48 pages', '48p'], image: 'https://i.pinimg.com/1200x/e1/8e/e6/e18ee65268ca73af5a35f4f2ade2c27d.jpg' },
+        { id: 'cahier-64p', name: 'Cahier 64 pages', price: 400, category: 'Cahiers', keywords: ['cahier 64', '64 pages', '64p'], image: 'https://i.pinimg.com/1200x/e1/8e/e6/e18ee65268ca73af5a35f4f2ade2c27d.jpg' },
+        { id: 'cahier-96p', name: 'Cahier 96 pages', price: 600, category: 'Cahiers', keywords: ['cahier 96', '96 pages', '96p'], image: 'https://i.pinimg.com/1200x/4e/99/18/4e991885818a6f5d75c158915c667798.jpg' },
+        { id: 'cahier-100p', name: 'Cahier 100 pages grand format', price: 700, category: 'Cahiers', keywords: ['cahier 100', '100 pages', '100p', 'grand format'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
+        { id: 'cahier-200p', name: 'Cahier 200 pages grand format', price: 1200, category: 'Cahiers', keywords: ['cahier 200', '200 pages', '200p'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
+        { id: 'prod-tp-100', name: 'Cahier de Travaux Pratiques 100p', price: 1200, category: 'Cahiers', keywords: ['travaux pratiques', 'tp 100', 'tp grand format', 'cahier tp'], image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&fit=crop' },
+        { id: 'prod-copies-doubles', name: 'Paquet de Copies Doubles PM', price: 1500, category: 'Papier', keywords: ['copie double', 'copies doubles', 'copie pm', 'copies pm'], image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=200&fit=crop' },
+        { id: 'prod-cahier-dessin', name: 'Cahier de Dessin PM', price: 800, category: 'Dessin', keywords: ['dessin pm', 'cahier de dessin', 'cahier dessin'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
+        { id: 'prod-tracer-règle', name: 'Matériels / Kit de Géométrie', price: 2200, category: 'Géométrie', keywords: ['géométrie', 'matériels de géométrie', 'matériel de géométrie', 'règle', 'équerre', 'rapporteur'], image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=200&fit=crop' },
+        { id: 'stylo-bille-bleu', name: 'Stylo Bille Bleu (Lot de 4)', price: 500, category: 'Stylos', keywords: ['stylo', 'bleu', 'bic', 'bille'], image: 'https://i.pinimg.com/736x/f3/c3/96/f3c396b6166cb46d61cafa6656cce35c.jpg' },
+      ];
+    }
 
     // 4. Traiter chaque article extrait pour le matching à 3 niveaux
     let exactMatchesCount = 0;
