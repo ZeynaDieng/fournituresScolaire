@@ -1,6 +1,11 @@
 {
   "version": 2,
   "framework": "nuxtjs",
+  "functions": {
+    "server/api/ai/scan-list.post.ts": {
+      "maxDuration": 30
+    }
+  },
   "build": {
     "env": {
       "NODE_ENV": "production"
