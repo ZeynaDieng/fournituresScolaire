@@ -456,6 +456,50 @@ const productsStore = useProductsStore();
 const isScanning = ref(false);
 const scannedRequest = ref<SchoolListRequest | null>(null);
 
+function compressImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (file.type === "application/pdf") {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 async function handleFileUpload(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files || input.files.length === 0) return;
@@ -464,27 +508,23 @@ async function handleFileUpload(event: Event) {
   isScanning.value = true;
 
   try {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target?.result as string;
+    const base64 = await compressImage(file);
 
-      const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
-        method: "POST",
-        body: { image: base64, fileName: file.name },
-      });
+    const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
+      method: "POST",
+      body: { image: base64, fileName: file.name },
+    });
 
-      if (res && res.success && res.data) {
-        scannedRequest.value = res.data;
-        saveSchoolListRequest(res.data);
-      } else {
-        alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");
-      }
-      isScanning.value = false;
-    };
-    reader.readAsDataURL(file);
+    if (res && res.success && res.data) {
+      scannedRequest.value = res.data;
+      saveSchoolListRequest(res.data);
+    } else {
+      alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");
+    }
   } catch (err) {
     console.error("Erreur d'upload de la liste:", err);
     alert("Impossible de lire le fichier.");
+  } finally {
     isScanning.value = false;
   }
 }
