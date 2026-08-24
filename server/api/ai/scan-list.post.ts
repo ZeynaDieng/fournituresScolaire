@@ -1,10 +1,20 @@
-// server/api/ai/scan-list.post.ts
-import { defineEventHandler, readBody } from 'h3';
+import { defineEventHandler, readBody, readRawBody } from 'h3';
 import { getConfidenceLevel, type ExtractedItem, type SchoolListRequest } from '~/utils/school-list-service';
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event);
+    let body: any = null;
+    try {
+      body = await readBody(event);
+    } catch (e) {}
+
+    if (!body) {
+      try {
+        const raw = await readRawBody(event, 'utf-8');
+        if (raw) body = JSON.parse(raw);
+      } catch (e) {}
+    }
+
     const { image, fileName } = body || {};
 
     if (!image) {
@@ -237,23 +247,17 @@ function generateFallbackExtraction() {
   };
 }
 
-/**
- * Appel Google Gemini 1.5 Flash Vision API (GRATUIT 100%)
- */
 async function callGeminiVision(image: string, apiKey: string) {
-  try {
-    let mimeType = 'image/jpeg';
-    let base64Data = image;
+  let mimeType = 'image/jpeg';
+  let base64Data = image;
 
-    if (image.startsWith('data:')) {
-      const parts = image.split(';base64,');
-      mimeType = parts[0].replace('data:', '');
-      base64Data = parts[1];
-    }
+  if (image.startsWith('data:')) {
+    const parts = image.split(';base64,');
+    mimeType = parts[0].replace('data:', '');
+    base64Data = parts[1];
+  }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
-
-    const promptText = `Tu es un expert en lecture de listes de fournitures scolaires au Sénégal.
+  const promptText = `Tu es un expert en lecture de listes de fournitures scolaires au Sénégal.
 Analyse l'image fournie (manuscrite ou imprimée) et retourne UNIQUEMENT un objet JSON strict au format exact suivant :
 {
   "overallConfidenceScore": 95,
@@ -269,47 +273,53 @@ Analyse l'image fournie (manuscrite ou imprimée) et retourne UNIQUEMENT un obje
 }
 Extrais TOUS les articles avec leurs quantités exactes. Ne rajoute aucun texte avant ou après le JSON.`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(15000),
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: promptText },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Data,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          response_mime_type: 'application/json',
-          temperature: 0.1,
-        },
-      }),
-    });
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash'];
 
-    if (response.ok) {
-      const data = await response.json();
-      const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (textResponse) {
-        const parsed = JSON.parse(textResponse);
-        console.log('✅ Succès réponse Google Gemini Vision:', JSON.stringify(parsed, null, 2));
-        if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
-          return parsed;
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(12000),
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: promptText },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64Data,
+                  },
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            response_mime_type: 'application/json',
+            temperature: 0.1,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textResponse) {
+          const parsed = JSON.parse(textResponse);
+          console.log(`✅ Succès réponse Google Gemini Vision (${model}):`, JSON.stringify(parsed, null, 2));
+          if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
+            return parsed;
+          }
         }
+      } else {
+        const errText = await response.text();
+        console.error(`❌ Erreur Google Gemini Vision ${model} (status ${response.status}):`, errText);
       }
-    } else {
-      const errText = await response.text();
-      console.error('❌ Erreur Google Gemini Vision (status ' + response.status + '):', errText);
+    } catch (err) {
+      console.error(`❌ Exception Google Gemini Vision ${model}:`, err);
     }
-  } catch (err) {
-    console.error('❌ Exception Google Gemini Vision:', err);
   }
   return null;
 }
