@@ -28,6 +28,8 @@ export default defineEventHandler(async (event) => {
     const openAiKey = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
     const geminiKey = process.env.GEMINI_API_KEY || process.env.NUXT_GEMINI_API_KEY || config.geminiApiKey;
 
+    console.log('🔑 Server Scan-List Keys Check -> Gemini:', !!geminiKey, 'Length:', geminiKey ? geminiKey.length : 0);
+
     let extractedData: {
       overallConfidenceScore: number;
       items: Array<{
