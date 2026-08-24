@@ -60,7 +60,7 @@
           <div v-if="isScanning" class="py-6 flex items-center gap-4 bg-white/10 p-5 rounded-2xl border border-white/15">
             <div class="w-8 h-8 border-3 border-white/30 border-t-[#F4C542] rounded-full animate-spin"></div>
             <div>
-              <p class="font-bold text-sm text-white">Analyse de la liste par l'assistant IA...</p>
+              <p class="font-bold text-sm text-white">{{ scanningStepText }}</p>
               <p class="text-xs text-slate-300">Matching 3 niveaux avec le catalogue EduShop</p>
             </div>
           </div>
@@ -506,6 +506,8 @@ function compressImage(file: File, maxWidth = 900, maxHeight = 900, quality = 0.
   });
 }
 
+const scanningStepText = ref("Analyse de la liste par l'assistant IA...");
+
 async function handleFileUpload(event: Event) {
   const input = event.target as HTMLInputElement;
   if (!input.files || input.files.length === 0) return;
@@ -513,6 +515,7 @@ async function handleFileUpload(event: Event) {
   const file = input.files[0];
   isScanning.value = true;
   scannedRequest.value = null;
+  scanningStepText.value = "Optimisation & lecture de l'image...";
 
   try {
     const base64 = await compressImage(file);
@@ -523,8 +526,11 @@ async function handleFileUpload(event: Event) {
       return;
     }
 
+    scanningStepText.value = "Déchiffrage par l'assistant IA EduShop...";
+
     const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
       method: "POST",
+      timeout: 15000,
       body: { image: base64, fileName: file.name },
     });
 
@@ -536,7 +542,7 @@ async function handleFileUpload(event: Event) {
     }
   } catch (err: any) {
     console.error("Erreur d'upload de la liste:", err);
-    alert(err?.data?.message || err?.message || "Impossible d'analyser le fichier. Réessayez avec un fichier JPG ou PNG.");
+    alert("L'analyse a expiré ou rencontré un souci réseau. Réessayez avec une photo bien éclairée.");
   } finally {
     isScanning.value = false;
     input.value = "";
