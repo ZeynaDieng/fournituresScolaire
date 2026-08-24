@@ -25,8 +25,11 @@ export default defineEventHandler(async (event) => {
     }
 
     const config = useRuntimeConfig();
-    const openAiKey = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
-    const geminiKey = process.env.GEMINI_API_KEY || process.env.NUXT_GEMINI_API_KEY || config.geminiApiKey;
+    const openAiKeyRaw = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
+    const openAiKey = openAiKeyRaw ? openAiKeyRaw.replace(/^["']|["']$/g, '').trim() : '';
+
+    const geminiKeyRaw = process.env.GEMINI_API_KEY || process.env.NUXT_GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.GOOGLE_GEMINI_KEY || config.geminiApiKey;
+    const geminiKey = geminiKeyRaw ? geminiKeyRaw.replace(/^["']|["']$/g, '').trim() : '';
 
     console.log('🔑 Server Scan-List Keys Check -> Gemini:', !!geminiKey, 'Length:', geminiKey ? geminiKey.length : 0);
 
