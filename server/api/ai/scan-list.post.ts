@@ -65,7 +65,9 @@ export default defineEventHandler(async (event) => {
       const base = getAirtableBase();
       const tableId = process.env.AIRTABLE_PRODUCTS_TABLE;
       if (base && tableId) {
-        const records = await base(tableId).select().all();
+        const fetchPromise = base(tableId).select().all();
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Airtable timeout')), 2500));
+        const records = await Promise.race([fetchPromise, timeoutPromise]) as any[];
         if (records && records.length > 0) {
           catalogueProducts = records.map((r: any) => {
             const name = r.fields.Name || r.fields.name || 'Produit';
@@ -84,7 +86,7 @@ export default defineEventHandler(async (event) => {
         }
       }
     } catch (e) {
-      console.warn('Airtable non accessible, utilisation du catalogue exact des 21 produits EduShop.');
+      console.warn('Airtable non accessible ou timeout, utilisation du catalogue exact des 21 produits EduShop.');
     }
 
     if (catalogueProducts.length === 0) {
