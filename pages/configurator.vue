@@ -457,46 +457,51 @@ const isScanning = ref(false);
 const scannedRequest = ref<SchoolListRequest | null>(null);
 
 function compressImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (file.type === "application/pdf") {
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-      return;
-    }
+  return new Promise((resolve) => {
+    const rawReader = new FileReader();
+    rawReader.onload = (e) => {
+      const rawBase64 = e.target?.result as string;
+      if (file.type === "application/pdf" || file.size < 500000) {
+        return resolve(rawBase64);
+      }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
+      try {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            let width = img.width;
+            let height = img.height;
 
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx?.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          } catch (err) {
+            resolve(rawBase64);
           }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", quality));
-      };
-      img.onerror = reject;
-      img.src = e.target?.result as string;
+        };
+        img.onerror = () => resolve(rawBase64);
+        img.src = rawBase64;
+      } catch (err) {
+        resolve(rawBase64);
+      }
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    rawReader.onerror = () => resolve("");
+    rawReader.readAsDataURL(file);
   });
 }
 
