@@ -272,6 +272,7 @@ Extrais TOUS les articles avec leurs quantités exactes. Ne rajoute aucun texte 
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(10000),
       body: JSON.stringify({
         contents: [
           {
@@ -324,6 +325,7 @@ async function callOpenAIVision(image: string, apiKey: string) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
+      signal: AbortSignal.timeout(10000),
       body: JSON.stringify({
         model: 'gpt-4o',
         messages: [
