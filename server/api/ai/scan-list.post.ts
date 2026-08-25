@@ -209,7 +209,7 @@ export default defineEventHandler(async (event) => {
       sourcingItemsCount,
       availableTotal,
       extractionSource,
-      debugInfo,
+      debugInfo: debugInfo || 'Mode secours activé (aucune erreur capturée)',
       sourcingStatus: 'pending',
     };
 
