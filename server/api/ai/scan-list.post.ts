@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
       const tableId = process.env.AIRTABLE_PRODUCTS_TABLE;
       if (base && tableId) {
         const fetchPromise = base(tableId).select().all();
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Airtable timeout')), 2500));
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Airtable timeout')), 800));
         const records = await Promise.race([fetchPromise, timeoutPromise]) as any[];
         if (records && records.length > 0) {
           catalogueProducts = records.map((r: any) => {
@@ -335,7 +335,8 @@ Ne rajoute aucun texte avant ou après le JSON.`;
         ],
         generationConfig: {
           response_mime_type: 'application/json',
-          temperature: 0.1,
+          temperature: 0.0,
+          maxOutputTokens: 600,
         },
       }),
     });

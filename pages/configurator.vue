@@ -456,7 +456,7 @@ const productsStore = useProductsStore();
 const isScanning = ref(false);
 const scannedRequest = ref<SchoolListRequest | null>(null);
 
-function compressImage(file: File, maxWidth = 900, maxHeight = 900, quality = 0.75): Promise<string> {
+function compressImage(file: File, maxWidth = 750, maxHeight = 750, quality = 0.65): Promise<string> {
   return new Promise((resolve) => {
     if (file.type === "application/pdf") {
       const reader = new FileReader();
