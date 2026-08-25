@@ -111,14 +111,20 @@ export default defineEventHandler(async (event) => {
         { id: 'cahier-32p', name: 'Cahier 32 pages', price: 300, category: 'Cahiers', keywords: ['cahier 32', '32 pages', '32p'], image: 'https://i.pinimg.com/1200x/a9/ee/92/a9ee9212b025b90fd7d2a14529c7c6c5.jpg' },
         { id: 'cahier-48p', name: 'Cahier 48 pages', price: 350, category: 'Cahiers', keywords: ['cahier 48', '48 pages', '48p'], image: 'https://i.pinimg.com/1200x/e1/8e/e6/e18ee65268ca73af5a35f4f2ade2c27d.jpg' },
         { id: 'cahier-64p', name: 'Cahier 64 pages', price: 400, category: 'Cahiers', keywords: ['cahier 64', '64 pages', '64p'], image: 'https://i.pinimg.com/1200x/e1/8e/e6/e18ee65268ca73af5a35f4f2ade2c27d.jpg' },
-        { id: 'cahier-96p', name: 'Cahier 96 pages', price: 600, category: 'Cahiers', keywords: ['cahier 96', '96 pages', '96p'], image: 'https://i.pinimg.com/1200x/4e/99/18/4e991885818a6f5d75c158915c667798.jpg' },
-        { id: 'cahier-100p', name: 'Cahier 100 pages grand format', price: 700, category: 'Cahiers', keywords: ['cahier 100', '100 pages', '100p', 'grand format'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
-        { id: 'cahier-200p', name: 'Cahier 200 pages grand format', price: 1200, category: 'Cahiers', keywords: ['cahier 200', '200 pages', '200p'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
+        { id: 'cahier-96p', name: 'Cahier 96 pages', price: 500, category: 'Cahiers', keywords: ['cahier 96', '96 pages', '96p'], image: 'https://i.pinimg.com/1200x/4e/99/18/4e991885818a6f5d75c158915c667798.jpg' },
+        { id: 'cahier-100p', name: 'Cahier 100 pages grand format', price: 500, category: 'Cahiers', keywords: ['cahier 100', '100 pages', '100p', 'grand format'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
+        { id: 'cahier-200p', name: 'Cahier 200 pages grand format', price: 600, category: 'Cahiers', keywords: ['cahier 200', '200 pages', '200p'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
         { id: 'prod-tp-100', name: 'Cahier de Travaux Pratiques 100p', price: 1200, category: 'Cahiers', keywords: ['travaux pratiques', 'tp 100', 'tp grand format', 'cahier tp'], image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&fit=crop' },
         { id: 'prod-copies-doubles', name: 'Paquet de Copies Doubles PM', price: 1500, category: 'Papier', keywords: ['copie double', 'copies doubles', 'copie pm', 'copies pm'], image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=200&fit=crop' },
         { id: 'prod-cahier-dessin', name: 'Cahier de Dessin PM', price: 800, category: 'Dessin', keywords: ['dessin pm', 'cahier de dessin', 'cahier dessin'], image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=200&fit=crop' },
         { id: 'prod-tracer-règle', name: 'Matériels / Kit de Géométrie', price: 2200, category: 'Géométrie', keywords: ['géométrie', 'matériels de géométrie', 'matériel de géométrie', 'règle', 'équerre', 'rapporteur'], image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=200&fit=crop' },
-        { id: 'stylo-bille-bleu', name: 'Stylo Bille Bleu (Lot de 4)', price: 500, category: 'Stylos', keywords: ['stylo', 'bleu', 'bic', 'bille'], image: 'https://i.pinimg.com/736x/f3/c3/96/f3c396b6166cb46d61cafa6656cce35c.jpg' },
+        { id: 'stylo-bille-bleu', name: 'Stylo Bille Bleu', price: 100, category: 'Stylos', keywords: ['stylo', 'bleu', 'bic', 'bille'], image: 'https://i.pinimg.com/736x/f3/c3/96/f3c396b6166cb46d61cafa6656cce35c.jpg' },
+        { id: 'stylo-bille-noir', name: 'Stylo Bille Noir', price: 100, category: 'Stylos', keywords: ['stylo noir', 'bille noir'], image: 'https://i.pinimg.com/1200x/4c/7a/91/4c7a917a5e91cb46adf213cf3de30734.jpg' },
+        { id: 'stylo-bille-rouge', name: 'Stylo Bille Rouge', price: 100, category: 'Stylos', keywords: ['stylo rouge', 'bille rouge'], image: 'https://i.pinimg.com/736x/6d/6c/05/6d6c0582d435971d58a47859c3a96f69.jpg' },
+        { id: 'crayon-hb', name: 'Crayon HB', price: 100, category: 'Crayons', keywords: ['crayon hb', 'crayon papier'], image: 'https://i.pinimg.com/1200x/33/7e/3b/337e3b1b9a8b9e5b4a9e1a0b8c5a2a1d.jpg' },
+        { id: 'crayon-de-couleur-12', name: 'Crayons de couleur 12', price: 600, category: 'Crayons', keywords: ['crayon couleur', 'crayons couleur', 'crayons 12'], image: 'https://i.pinimg.com/1200x/11/7e/3b/117e3b1b9a8b9e5b4a9e1a0b8c5a2a1d.jpg' },
+        { id: 'feutres-fins-12', name: 'Feutres fins 12', price: 800, category: 'Feutres et Surligneurs', keywords: ['feutres', 'feutre'], image: 'https://i.pinimg.com/1200x/99/7e/3b/997e3b1b9a8b9e5b4a9e1a0b8c5a2a1d.jpg' },
+        { id: 'surligneur-jaune', name: 'Surligneur Jaune', price: 150, category: 'Feutres et Surligneurs', keywords: ['surligneur'], image: 'https://i.pinimg.com/1200x/88/9d/4d/889d4d4b8e8e5b5a5e5b5a5e5b5a5e5b.jpg' },
       ];
     }
 
@@ -277,21 +283,35 @@ async function callGeminiVision(image: string, apiKey: string) {
     base64Data = parts[1];
   }
 
-  const promptText = `Tu es un expert en lecture de listes de fournitures scolaires au Sénégal.
-Analyse l'image fournie (manuscrite ou imprimée) et retourne UNIQUEMENT un objet JSON strict au format exact suivant :
+  const promptText = `Tu es l'expert officiel d'EduShop au Sénégal pour le déchiffrage de listes de fournitures scolaires (manuscrites et imprimées).
+
+RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
+1. "PAQUET DE CAHIERS" :
+   - Au Sénégal, les écoles demandent souvent "1 paquet de cahiers [X] pages" ou "2 paquets de cahiers [X] pages".
+   - 1 paquet standard de cahiers contient 10 cahiers unitaires (ex: 1 paquet de 100 pages = 10 cahiers de 100 pages).
+   - Si la liste demande "2 paquets de cahiers 100 pages", convertis en 20 cahiers unitaires de 100 pages (quantity: 20, normalizedName: "Cahier 100 pages grand format", rawText: "2 paquets de cahiers 100 pages").
+   - Si la liste demande "1 paquet de cahiers 200 pages", quantity: 10, normalizedName: "Cahier 200 pages grand format".
+2. "COPIES DOUBLES & DESSIN" :
+   - "Paquet de copies doubles" -> normalizedName: "Paquet de Copies Doubles PM", quantity: 1.
+   - "Cahier de dessin" -> normalizedName: "Cahier de Dessin PM", quantity: 1.
+3. "MATÉRIELS ET STYLOS" :
+   - "Stylo bleu / bic" -> normalizedName: "Stylo Bille Bleu", quantity: nombre de stylos.
+   - "Matériel de géométrie" -> normalizedName: "Matériels / Kit de Géométrie", quantity: 1.
+
+Retourne UNIQUEMENT un objet JSON strict au format exact :
 {
   "overallConfidenceScore": 95,
   "items": [
     {
-      "rawText": "Trois cahiers de travaux pratiques",
-      "normalizedName": "Cahier de travaux pratiques grand format 100 pages",
-      "quantity": 3,
+      "rawText": "2 paquets de cahiers 100 pages",
+      "normalizedName": "Cahier 100 pages grand format",
+      "quantity": 20,
       "confidenceScore": 95,
       "suggestedCategory": "cahier"
     }
   ]
 }
-Extrais TOUS les articles avec leurs quantités exactes. Ne rajoute aucun texte avant ou après le JSON.`;
+Ne rajoute aucun texte avant ou après le JSON.`;
 
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
