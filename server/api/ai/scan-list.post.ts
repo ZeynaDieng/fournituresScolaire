@@ -17,12 +17,7 @@ export default defineEventHandler(async (event) => {
 
     const { image, fileName } = body || {};
 
-    if (!image) {
-      return {
-        success: false,
-        error: 'Aucune image ou document n\'a été fourni.',
-      };
-    }
+    console.log(`📥 [SERVER SCAN] Image reçue. Taille base64 : ${image.length} caractères. Nom fichier : ${fileName || 'inconnu'}`);
 
     const config = useRuntimeConfig();
     const openAiKeyRaw = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
@@ -31,7 +26,7 @@ export default defineEventHandler(async (event) => {
     const geminiKeyRaw = process.env.GEMINI_API_KEY || process.env.NUXT_GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.GOOGLE_GEMINI_KEY || config.geminiApiKey;
     const geminiKey = geminiKeyRaw ? geminiKeyRaw.replace(/^["']|["']$/g, '').trim() : '';
 
-    console.log('🔑 Server Scan-List Keys Check -> Gemini:', !!geminiKey, 'Length:', geminiKey ? geminiKey.length : 0);
+    console.log('🔑 [SERVER SCAN] Clés détectées -> Gemini:', !!geminiKey ? `OUI (${geminiKey.length} car.)` : 'NON', '| OpenAI:', !!openAiKey ? `OUI (${openAiKey.length} car.)` : 'NON');
 
     let extractedData: {
       overallConfidenceScore: number;
@@ -46,19 +41,31 @@ export default defineEventHandler(async (event) => {
 
     // 1. Tenter l'appel Google Gemini Vision API (100% GRATUIT) si la clé Gemini est configurée
     if (geminiKey) {
-      console.log('🤖 Tentative d\'appel Google Gemini 1.5 Flash Vision API (Gratuit)...');
+      console.log('🤖 [SERVER SCAN] Lancement appel Google Gemini 3.6 Flash Vision...');
       extractedData = await callGeminiVision(image, geminiKey);
+      if (extractedData) {
+        console.log(`✅ [SERVER SCAN] Succès extraction Gemini ! ${extractedData.items.length} articles trouvés.`);
+      } else {
+        console.warn('❌ [SERVER SCAN] Échec ou réponse vide de Gemini Vision.');
+      }
+    } else {
+      console.warn('⚠️ [SERVER SCAN] Pas de clé GEMINI_API_KEY trouvée.');
     }
 
     // 2. Sinon tenter l'appel OpenAI Vision API si la clé OpenAI est définie
     if (!extractedData && openAiKey) {
-      console.log('🤖 Tentative d\'appel OpenAI Vision...');
+      console.log('🤖 [SERVER SCAN] Lancement appel de secours OpenAI Vision...');
       extractedData = await callOpenAIVision(image, openAiKey);
+      if (extractedData) {
+        console.log(`✅ [SERVER SCAN] Succès extraction OpenAI ! ${extractedData.items.length} articles trouvés.`);
+      } else {
+        console.warn('❌ [SERVER SCAN] Échec ou réponse vide de OpenAI Vision.');
+      }
     }
 
     // 3. Sinon utiliser le parser intelligent de secours
     if (!extractedData) {
-      console.warn('⚠️ Passage au mode de secours gratuit.');
+      console.warn('⚠️ [SERVER SCAN] BASCULEMENT SUR LA LISTE DE SECOURS (FALLBACK). Raison : Aucune API IA (Gemini/OpenAI) n\'a pu retourner de résultat.');
       extractedData = generateFallbackExtraction();
     }
 

@@ -513,35 +513,45 @@ async function handleFileUpload(event: Event) {
   if (!input.files || input.files.length === 0) return;
 
   const file = input.files[0];
+  console.log(`📸 [SCANNER CLIENT] Fichier sélectionné : ${file.name} (${file.size} octets, type: ${file.type || 'inconnu'})`);
+
   isScanning.value = true;
   scannedRequest.value = null;
   scanningStepText.value = "Optimisation & lecture de l'image...";
 
   try {
+    console.log("⏳ [SCANNER CLIENT] Compression de l'image en cours...");
     const base64 = await compressImage(file);
     if (!base64) {
+      console.error("❌ [SCANNER CLIENT] Image compressée vide ou illisible.");
       alert("Le fichier choisi est vide ou illisible.");
       isScanning.value = false;
       input.value = "";
       return;
     }
 
+    console.log(`✅ [SCANNER CLIENT] Image prête. Taille base64 : ${base64.length} caractères.`);
     scanningStepText.value = "Déchiffrage par l'assistant IA EduShop...";
 
+    console.log("🚀 [SCANNER CLIENT] Envoi POST à /api/ai/scan-list...");
     const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
       method: "POST",
       timeout: 15000,
       body: { image: base64, fileName: file.name },
     });
 
+    console.log("📥 [SCANNER CLIENT] Réponse reçue du serveur :", res);
+
     if (res && res.success && res.data) {
       scannedRequest.value = res.data;
       saveSchoolListRequest(res.data);
+      console.log(`🎉 [SCANNER CLIENT] Succès ! Réf : ${res.data.id}, ${res.data.extractedItems.length} articles extraits.`);
     } else {
+      console.error("⚠️ [SCANNER CLIENT] Erreur retournée par l'API :", res?.error);
       alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");
     }
   } catch (err: any) {
-    console.error("Erreur d'upload de la liste:", err);
+    console.error("❌ [SCANNER CLIENT] Exception réseau ou d'upload :", err);
     alert("L'analyse a expiré ou rencontré un souci réseau. Réessayez avec une photo bien éclairée.");
   } finally {
     isScanning.value = false;
