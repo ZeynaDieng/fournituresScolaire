@@ -324,7 +324,7 @@ Ne rajoute aucun texte avant ou après le JSON.`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(13000),
+      signal: AbortSignal.timeout(28000),
       body: JSON.stringify({
         contents: [
           {
@@ -362,8 +362,8 @@ Ne rajoute aucun texte avant ou après le JSON.`;
             },
             required: ['items']
           },
-          temperature: 0.2,
-          maxOutputTokens: 1200,
+          temperature: 0.0,
+          maxOutputTokens: 1000,
         },
       }),
     });
