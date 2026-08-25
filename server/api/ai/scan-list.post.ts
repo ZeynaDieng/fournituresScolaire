@@ -335,8 +335,8 @@ Ne rajoute aucun texte avant ou après le JSON.`;
         ],
         generationConfig: {
           response_mime_type: 'application/json',
-          temperature: 0.0,
-          maxOutputTokens: 600,
+          temperature: 0.2,
+          maxOutputTokens: 800,
         },
       }),
     });
@@ -347,8 +347,21 @@ Ne rajoute aucun texte avant ou après le JSON.`;
       if (textResponse) {
         const parsed = JSON.parse(textResponse);
         console.log('✅ Succès réponse Google Gemini Vision:', JSON.stringify(parsed, null, 2));
-        if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
-          return parsed;
+        if (parsed) {
+          const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
+          if (rawList && Array.isArray(rawList) && rawList.length > 0) {
+            console.log(`✅ Gemini Vision a extrait ${rawList.length} articles avec succès !`);
+            return {
+              overallConfidenceScore: parsed.overallConfidenceScore || 90,
+              items: rawList.map((item: any) => ({
+                rawText: item.rawText || item.nom || item.name || item.description || 'Article',
+                normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
+                quantity: Number(item.quantity || item.quantite || item.qty || 1),
+                confidenceScore: Number(item.confidenceScore || 90),
+                suggestedCategory: item.suggestedCategory || item.categorie || ''
+              }))
+            };
+          }
         }
       }
     } else {
