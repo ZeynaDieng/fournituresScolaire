@@ -363,7 +363,7 @@ Ne rajoute aucun texte avant ou après le JSON.`;
             required: ['items']
           },
           temperature: 0.0,
-          maxOutputTokens: 1000,
+          maxOutputTokens: 4096,
         },
       }),
     });
@@ -372,7 +372,27 @@ Ne rajoute aucun texte avant ou après le JSON.`;
       const data = await response.json();
       const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (textResponse) {
-        const parsed = JSON.parse(textResponse);
+        let parsed: any = null;
+        try {
+          parsed = JSON.parse(textResponse);
+        } catch (e) {
+          console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
+          let cleaned = textResponse.trim();
+          const lastObj = cleaned.lastIndexOf('}');
+          if (lastObj > 0) {
+            cleaned = cleaned.substring(0, lastObj + 1);
+            if (!cleaned.endsWith(']}')) {
+              if (!cleaned.endsWith(']')) cleaned += ']';
+              cleaned += '}';
+            }
+            try {
+              parsed = JSON.parse(cleaned);
+              console.log('✅ Réparation JSON réussie !');
+            } catch (e2) {
+              console.error('❌ Échec de la réparation JSON:', e2);
+            }
+          }
+        }
         console.log('✅ Succès réponse Google Gemini Vision:', JSON.stringify(parsed, null, 2));
         if (parsed) {
           const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
