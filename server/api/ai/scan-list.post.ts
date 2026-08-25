@@ -341,8 +341,29 @@ Ne rajoute aucun texte avant ou après le JSON.`;
         ],
         generationConfig: {
           response_mime_type: 'application/json',
+          response_schema: {
+            type: 'OBJECT',
+            properties: {
+              overallConfidenceScore: { type: 'INTEGER' },
+              items: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    rawText: { type: 'STRING' },
+                    normalizedName: { type: 'STRING' },
+                    quantity: { type: 'INTEGER' },
+                    confidenceScore: { type: 'INTEGER' },
+                    suggestedCategory: { type: 'STRING' }
+                  },
+                  required: ['rawText', 'normalizedName', 'quantity']
+                }
+              }
+            },
+            required: ['items']
+          },
           temperature: 0.2,
-          maxOutputTokens: 800,
+          maxOutputTokens: 1200,
         },
       }),
     });
