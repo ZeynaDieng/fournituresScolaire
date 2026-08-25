@@ -65,80 +65,126 @@
             </div>
           </div>
 
-          <!-- Résultat de l'analyse IA -->
-          <div v-if="scannedRequest && !isScanning" class="pt-4 space-y-6 bg-white text-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xl">
-            <!-- Badge score de confiance qualitatif global -->
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <!-- Résultat de l'analyse IA (Optimisé Mobile UX) -->
+          <div id="scanned-result-card" v-if="scannedRequest && !isScanning" class="pt-4 space-y-5 bg-white text-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-200 shadow-xl scroll-mt-24">
+            <!-- Header Référence & Badge de Confiance -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
-                <span class="text-[11px] uppercase tracking-widest text-slate-400 font-extrabold block">RÉFÉRENCE UNIQUE</span>
-                <span class="font-display font-extrabold text-xl text-[#0F3D91]">{{ scannedRequest.id }}</span>
+                <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold block">RÉFÉRENCE UNIQUE</span>
+                <span class="font-display font-extrabold text-lg sm:text-xl text-[#0F3D91]">{{ scannedRequest.id }}</span>
               </div>
-              <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 text-xs font-extrabold px-4 py-2 rounded-full border border-emerald-200">
+              <div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-[11px] sm:text-xs font-extrabold px-3 py-1.5 rounded-full border border-emerald-200">
                 <span>✅ Liste analysée — Confiance {{ scannedRequest.overallConfidenceLevel }}</span>
               </div>
             </div>
 
             <!-- Messages d'information recommandés -->
-            <div class="space-y-2 text-xs sm:text-sm font-semibold">
-              <p class="text-emerald-800 flex items-center gap-2">
-                <span>✅</span>
+            <div class="space-y-1.5 text-xs sm:text-sm font-semibold bg-slate-50/70 p-3 sm:p-4 rounded-2xl border border-slate-150">
+              <p class="text-emerald-800 flex items-start gap-2">
+                <span class="shrink-0 mt-0.5">✅</span>
                 <span>Les articles disponibles sont prêts à être commandés immédiatement.</span>
               </p>
-              <p class="text-amber-800 flex items-center gap-2">
-                <span>🔍</span>
+              <p class="text-amber-800 flex items-start gap-2">
+                <span class="shrink-0 mt-0.5">🔍</span>
                 <span>Les autres articles sont déjà en cours de recherche auprès de nos fournisseurs.</span>
               </p>
             </div>
 
+            <!-- Filtres Onglets Mobile (Tous | Prêts | En recherche) -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+              <button
+                @click="activeFilter = 'all'"
+                :class="activeFilter === 'all' ? 'bg-[#0F3D91] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                class="text-xs font-extrabold px-3.5 py-2 rounded-full shrink-0 transition-all"
+              >
+                Tous ({{ scannedRequest.extractedItems.length }})
+              </button>
+              <button
+                @click="activeFilter = 'available'"
+                :class="activeFilter === 'available' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'"
+                class="text-xs font-extrabold px-3.5 py-2 rounded-full shrink-0 transition-all"
+              >
+                Prêts immédiatement ({{ scannedRequest.exactMatchesCount + scannedRequest.equivalentMatchesCount }})
+              </button>
+              <button
+                @click="activeFilter = 'sourcing'"
+                :class="activeFilter === 'sourcing' ? 'bg-amber-600 text-white shadow-xs' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'"
+                class="text-xs font-extrabold px-3.5 py-2 rounded-full shrink-0 transition-all"
+              >
+                En recherche ({{ scannedRequest.sourcingItemsCount }})
+              </button>
+            </div>
+
             <!-- Liste des articles extraits (Matchs + Sourcing) -->
-            <div class="space-y-3 pt-2">
-              <h4 class="font-display text-sm font-extrabold text-slate-900 uppercase tracking-wider">
-                Articles détectés dans votre liste ({{ scannedRequest.extractedItems.length }})
-              </h4>
-
-              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-80 overflow-y-auto">
+            <div class="space-y-2 pt-1">
+              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-[420px] overflow-y-auto">
                 <div
-                  v-for="item in scannedRequest.extractedItems"
+                  v-for="item in filteredExtractedItems"
                   :key="item.id"
-                  class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white hover:bg-slate-50 transition-colors"
+                  class="p-3 sm:p-4 flex items-center justify-between gap-3 bg-white hover:bg-slate-50 transition-colors"
                 >
-                  <div class="space-y-1">
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <span class="font-bold text-slate-900 text-sm">
-                        {{ item.quantity }}x {{ item.normalizedName }}
-                      </span>
-
-                      <!-- Badge affiché uniquement pour les articles en cours de recherche fournisseur -->
-                      <span
-                        v-if="item.matchType === 'sourcing'"
-                        class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full"
-                      >
-                        🔍 En cours de recherche auprès de nos fournisseurs
-                      </span>
+                  <!-- Vignette produit + Détails -->
+                  <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <img
+                      v-if="item.matchedProductImage"
+                      :src="item.matchedProductImage"
+                      :alt="item.normalizedName"
+                      class="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-slate-200 shrink-0 bg-slate-50"
+                    />
+                    <div v-else class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-amber-200 bg-amber-50 flex items-center justify-center shrink-0 text-amber-700 text-lg">
+                      🔍
                     </div>
 
-                    <p v-if="item.matchedProductName" class="text-xs text-slate-500 font-medium">
-                      Article retenu : {{ item.matchedProductName }}
-                    </p>
+                    <div class="space-y-0.5 min-w-0 flex-1">
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="bg-slate-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">
+                          {{ item.quantity }}x
+                        </span>
+                        <span class="font-bold text-slate-900 text-xs sm:text-sm truncate">
+                          {{ item.normalizedName }}
+                        </span>
+                      </div>
+
+                      <p v-if="item.matchedProductName && item.matchedProductName !== item.normalizedName" class="text-[11px] text-slate-500 font-medium truncate">
+                        Retenu : {{ item.matchedProductName }}
+                      </p>
+
+                      <!-- Badge statut pour mobile -->
+                      <div class="pt-0.5">
+                        <span
+                          v-if="item.matchType === 'sourcing'"
+                          class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md inline-block"
+                        >
+                          🔍 En cours de recherche fournisseur
+                        </span>
+                        <span
+                          v-else
+                          class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md inline-block"
+                        >
+                          ✅ Disponible en stock
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
+                  <!-- Prix unitaire / Sous-total -->
                   <div class="text-right shrink-0">
-                    <span v-if="item.matchedProductPrice" class="font-extrabold text-sm text-[#0F3D91]">
+                    <span v-if="item.matchedProductPrice" class="font-extrabold text-xs sm:text-sm text-[#0F3D91] block">
                       {{ useFormatter().formatPrice(item.matchedProductPrice * item.quantity) }}
                     </span>
-                    <span v-else class="text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full inline-block">
-                      Recherche fournisseur
+                    <span v-else class="text-[11px] font-extrabold text-amber-700 bg-amber-50 px-2 py-1 rounded-md inline-block">
+                      Sur devis
                     </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Footer & Bouton de commande des articles disponibles -->
+            <!-- Footer Desktop & Tablettes -->
             <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <p class="text-xs uppercase tracking-widest text-slate-400 font-extrabold">Montant disponible maintenant</p>
-                <p class="font-display text-3xl font-extrabold text-[#0F3D91]">
+                <p class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">Montant disponible maintenant</p>
+                <p class="font-display text-2xl sm:text-3xl font-extrabold text-[#0F3D91]">
                   {{ useFormatter().formatPrice(scannedRequest.availableTotal) }}
                 </p>
               </div>
@@ -146,19 +192,39 @@
               <div class="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   @click="scannedRequest = null"
-                  class="text-xs font-bold text-slate-500 hover:text-slate-900 px-4 py-3 border border-slate-200 rounded-full"
+                  class="text-xs font-bold text-slate-500 hover:text-slate-900 px-4 py-3 border border-slate-200 rounded-full w-full sm:w-auto text-center"
                 >
                   Scanner une autre photo
                 </button>
 
                 <button
                   @click="orderScannedAvailableItems"
-                  class="bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-sm px-8 py-3.5 rounded-full shadow-md hover:scale-105 transition-all flex-1 sm:flex-initial text-center"
+                  class="bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs sm:text-sm px-6 sm:px-8 py-3.5 rounded-full shadow-md hover:scale-105 transition-all w-full sm:w-auto text-center"
                 >
                   🛒 Commander les articles disponibles ({{ useFormatter().formatPrice(scannedRequest.availableTotal) }}) →
                 </button>
               </div>
             </div>
+          </div>
+
+          <!-- Barre d'Action Flottante Sticky Mobile (Toujours accessible au pouce) -->
+          <div
+            v-if="scannedRequest && !isScanning"
+            class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3.5 shadow-2xl md:hidden flex items-center justify-between gap-3"
+          >
+            <div>
+              <p class="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold">Disponible</p>
+              <p class="font-display text-lg font-extrabold text-[#0F3D91]">
+                {{ useFormatter().formatPrice(scannedRequest.availableTotal) }}
+              </p>
+            </div>
+
+            <button
+              @click="orderScannedAvailableItems"
+              class="bg-[#F4C542] active:bg-[#e0b230] text-slate-950 font-extrabold text-xs px-5 py-3 rounded-full shadow-md flex-1 text-center"
+            >
+              🛒 Commander ({{ scannedRequest.exactMatchesCount + scannedRequest.equivalentMatchesCount }}) →
+            </button>
           </div>
         </div>
       </div>
@@ -439,7 +505,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useCartStore } from "~/stores/cart";
 import { useAirtableStore } from "~/stores/airtable";
@@ -455,6 +521,18 @@ const productsStore = useProductsStore();
 
 const isScanning = ref(false);
 const scannedRequest = ref<SchoolListRequest | null>(null);
+const activeFilter = ref<'all' | 'available' | 'sourcing'>('all');
+
+const filteredExtractedItems = computed(() => {
+  if (!scannedRequest.value) return [];
+  if (activeFilter.value === 'available') {
+    return scannedRequest.value.extractedItems.filter(i => i.matchedProductPrice && i.matchedProductPrice > 0);
+  }
+  if (activeFilter.value === 'sourcing') {
+    return scannedRequest.value.extractedItems.filter(i => !i.matchedProductPrice || i.matchedProductPrice === 0);
+  }
+  return scannedRequest.value.extractedItems;
+});
 
 function compressImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<string> {
   return new Promise((resolve) => {
@@ -545,6 +623,9 @@ async function handleFileUpload(event: Event) {
     if (res && res.success && res.data) {
       scannedRequest.value = res.data;
       saveSchoolListRequest(res.data);
+      nextTick(() => {
+        document.getElementById("scanned-result-card")?.scrollIntoView({ behavior: "smooth" });
+      });
       console.log(`🎉 [SCANNER CLIENT] Succès ! Réf : ${res.data.id}`);
       console.log(`🤖 [SCANNER CLIENT] Source d'extraction : ${res.data.extractionSource || 'inconnue'}`);
       console.log("📋 [SCANNER CLIENT] Liste exacte des articles retournés par le serveur :");
