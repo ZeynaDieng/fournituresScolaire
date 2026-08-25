@@ -545,7 +545,17 @@ async function handleFileUpload(event: Event) {
     if (res && res.success && res.data) {
       scannedRequest.value = res.data;
       saveSchoolListRequest(res.data);
-      console.log(`🎉 [SCANNER CLIENT] Succès ! Réf : ${res.data.id}, ${res.data.extractedItems.length} articles extraits.`);
+      console.log(`🎉 [SCANNER CLIENT] Succès ! Réf : ${res.data.id}`);
+      console.log(`🤖 [SCANNER CLIENT] Source d'extraction : ${res.data.extractionSource || 'inconnue'}`);
+      console.log("📋 [SCANNER CLIENT] Liste exacte des articles retournés par le serveur :");
+      res.data.extractedItems.forEach((item, idx) => {
+        console.log(`   ${idx + 1}. [${item.matchType}] ${item.quantity}x ${item.normalizedName} (rawText: "${item.rawText}")`);
+      });
+      if (res.data.extractionSource === 'fallback') {
+        console.warn("⚠️ [SCANNER CLIENT] ATTENTION : Le serveur a basculé sur les données témoins (Fallback) car Gemini/OpenAI n'a pas pu traiter l'image.");
+      } else {
+        console.log("🔥 [SCANNER CLIENT] EXCELLENT ! L'IA " + res.data.extractionSource + " a scanné l'image en direct !");
+      }
     } else {
       console.error("⚠️ [SCANNER CLIENT] Erreur retournée par l'API :", res?.error);
       alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");

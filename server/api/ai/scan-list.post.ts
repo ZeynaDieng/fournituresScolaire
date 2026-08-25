@@ -39,11 +39,14 @@ export default defineEventHandler(async (event) => {
       }>;
     } | null = null;
 
+    let extractionSource: 'gemini' | 'openai' | 'fallback' = 'fallback';
+
     // 1. Tenter l'appel Google Gemini Vision API (100% GRATUIT) si la clé Gemini est configurée
     if (geminiKey) {
       console.log('🤖 [SERVER SCAN] Lancement appel Google Gemini 3.6 Flash Vision...');
       extractedData = await callGeminiVision(image, geminiKey);
       if (extractedData) {
+        extractionSource = 'gemini';
         console.log(`✅ [SERVER SCAN] Succès extraction Gemini ! ${extractedData.items.length} articles trouvés.`);
       } else {
         console.warn('❌ [SERVER SCAN] Échec ou réponse vide de Gemini Vision.');
@@ -57,6 +60,7 @@ export default defineEventHandler(async (event) => {
       console.log('🤖 [SERVER SCAN] Lancement appel de secours OpenAI Vision...');
       extractedData = await callOpenAIVision(image, openAiKey);
       if (extractedData) {
+        extractionSource = 'openai';
         console.log(`✅ [SERVER SCAN] Succès extraction OpenAI ! ${extractedData.items.length} articles trouvés.`);
       } else {
         console.warn('❌ [SERVER SCAN] Échec ou réponse vide de OpenAI Vision.');
@@ -65,6 +69,7 @@ export default defineEventHandler(async (event) => {
 
     // 3. Sinon utiliser le parser intelligent de secours
     if (!extractedData) {
+      extractionSource = 'fallback';
       console.warn('⚠️ [SERVER SCAN] BASCULEMENT SUR LA LISTE DE SECOURS (FALLBACK). Raison : Aucune API IA (Gemini/OpenAI) n\'a pu retourner de résultat.');
       extractedData = generateFallbackExtraction();
     }
@@ -192,6 +197,7 @@ export default defineEventHandler(async (event) => {
       equivalentMatchesCount,
       sourcingItemsCount,
       availableTotal,
+      extractionSource,
       sourcingStatus: 'pending',
     };
 
