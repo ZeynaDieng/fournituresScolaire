@@ -64,9 +64,9 @@ export const useCartStore = defineStore("cart", {
       return this.subtotal;
     },
 
-    // Frais de livraison
+    // Frais de livraison (0 FCFA par défaut, plus d'ajout automatique)
     deliveryFee(state): number {
-      return this.subtotal > 30000 ? 0 : 2500;
+      return 0;
     },
 
     // Total avec livraison et réductions

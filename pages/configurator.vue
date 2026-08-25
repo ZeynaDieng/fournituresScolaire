@@ -38,7 +38,7 @@
           </div>
 
           <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-            📸 Photographiez votre <span class="text-[#F4C542]">liste scolaire</span>
+            Photographiez votre <span class="text-[#F4C542]">liste scolaire</span>
           </h2>
           <p class="text-slate-200 text-xs sm:text-sm font-medium max-w-xl leading-relaxed">
             Importez la photo ou le PDF de votre liste de fournitures. L'assistant IA analyse le document, associe les produits disponibles et prépare votre commande.

@@ -159,7 +159,7 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="bg-[#F4C542] text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
-                📸 SCANNER IA
+                SCANNER IA
               </span>
               <span class="font-display font-extrabold text-sm text-[#F4C542]">
                 Référence : {{ detailOrder.schoolListRef }}

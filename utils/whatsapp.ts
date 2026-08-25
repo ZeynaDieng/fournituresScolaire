@@ -201,7 +201,7 @@ export async function sendSchoolListConfirmationWhatsApp(
   const name = request.customerName || "Parent d'élève";
 
   const message =
-    `📸 *ASSISTANT IA EDUSHOP - LISTE SCOLAIRE REÇUE*\n\n` +
+    `*ASSISTANT IA EDUSHOP - LISTE SCOLAIRE REÇUE*\n\n` +
     `Bonjour ${name},\n\n` +
     `Nous avons bien reçu l'analyse de votre liste scolaire !\n` +
     `📋 *Référence :* ${request.id}\n\n` +

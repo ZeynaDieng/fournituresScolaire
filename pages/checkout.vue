@@ -183,8 +183,7 @@ const airtableStore = useAirtableStore();
 const { formatPrice } = useFormatter();
 
 const step = ref<1 | 2>(1);
-const selectedPayment = ref("paytech");
-const deliveryType = ref<"home" | "store">("home");
+const deliveryType = ref<"home" | "store">("store");
 const isSubmitting = ref(false);
 const isAutoFilled = ref(false);
 
@@ -230,8 +229,7 @@ const cartSubtotal = computed(() => {
 });
 
 const shippingCost = computed(() => {
-  if (deliveryType.value === "store") return 0;
-  return cartSubtotal.value > 30000 ? 0 : 2500;
+  return 0; // Pas d'ajout automatique de frais de livraison
 });
 
 const totalPrice = computed(() => cartSubtotal.value + shippingCost.value);
