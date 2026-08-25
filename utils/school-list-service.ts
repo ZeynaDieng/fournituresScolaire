@@ -34,6 +34,7 @@ export interface SchoolListRequest {
 
   // Champs préparés pour l'architecture V2
   extractionSource?: 'gemini' | 'openai' | 'fallback';
+  debugInfo?: string;
   sourcingStatus: SourcingStatus;
   complementaryAmount?: number;
   complementaryPaymentUrl?: string;

@@ -552,7 +552,8 @@ async function handleFileUpload(event: Event) {
         console.log(`   ${idx + 1}. [${item.matchType}] ${item.quantity}x ${item.normalizedName} (rawText: "${item.rawText}")`);
       });
       if (res.data.extractionSource === 'fallback') {
-        console.warn("⚠️ [SCANNER CLIENT] ATTENTION : Le serveur a basculé sur les données témoins (Fallback) car Gemini/OpenAI n'a pas pu traiter l'image.");
+        console.warn("⚠️ [SCANNER CLIENT] ATTENTION : Le serveur a basculé sur les données témoins (Fallback).");
+        console.warn("🔍 [DIAGNOSTIC SERVEUR VERCEL] :", res.data.debugInfo || "Aucune information complémentaire.");
       } else {
         console.log("🔥 [SCANNER CLIENT] EXCELLENT ! L'IA " + res.data.extractionSource + " a scanné l'image en direct !");
       }

@@ -40,19 +40,24 @@ export default defineEventHandler(async (event) => {
     } | null = null;
 
     let extractionSource: 'gemini' | 'openai' | 'fallback' = 'fallback';
+    let debugInfo = '';
 
     // 1. Tenter l'appel Google Gemini Vision API (100% GRATUIT) si la clé Gemini est configurée
     if (geminiKey) {
       console.log('🤖 [SERVER SCAN] Lancement appel Google Gemini 3.6 Flash Vision...');
-      extractedData = await callGeminiVision(image, geminiKey);
-      if (extractedData) {
+      const geminiRes = await callGeminiVision(image, geminiKey);
+      if (geminiRes && geminiRes.data) {
+        extractedData = geminiRes.data;
         extractionSource = 'gemini';
+        debugInfo = 'Gemini 3.6 Flash Vision a extrait les données avec succès';
         console.log(`✅ [SERVER SCAN] Succès extraction Gemini ! ${extractedData.items.length} articles trouvés.`);
       } else {
-        console.warn('❌ [SERVER SCAN] Échec ou réponse vide de Gemini Vision.');
+        debugInfo = geminiRes?.error || 'Gemini Vision a renvoyé une réponse sans articles';
+        console.warn('❌ [SERVER SCAN] Échec Gemini Vision:', debugInfo);
       }
     } else {
-      console.warn('⚠️ [SERVER SCAN] Pas de clé GEMINI_API_KEY trouvée.');
+      debugInfo = 'Clé GEMINI_API_KEY non détectée dans les variables d\'environnement Vercel';
+      console.warn('⚠️ [SERVER SCAN]', debugInfo);
     }
 
     // 2. Sinon tenter l'appel OpenAI Vision API si la clé OpenAI est définie
@@ -204,6 +209,7 @@ export default defineEventHandler(async (event) => {
       sourcingItemsCount,
       availableTotal,
       extractionSource,
+      debugInfo,
       sourcingStatus: 'pending',
     };
 
@@ -352,26 +358,34 @@ Ne rajoute aucun texte avant ou après le JSON.`;
           if (rawList && Array.isArray(rawList) && rawList.length > 0) {
             console.log(`✅ Gemini Vision a extrait ${rawList.length} articles avec succès !`);
             return {
-              overallConfidenceScore: parsed.overallConfidenceScore || 90,
-              items: rawList.map((item: any) => ({
-                rawText: item.rawText || item.nom || item.name || item.description || 'Article',
-                normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
-                quantity: Number(item.quantity || item.quantite || item.qty || 1),
-                confidenceScore: Number(item.confidenceScore || 90),
-                suggestedCategory: item.suggestedCategory || item.categorie || ''
-              }))
+              data: {
+                overallConfidenceScore: parsed.overallConfidenceScore || 90,
+                items: rawList.map((item: any) => ({
+                  rawText: item.rawText || item.nom || item.name || item.description || 'Article',
+                  normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
+                  quantity: Number(item.quantity || item.quantite || item.qty || 1),
+                  confidenceScore: Number(item.confidenceScore || 90),
+                  suggestedCategory: item.suggestedCategory || item.categorie || ''
+                }))
+              }
             };
+          } else {
+            return { error: 'Gemini a analysé l\'image mais a renvoyé un tableau d\'articles vide (0 items trouvés).' };
           }
         }
+      } else {
+        return { error: `Réponse vide ou censurée par Google AI Safety Filter: ${JSON.stringify(data.candidates?.[0]?.finishReason || 'inconnu')}` };
       }
     } else {
       const errText = await response.text();
       console.error('❌ Erreur Google Gemini Vision (status ' + response.status + '):', errText);
+      return { error: `Erreur HTTP ${response.status} de l'API Google Gemini: ${errText.substring(0, 150)}` };
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error('❌ Exception Google Gemini Vision:', err);
+    return { error: `Exception réseau/timeout Gemini Vision: ${err?.message || err}` };
   }
-  return null;
+  return { error: 'Échec inconnu de Gemini Vision' };
 }
 
 /**
