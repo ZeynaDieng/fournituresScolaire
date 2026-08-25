@@ -298,7 +298,7 @@ Extrais TOUS les articles avec leurs quantités exactes. Ne rajoute aucun texte 
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(13000),
       body: JSON.stringify({
         contents: [
           {
