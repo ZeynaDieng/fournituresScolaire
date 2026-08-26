@@ -11,10 +11,15 @@ export default defineEventHandler(async (event) => {
     const pass = process.env.NOTIFICATION_EMAIL_PASSWORD || process.env.EMAIL_PASSWORD || "zmruomypjxrjxfto";
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: user.replace(/\s+/g, ""),
         pass: pass.replace(/\s+/g, ""),
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
