@@ -34,26 +34,40 @@ export function printOfficialInvoice(order: OrderInvoiceData) {
     return new Intl.NumberFormat("fr-FR").format(val || 0) + " F CFA";
   };
 
-  // 1. Calcul mathématique dynamique 100% exact du sous-total des fournitures
-  const itemsSubtotal = (order.items && order.items.length > 0)
-    ? order.items.reduce((sum, item) => {
+  // 1. Récupération dynamique 100% exacte des articles commandés (depuis order ou localStorage)
+  let itemsToRender = (order.items && order.items.length > 0) ? order.items : [];
+  if (itemsToRender.length === 0 && process.client) {
+    try {
+      const savedLast = localStorage.getItem("last_order");
+      if (savedLast) {
+        const parsedLast = JSON.parse(savedLast);
+        if (parsedLast.items && parsedLast.items.length > 0) {
+          itemsToRender = parsedLast.items;
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 2. Calcul mathématique dynamique 100% exact du sous-total des fournitures
+  const itemsSubtotal = (itemsToRender.length > 0)
+    ? itemsToRender.reduce((sum, item) => {
         const p = typeof item.price === "number" ? item.price : parseFloat(String(item.price).replace(/[^0-9.]/g, "")) || 0;
         const q = typeof item.quantity === "number" ? item.quantity : parseInt(String(item.quantity), 10) || 1;
         return sum + (p * q);
       }, 0)
     : (order.total || 0);
 
-  // 2. Détermination exacte des frais de livraison
+  // 3. Détermination exacte des frais de livraison (0 par défaut)
   const isStorePickup = order.deliveryType === 'store' || (order.address && order.address.toLowerCase().includes('retrait'));
-  const shippingCost = isStorePickup ? 0 : (itemsSubtotal > 30000 ? 0 : (order.shippingFee !== undefined ? order.shippingFee : 2500));
+  const shippingCost = isStorePickup ? 0 : (order.shippingFee !== undefined ? Number(order.shippingFee) : 0);
 
-  // 3. Calcul exact du Total Général Acquitté (Sous-total + Livraison)
+  // 4. Calcul exact du Total Général Acquitté (Sous-total + Livraison)
   const realGrandTotal = itemsSubtotal + shippingCost;
 
-  // 4. Détection intelligente du parcours Assistant Rentrée Zen (depuis la commande ou la liste des articles)
+  // 5. Détection intelligente du parcours Assistant Rentrée Zen
   let configData = order.configuratorChoice;
-  if (!configData && order.items && order.items.length > 0) {
-    const packItem = order.items.find(i => (i.name && (i.name.toLowerCase().includes("pack") || i.name.toLowerCase().includes("sur-mesure"))));
+  if (!configData && itemsToRender.length > 0) {
+    const packItem = itemsToRender.find(i => (i.name && (i.name.toLowerCase().includes("pack") || i.name.toLowerCase().includes("sur-mesure"))));
     if (packItem) {
       configData = {
         level: packItem.name.replace(/^Pack\s+/i, '').replace(/\s*\(.*\)$/, '') || 'Pack Scolaire Conforme',
@@ -298,7 +312,7 @@ export function printOfficialInvoice(order: OrderInvoiceData) {
         </tr>
       </thead>
       <tbody>
-        ${(order.items && order.items.length > 0) ? order.items.map((item) => {
+        ${(itemsToRender && itemsToRender.length > 0) ? itemsToRender.map((item) => {
           const p = typeof item.price === "number" ? item.price : parseFloat(String(item.price).replace(/[^0-9.]/g, "")) || 0;
           const q = typeof item.quantity === "number" ? item.quantity : parseInt(String(item.quantity), 10) || 1;
           return `
