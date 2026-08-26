@@ -24,7 +24,7 @@
     <section class="container-edu py-10 md:py-16 max-w-4xl">
       <ClientOnly>
         <!-- 📸 Bannières Scanner IA de Liste Scolaire (Placée en haut de l'assistant) -->
-      <div class="bg-gradient-to-br from-[#0F3D91] to-[#0B132B] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-10 relative overflow-hidden">
+      <div id="scanner-banner-card" class="bg-gradient-to-br from-[#0F3D91] to-[#0B132B] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-10 relative overflow-hidden scroll-mt-20">
         <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-[#F4C542]/10 rounded-full blur-2xl pointer-events-none"></div>
 
         <div class="relative z-10 space-y-4">
@@ -37,12 +37,14 @@
             </span>
           </div>
 
-          <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-            Photographiez votre <span class="text-[#F4C542]">liste scolaire</span>
-          </h2>
-          <p class="text-slate-200 text-xs sm:text-sm font-medium max-w-xl leading-relaxed">
-            Importez la photo ou le PDF de votre liste de fournitures. L'assistant IA analyse le document, associe les produits disponibles et prépare votre commande.
-          </p>
+          <div v-if="!scannedRequest">
+            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+              Photographiez votre <span class="text-[#F4C542]">liste scolaire</span>
+            </h2>
+            <p class="text-slate-200 text-xs sm:text-sm font-medium max-w-xl leading-relaxed mt-1">
+              Importez la photo ou le PDF de votre liste de fournitures. L'assistant IA analyse le document, associe les produits disponibles et prépare votre commande.
+            </p>
+          </div>
 
           <!-- Zone d'upload / Analyse -->
           <div v-if="!isScanning && !scannedRequest" class="pt-2">
@@ -66,7 +68,7 @@
           </div>
 
           <!-- Résultat de l'analyse IA (Épuré & Ultra-Lisible) -->
-          <div id="scanned-result-card" v-if="scannedRequest && !isScanning" class="pt-4 space-y-4 bg-white text-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-200 shadow-xl scroll-mt-24">
+          <div id="scanned-result-card" v-if="scannedRequest && !isScanning" class="pt-4 space-y-4 bg-white text-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-200 shadow-xl">
             <!-- Header Référence & Badge de Confiance -->
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
@@ -113,9 +115,9 @@
               </button>
             </div>
 
-            <!-- Liste des articles épurée sans images ni icônes parasites -->
+            <!-- Liste des articles épurée sans images ni icônes parasites (Hauteur Naturelle) -->
             <div class="space-y-2 pt-1">
-              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-[440px] overflow-y-auto">
+              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
                 <div
                   v-for="item in filteredExtractedItems"
                   :key="item.id"
@@ -589,7 +591,7 @@ async function handleFileUpload(event: Event) {
       scannedRequest.value = res.data;
       saveSchoolListRequest(res.data);
       nextTick(() => {
-        document.getElementById("scanned-result-card")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById("scanner-banner-card")?.scrollIntoView({ behavior: "smooth" });
       });
       console.log(`🎉 [SCANNER CLIENT] Succès ! Réf : ${res.data.id}`);
       console.log(`🤖 [SCANNER CLIENT] Source d'extraction : ${res.data.extractionSource || 'inconnue'}`);
