@@ -281,14 +281,14 @@
           </div>
 
           <!-- Bloc B: Mission Sourcing / Articles Hors Stock à Rechercher pour le Client -->
-          <div v-if="detailOrder && detailOrder.sourcingItems && detailOrder.sourcingItems.length > 0" class="space-y-2">
+          <div v-if="detailOrder && getSourcingList(detailOrder).length > 0" class="space-y-2">
             <h4 class="font-display text-sm font-extrabold text-amber-900 flex items-center gap-2">
               <span>🔍</span>
-              <span>Mission Sourcing — Articles Hors Stock à Rechercher par l'Équipe EduShop ({{ detailOrder.sourcingItems.length }})</span>
+              <span>Mission Sourcing — Articles Hors Stock à Rechercher par l'Équipe EduShop ({{ getSourcingList(detailOrder).length }})</span>
             </h4>
             <div class="bg-amber-50/60 rounded-2xl p-4 border border-amber-200 space-y-2.5">
               <div 
-                v-for="(sItem, sIdx) in detailOrder.sourcingItems" 
+                v-for="(sItem, sIdx) in getSourcingList(detailOrder)" 
                 :key="sIdx" 
                 class="flex items-center justify-between text-xs p-2.5 bg-white rounded-xl border border-amber-200/80"
               >
@@ -629,6 +629,26 @@ const getDetailedPackingList = (order: any) => {
   return list;
 };
 
+const getSourcingList = (order: any) => {
+  if (!order) return [];
+  if (order.sourcingItems && Array.isArray(order.sourcingItems) && order.sourcingItems.length > 0) {
+    return order.sourcingItems;
+  }
+  if (process.client) {
+    try {
+      const activeSLRStr = localStorage.getItem("active_school_list_request");
+      if (activeSLRStr) {
+        const activeSLR = JSON.parse(activeSLRStr);
+        if (activeSLR.extractedItems) {
+          const sourcings = activeSLR.extractedItems.filter((i: any) => i.matchType === 'sourcing' || !i.matchedProductPrice);
+          if (sourcings.length > 0) return sourcings;
+        }
+      }
+    } catch(e) {}
+  }
+  return [];
+};
+
 const updateOrderStatus = (order: any) => {
   alert(`Le statut de la commande #${order.ref} a été mis à jour.`);
 };
@@ -684,7 +704,9 @@ function fetchOrders() {
             paymentMethod: o.paymentMethod || "Wave / Orange Money",
             createdAt: o.createdAt || o.date || new Date().toLocaleDateString("fr-FR"),
             configuratorChoice: o.configuratorChoice || undefined,
+            schoolListRef: o.schoolListRef || undefined,
             items: o.items || [],
+            sourcingItems: o.sourcingItems || [],
           }));
 
           // Conserver également les démos si nécessaire mais mettre les vraies commandes en premier
