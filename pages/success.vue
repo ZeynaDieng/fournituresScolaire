@@ -168,6 +168,19 @@ onMounted(() => {
           configuratorChoice: parsed.configuratorChoice || undefined,
           items: calculatedItems,
         };
+
+        // Double-Sécurité : Déclenchement automatique de l'e-mail de notification Admin si non encore envoyé
+        const emailSentKey = `email_sent_${orderData.value.ref}`;
+        if (!sessionStorage.getItem(emailSentKey)) {
+          sessionStorage.setItem(emailSentKey, "true");
+          $fetch("/api/admin/send-order-email", {
+            method: "POST",
+            body: {
+              targetEmail: "zeynash1@gmail.com",
+              order: parsed,
+            },
+          }).catch((err) => console.error("Erreur envoi secours email success.vue:", err));
+        }
       } catch (e) {
         console.log("Erreur lecture commande locale:", e);
       }
