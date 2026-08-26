@@ -165,51 +165,31 @@
               </div>
             </div>
 
-            <!-- Footer Desktop & Tablettes -->
-            <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- Footer Actions Épuré & Compact -->
+            <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <p class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">Montant disponible maintenant</p>
-                <p class="font-display text-2xl sm:text-3xl font-extrabold text-[#0F3D91]">
+                <p class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">Total disponible</p>
+                <p class="font-display text-xl sm:text-2xl font-extrabold text-[#0F3D91]">
                   {{ useFormatter().formatPrice(scannedRequest.availableTotal) }}
                 </p>
               </div>
 
-              <div class="flex items-center gap-3 w-full sm:w-auto">
+              <div class="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   @click="scannedRequest = null"
-                  class="text-xs font-bold text-slate-500 hover:text-slate-900 px-4 py-3 border border-slate-200 rounded-full w-full sm:w-auto text-center"
+                  class="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3.5 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-center flex-1 sm:flex-initial"
                 >
-                  Scanner une autre photo
+                  Scanner autre liste
                 </button>
 
                 <button
                   @click="orderScannedAvailableItems"
-                  class="bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs sm:text-sm px-6 sm:px-8 py-3.5 rounded-full shadow-md hover:scale-105 transition-all w-full sm:w-auto text-center"
+                  class="bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all text-center flex-1 sm:flex-initial"
                 >
-                  🛒 Commander les articles disponibles ({{ useFormatter().formatPrice(scannedRequest.availableTotal) }}) →
+                  Commander ({{ useFormatter().formatPrice(scannedRequest.availableTotal) }}) →
                 </button>
               </div>
             </div>
-          </div>
-
-          <!-- Barre d'Action Flottante Sticky Mobile (Toujours accessible au pouce) -->
-          <div
-            v-if="scannedRequest && !isScanning"
-            class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3.5 shadow-2xl md:hidden flex items-center justify-between gap-3"
-          >
-            <div>
-              <p class="text-[9px] uppercase tracking-widest text-slate-400 font-extrabold">Disponible</p>
-              <p class="font-display text-lg font-extrabold text-[#0F3D91]">
-                {{ useFormatter().formatPrice(scannedRequest.availableTotal) }}
-              </p>
-            </div>
-
-            <button
-              @click="orderScannedAvailableItems"
-              class="bg-[#F4C542] active:bg-[#e0b230] text-slate-950 font-extrabold text-xs px-5 py-3 rounded-full shadow-md flex-1 text-center"
-            >
-              🛒 Commander ({{ scannedRequest.exactMatchesCount + scannedRequest.equivalentMatchesCount }}) →
-            </button>
           </div>
         </div>
       </div>
