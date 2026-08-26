@@ -26,23 +26,17 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    if (!body.customer?.name || !body.customer?.phone) {
-      throw createError({
-        statusCode: 400,
-        statusMessage:
-          "Les informations du client (nom, téléphone) sont requises",
-      });
-    }
-
     // Génération d'une référence unique si non fournie
     const ref =
       body.ref_command ||
       `CMD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Générer un email par défaut si non fourni
+    // Générer client et email par défaut si non fournis
     const customer = {
-      ...body.customer,
-      email: body.customer.email || `client_${Date.now()}@edushop.sn`,
+      name: body.customer?.name || "Client EduShop",
+      phone: body.customer?.phone || "+221770000000",
+      email: body.customer?.email || `client_${Date.now()}@edushop.sn`,
+      id: body.customer?.id || null,
     };
 
     // Construction des données selon la documentation Paytech
@@ -51,13 +45,12 @@ export default defineEventHandler(async (event) => {
     const itemPrice = parseInt(body.amount.toString());
 
     // Préparation des données Paytech
-    const paytechData = {
+    const paytechData: any = {
       item_name: itemName,
       item_price: itemPrice,
       currency: body.currency || "XOF",
       ref_command: ref,
       command_name: commandName,
-      target_payment: body.target_payment || "",
       env: config.paytech.sandbox ? "test" : "prod",
       custom_field: JSON.stringify({
         order_id: ref,
@@ -85,6 +78,10 @@ export default defineEventHandler(async (event) => {
         ""
       )}/api/paytech/refund-webhook`,
     };
+
+    if (body.target_payment) {
+      paytechData.target_payment = body.target_payment;
+    }
 
     // 📊 Enregistrer directement dans Airtable (plus de Prisma)
     try {

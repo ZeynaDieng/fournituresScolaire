@@ -214,13 +214,11 @@ onMounted(() => {
   }
 });
 
-const selectedPayment = ref("cash");
+const selectedPayment = ref("paytech");
 
 const paymentMethods = [
-  { id: "cash", name: "💵 Paiement à la livraison / au retrait", desc: "Réglez directement en espèces lors de la livraison ou en magasin", badge: "Sans frais" },
-  { id: "wave", name: "💙 Wave Mobile Money", desc: "Paiement direct sécurisé via l'application Wave" },
-  { id: "om", name: "🧡 Orange Money", desc: "Paiement direct sécurisé par Orange Money" },
-  { id: "paytech", name: "💳 Carte Bancaire / Autre", desc: "Paiement sécurisé par carte bancaire ou carte internationale" },
+  { id: "paytech", name: "💳 Paiement en ligne (PayTech)", desc: "Payez en toute sécurité par Wave, Orange Money, Free Money ou Carte Bancaire", badge: "Recommandé" },
+  { id: "cash", name: "💵 Paiement à la livraison / au retrait", desc: "Réglez directement en espèces lors de la livraison ou en magasin" },
 ];
 
 const cartSubtotal = computed(() => {
@@ -270,17 +268,21 @@ async function submitOrder() {
 
     const currentItemsCloned = JSON.parse(JSON.stringify(cartStore.items || []));
 
+    const finalName = `${form.value.firstName} ${form.value.lastName}`.trim() || "Client EduShop";
+    const finalPhone = form.value.phone || "+221770000000";
+    const finalEmail = form.value.email || `${finalPhone.replace(/[^0-9]/g, "")}@edushop.sn`;
+
     const orderPayload = {
-      customerName: `${form.value.firstName} ${form.value.lastName}`.trim(),
-      customerPhone: form.value.phone,
-      customerEmail: form.value.email,
-      address: deliveryType.value === "store" ? "Retrait en Magasin (Ouakam, Dakar)" : form.value.address,
+      customerName: finalName,
+      customerPhone: finalPhone,
+      customerEmail: finalEmail,
+      address: deliveryType.value === "store" ? "Retrait en Magasin (Ouakam, Dakar)" : (form.value.address || "Dakar"),
       deliveryType: deliveryType.value,
       shippingFee: shippingCost.value,
       items: currentItemsCloned,
       amount: totalPrice.value,
       total: totalPrice.value,
-      paymentMethod: selectedPayment.value === "cash" ? "Paiement à la livraison (Espèces)" : (selectedPayment.value === "wave" ? "Wave" : (selectedPayment.value === "om" ? "Orange Money" : "Paiement en ligne")),
+      paymentMethod: selectedPayment.value === "paytech" ? "Paiement en ligne (PayTech)" : "Paiement à la livraison (Espèces)",
       configuratorChoice: activeConfigurator,
       schoolListRef: activeSchoolListRef,
       orderRef: `REF-${Date.now().toString().slice(-6)}`,
@@ -323,12 +325,12 @@ async function submitOrder() {
 
       // 3. Création automatique du compte client s'il n'existe pas encore
       const autoUser = {
-        firstName: form.value.firstName,
-        lastName: form.value.lastName,
-        name: `${form.value.firstName} ${form.value.lastName}`.trim(),
-        email: form.value.email || `${form.value.phone.replace(/[^0-9]/g, "")}@edushop.sn`,
-        phone: form.value.phone,
-        address: form.value.address,
+        firstName: form.value.firstName || "Client",
+        lastName: form.value.lastName || "EduShop",
+        name: finalName,
+        email: finalEmail,
+        phone: finalPhone,
+        address: orderPayload.address,
         city: "Dakar",
         createdAt: new Date().toLocaleDateString("fr-FR"),
       };
@@ -385,13 +387,12 @@ async function submitOrder() {
             customer: {
               name: orderPayload.customerName,
               phone: orderPayload.customerPhone,
-              email: orderPayload.customerEmail || `${orderPayload.customerPhone.replace(/[^0-9]/g, "")}@edushop.sn`,
+              email: orderPayload.customerEmail,
             },
-            items: cartStore.items,
+            items: currentItemsCloned,
             shipping: {
               address: orderPayload.address,
             },
-            target_payment: selectedPayment.value === "wave" ? "wave" : (selectedPayment.value === "om" ? "om" : ""),
           },
         });
 
