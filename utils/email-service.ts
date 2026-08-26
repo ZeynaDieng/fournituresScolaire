@@ -18,14 +18,16 @@ function createEmailTransporter() {
 
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
+    requireTLS: true,
     auth: {
       user: EMAIL_CONFIG.user.replace(/\s+/g, ""),
       pass: EMAIL_CONFIG.password.replace(/\s+/g, ""),
     },
     tls: {
       rejectUnauthorized: false,
+      ciphers: "SSLv3",
     },
   });
 }

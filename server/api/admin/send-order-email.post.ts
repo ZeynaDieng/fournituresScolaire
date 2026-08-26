@@ -12,14 +12,16 @@ export default defineEventHandler(async (event) => {
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: {
         user: user.replace(/\s+/g, ""),
         pass: pass.replace(/\s+/g, ""),
       },
       tls: {
         rejectUnauthorized: false,
+        ciphers: "SSLv3",
       },
     });
 
