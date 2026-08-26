@@ -301,15 +301,9 @@ RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
    - "Paquet de copies doubles" -> normalizedName: "Paquet de Copies Doubles PM", quantity: 1.
    - "Cahier de dessin" -> normalizedName: "Cahier de Dessin PM", quantity: 1.
 3. "MATÉRIELS ET STYLOS" :
-   - "Stylo bleu / bic" -> normalizedName: "Stylo Bille Bleu", quantity: nombre de stylos.
+   - "Stylo bleu / bic" -> normalizedName: "Stylo Bille Bleu", quantity: 1.
    - "Matériel de géométrie" -> normalizedName: "Matériels / Kit de Géométrie", quantity: 1.
 
-Retourne UNIQUEMENT un objet JSON strict au format exact :
-  const promptText = `Tu es l'assistant OCR et IA spécialisé dans les fournitures scolaires pour la boutique Sénégalais "EduShop".
-Analyse cette photo de liste scolaire et extrais tous les articles demandés sous forme d'un objet JSON strict.
-Consignes spéciales pour les paquets de cahiers au Sénégal :
-- Si la liste demande "1 paquet de cahiers", convertir en quantite: 10 (car 1 paquet = 10 cahiers unitaires).
-- Si la liste demande "2 paquets de cahiers 100p", convertir en quantite: 20 et rawText: "20 Cahiers 100 pages".
 Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
 
   const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-pro'];
