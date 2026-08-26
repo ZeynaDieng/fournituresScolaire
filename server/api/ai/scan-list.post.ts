@@ -23,10 +23,27 @@ export default defineEventHandler(async (event) => {
     const openAiKeyRaw = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
     const openAiKey = openAiKeyRaw ? openAiKeyRaw.replace(/^["']|["']$/g, '').trim() : '';
 
-    const geminiKeyRaw = process.env.GEMINI_API_KEY || process.env.NUXT_GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.GOOGLE_GEMINI_KEY || config.geminiApiKey;
-    const geminiKey = geminiKeyRaw ? geminiKeyRaw.replace(/^["']|["']$/g, '').trim() : '';
+    const geminiKeys: string[] = [];
+    if (process.env.GEMINI_API_KEYS) {
+      process.env.GEMINI_API_KEYS.split(',').forEach(k => {
+        const clean = k.replace(/^["']|["']$/g, '').trim();
+        if (clean && !geminiKeys.includes(clean)) geminiKeys.push(clean);
+      });
+    }
+    [
+      process.env.GEMINI_API_KEY,
+      process.env.NUXT_GEMINI_API_KEY,
+      process.env.GEMINI_KEY,
+      process.env.GOOGLE_GEMINI_KEY,
+      config.geminiApiKey
+    ].forEach(k => {
+      if (k) {
+        const clean = k.replace(/^["']|["']$/g, '').trim();
+        if (clean && !geminiKeys.includes(clean)) geminiKeys.push(clean);
+      }
+    });
 
-    console.log('🔑 [SERVER SCAN] Clés détectées -> Gemini:', !!geminiKey ? `OUI (${geminiKey.length} car.)` : 'NON', '| OpenAI:', !!openAiKey ? `OUI (${openAiKey.length} car.)` : 'NON');
+    console.log('🔑 [SERVER SCAN] Clés Gemini détectées:', geminiKeys.length, '| OpenAI:', !!openAiKey ? `OUI` : 'NON');
 
     let extractedData: {
       overallConfidenceScore: number;
@@ -42,10 +59,10 @@ export default defineEventHandler(async (event) => {
     let extractionSource: 'gemini' | 'openai' | 'fallback' = 'fallback';
     let debugInfo = '';
 
-    // 1. Tenter l'appel Google Gemini Vision API (100% GRATUIT) si la clé Gemini est configurée
-    if (geminiKey) {
-      console.log('🤖 [SERVER SCAN] Lancement appel Google Gemini 3.6 Flash Vision...');
-      const geminiRes = await callGeminiVision(image, geminiKey);
+    // 1. Tenter l'appel Google Gemini Vision API avec rotation de clés si disponible
+    if (geminiKeys.length > 0) {
+      console.log('🤖 [SERVER SCAN] Lancement appel Google Gemini Vision...');
+      const geminiRes = await callGeminiVision(image, geminiKeys);
       if (geminiRes && geminiRes.data) {
         extractedData = geminiRes.data;
         extractionSource = 'gemini';
@@ -279,7 +296,7 @@ function generateFallbackExtraction() {
   };
 }
 
-async function callGeminiVision(base64Image: string, apiKey: string) {
+async function callGeminiVision(base64Image: string, apiKeys: string[]) {
   let base64Data = base64Image;
   let mimeType = 'image/jpeg';
 
@@ -306,113 +323,120 @@ RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
 
 Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
 
-  try {
-    const model = 'gemini-3.6-flash';
-    console.log(`🤖 [SERVER SCAN] Envoi à Google Gemini : ${model}...`);
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(25000),
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: promptText },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Data,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          response_mime_type: 'application/json',
-          response_schema: {
-            type: 'OBJECT',
-            properties: {
-              overallConfidenceScore: { type: 'INTEGER' },
-              items: {
-                type: 'ARRAY',
-                items: {
-                  type: 'OBJECT',
-                  properties: {
-                    rawText: { type: 'STRING' },
-                    normalizedName: { type: 'STRING' },
-                    quantity: { type: 'INTEGER' },
-                    confidenceScore: { type: 'INTEGER' },
-                    suggestedCategory: { type: 'STRING' }
-                  },
-                  required: ['rawText', 'normalizedName', 'quantity']
-                }
-              }
-            },
-            required: ['items']
-          },
-          temperature: 0.0,
-          maxOutputTokens: 4096,
-        },
-      }),
-    });
+  let lastError = '';
 
-    if (response.ok) {
-      const data = await response.json();
-      const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (textResponse) {
-        let parsed: any = null;
-        try {
-          parsed = JSON.parse(textResponse);
-        } catch (e) {
-          console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
-          let cleaned = textResponse.trim();
-          const lastObj = cleaned.lastIndexOf('}');
-          if (lastObj > 0) {
-            cleaned = cleaned.substring(0, lastObj + 1);
-            if (!cleaned.endsWith(']}')) {
-              if (!cleaned.endsWith(']')) cleaned += ']';
-              cleaned += '}';
-            }
-            try {
-              parsed = JSON.parse(cleaned);
-              console.log('✅ Réparation JSON réussie !');
-            } catch (e2) {
-              console.error('❌ Échec de la réparation JSON:', e2);
-            }
-          }
-        }
-        if (parsed) {
-          const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
-          if (rawList && Array.isArray(rawList) && rawList.length > 0) {
-            console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
-            return {
-              data: {
-                overallConfidenceScore: parsed.overallConfidenceScore || 90,
-                items: rawList.map((item: any) => ({
-                  rawText: item.rawText || item.nom || item.name || item.description || 'Article',
-                  normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
-                  quantity: Number(item.quantity || item.quantite || item.qty || 1),
-                  confidenceScore: Number(item.confidenceScore || 90),
-                  suggestedCategory: item.suggestedCategory || item.categorie || ''
-                }))
+  for (let i = 0; i < apiKeys.length; i++) {
+    const apiKey = apiKeys[i];
+    try {
+      const model = 'gemini-3.6-flash';
+      console.log(`🤖 [SERVER SCAN] Envoi à Google Gemini (clé ${i + 1}/${apiKeys.length}) : ${model}...`);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(25000),
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: promptText },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64Data,
+                  },
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            response_mime_type: 'application/json',
+            response_schema: {
+              type: 'OBJECT',
+              properties: {
+                overallConfidenceScore: { type: 'INTEGER' },
+                items: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      rawText: { type: 'STRING' },
+                      normalizedName: { type: 'STRING' },
+                      quantity: { type: 'INTEGER' },
+                      confidenceScore: { type: 'INTEGER' },
+                      suggestedCategory: { type: 'STRING' }
+                    },
+                    required: ['rawText', 'normalizedName', 'quantity']
+                  }
+                }
+              },
+              required: ['items']
+            },
+            temperature: 0.0,
+            maxOutputTokens: 4096,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textResponse) {
+          let parsed: any = null;
+          try {
+            parsed = JSON.parse(textResponse);
+          } catch (e) {
+            console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
+            let cleaned = textResponse.trim();
+            const lastObj = cleaned.lastIndexOf('}');
+            if (lastObj > 0) {
+              cleaned = cleaned.substring(0, lastObj + 1);
+              if (!cleaned.endsWith(']}')) {
+                if (!cleaned.endsWith(']')) cleaned += ']';
+                cleaned += '}';
               }
-            };
+              try {
+                parsed = JSON.parse(cleaned);
+                console.log('✅ Réparation JSON réussie !');
+              } catch (e2) {
+                console.error('❌ Échec de la réparation JSON:', e2);
+              }
+            }
+          }
+          if (parsed) {
+            const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
+            if (rawList && Array.isArray(rawList) && rawList.length > 0) {
+              console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
+              return {
+                data: {
+                  overallConfidenceScore: parsed.overallConfidenceScore || 90,
+                  items: rawList.map((item: any) => ({
+                    rawText: item.rawText || item.nom || item.name || item.description || 'Article',
+                    normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
+                    quantity: Number(item.quantity || item.quantite || item.qty || 1),
+                    confidenceScore: Number(item.confidenceScore || 90),
+                    suggestedCategory: item.suggestedCategory || item.categorie || ''
+                  }))
+                }
+              };
+            }
           }
         }
+      } else {
+        const errText = await response.text();
+        if (response.status === 429) {
+          lastError = 'Quota gratuit quotidien Google Gemini atteint (limit: 20 requêtes/jour pour la clé gratuite). Basculement automatique en mode de secours.';
+          console.warn(`⚠️ Clé ${i + 1} en quota 429, tentative avec la clé suivante si présente...`);
+          continue;
+        }
+        lastError = `Statut HTTP ${response.status} de Gemini API: ${errText.substring(0, 150)}`;
       }
-    } else {
-      const errText = await response.text();
-      if (response.status === 429) {
-        return { error: 'Quota gratuit quotidien Google Gemini atteint (limit: 20 requêtes/jour pour la clé gratuite). Basculement automatique en mode de secours.' };
-      }
-      return { error: `Statut HTTP ${response.status} de Gemini API: ${errText.substring(0, 150)}` };
+    } catch (err: any) {
+      lastError = `Exception réseau Gemini API: ${err?.message || err}`;
     }
-  } catch (err: any) {
-    return { error: `Exception réseau Gemini API: ${err?.message || err}` };
   }
 
-  return { error: 'Échec de l\'analyse Gemini Vision.' };
+  return { error: lastError || 'Échec de l\'analyse Gemini Vision.' };
 }
 
 /**
