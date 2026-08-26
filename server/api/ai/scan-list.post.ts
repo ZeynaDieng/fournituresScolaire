@@ -306,7 +306,7 @@ RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
 
 Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
 
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-pro'];
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
   let lastError = '';
 
   for (const model of models) {
