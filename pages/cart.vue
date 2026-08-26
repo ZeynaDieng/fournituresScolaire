@@ -70,19 +70,19 @@
 
           <div class="space-y-3 text-sm text-slate-600 font-medium">
             <div class="flex justify-between">
-              <span>Sous-total</span>
+              <span>Sous-total fournitures</span>
               <span class="font-bold text-slate-900">{{ formatPrice(cartStore.totalAmount) }}</span>
             </div>
-            <div class="flex justify-between">
-              <span>Livraison (Dakar & Régions)</span>
-              <span class="font-bold text-slate-900">{{ shippingCost === 0 ? 'GRATUIT' : formatPrice(shippingCost) }}</span>
+            <div class="flex justify-between items-center">
+              <span>Frais de livraison</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">Choix à l'étape suivante</span>
             </div>
           </div>
 
           <div class="pt-4 border-t border-slate-200 flex items-end justify-between">
             <div>
-              <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Total à payer</p>
-              <p class="font-display text-3xl font-extrabold text-[#0F3D91] mt-1">{{ formatPrice(totalWithShipping) }}</p>
+              <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Total fournitures</p>
+              <p class="font-display text-3xl font-extrabold text-[#0F3D91] mt-1">{{ formatPrice(cartStore.totalAmount) }}</p>
             </div>
           </div>
 
@@ -99,13 +99,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useCartStore } from "~/stores/cart";
 import { useFormatter } from "~/composables/useFormatter";
 
 const cartStore = useCartStore();
 const { formatPrice } = useFormatter();
-
-const shippingCost = computed(() => (cartStore.totalAmount > 30000 ? 0 : 2500));
-const totalWithShipping = computed(() => cartStore.totalAmount + shippingCost.value);
 </script>
