@@ -279,12 +279,12 @@ function generateFallbackExtraction() {
   };
 }
 
-async function callGeminiVision(image: string, apiKey: string) {
+async function callGeminiVision(base64Image: string, apiKey: string) {
+  let base64Data = base64Image;
   let mimeType = 'image/jpeg';
-  let base64Data = image;
 
-  if (image.startsWith('data:')) {
-    const parts = image.split(';base64,');
+  if (base64Image.startsWith('data:')) {
+    const parts = base64Image.split(';base64,');
     mimeType = parts[0].replace('data:', '');
     base64Data = parts[1];
   }
@@ -306,116 +306,113 @@ RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
 
 Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
 
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
-  let lastError = '';
-
-  for (const model of models) {
-    try {
-      console.log(`🤖 [SERVER SCAN] Essai modèle Gemini : ${model}...`);
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(20000),
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: promptText },
-                {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: base64Data,
-                  },
+  try {
+    const model = 'gemini-3.6-flash';
+    console.log(`🤖 [SERVER SCAN] Envoi à Google Gemini : ${model}...`);
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(25000),
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              { text: promptText },
+              {
+                inline_data: {
+                  mime_type: mimeType,
+                  data: base64Data,
                 },
-              ],
-            },
-          ],
-          generationConfig: {
-            response_mime_type: 'application/json',
-            response_schema: {
-              type: 'OBJECT',
-              properties: {
-                overallConfidenceScore: { type: 'INTEGER' },
-                items: {
-                  type: 'ARRAY',
-                  items: {
-                    type: 'OBJECT',
-                    properties: {
-                      rawText: { type: 'STRING' },
-                      normalizedName: { type: 'STRING' },
-                      quantity: { type: 'INTEGER' },
-                      confidenceScore: { type: 'INTEGER' },
-                      suggestedCategory: { type: 'STRING' }
-                    },
-                    required: ['rawText', 'normalizedName', 'quantity']
-                  }
-                }
               },
-              required: ['items']
-            },
-            temperature: 0.0,
-            maxOutputTokens: 4096,
+            ],
           },
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (textResponse) {
-          let parsed: any = null;
-          try {
-            parsed = JSON.parse(textResponse);
-          } catch (e) {
-            console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
-            let cleaned = textResponse.trim();
-            const lastObj = cleaned.lastIndexOf('}');
-            if (lastObj > 0) {
-              cleaned = cleaned.substring(0, lastObj + 1);
-              if (!cleaned.endsWith(']}')) {
-                if (!cleaned.endsWith(']')) cleaned += ']';
-                cleaned += '}';
-              }
-              try {
-                parsed = JSON.parse(cleaned);
-                console.log('✅ Réparation JSON réussie !');
-              } catch (e2) {
-                console.error('❌ Échec de la réparation JSON:', e2);
-              }
-            }
-          }
-          if (parsed) {
-            const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
-            if (rawList && Array.isArray(rawList) && rawList.length > 0) {
-              console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
-              return {
-                data: {
-                  overallConfidenceScore: parsed.overallConfidenceScore || 90,
-                  items: rawList.map((item: any) => ({
-                    rawText: item.rawText || item.nom || item.name || item.description || 'Article',
-                    normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
-                    quantity: Number(item.quantity || item.quantite || item.qty || 1),
-                    confidenceScore: Number(item.confidenceScore || 90),
-                    suggestedCategory: item.suggestedCategory || item.categorie || ''
-                  }))
+        ],
+        generationConfig: {
+          response_mime_type: 'application/json',
+          response_schema: {
+            type: 'OBJECT',
+            properties: {
+              overallConfidenceScore: { type: 'INTEGER' },
+              items: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    rawText: { type: 'STRING' },
+                    normalizedName: { type: 'STRING' },
+                    quantity: { type: 'INTEGER' },
+                    confidenceScore: { type: 'INTEGER' },
+                    suggestedCategory: { type: 'STRING' }
+                  },
+                  required: ['rawText', 'normalizedName', 'quantity']
                 }
-              };
+              }
+            },
+            required: ['items']
+          },
+          temperature: 0.0,
+          maxOutputTokens: 4096,
+        },
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (textResponse) {
+        let parsed: any = null;
+        try {
+          parsed = JSON.parse(textResponse);
+        } catch (e) {
+          console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
+          let cleaned = textResponse.trim();
+          const lastObj = cleaned.lastIndexOf('}');
+          if (lastObj > 0) {
+            cleaned = cleaned.substring(0, lastObj + 1);
+            if (!cleaned.endsWith(']}')) {
+              if (!cleaned.endsWith(']')) cleaned += ']';
+              cleaned += '}';
+            }
+            try {
+              parsed = JSON.parse(cleaned);
+              console.log('✅ Réparation JSON réussie !');
+            } catch (e2) {
+              console.error('❌ Échec de la réparation JSON:', e2);
             }
           }
         }
-      } else {
-        const errText = await response.text();
-        lastError = `Statut HTTP ${response.status} sur ${model}: ${errText.substring(0, 150)}`;
-        console.warn(`⚠️ Modèle ${model} indisponible (${response.status}), essai du modèle suivant...`);
+        if (parsed) {
+          const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
+          if (rawList && Array.isArray(rawList) && rawList.length > 0) {
+            console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
+            return {
+              data: {
+                overallConfidenceScore: parsed.overallConfidenceScore || 90,
+                items: rawList.map((item: any) => ({
+                  rawText: item.rawText || item.nom || item.name || item.description || 'Article',
+                  normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
+                  quantity: Number(item.quantity || item.quantite || item.qty || 1),
+                  confidenceScore: Number(item.confidenceScore || 90),
+                  suggestedCategory: item.suggestedCategory || item.categorie || ''
+                }))
+              }
+            };
+          }
+        }
       }
-    } catch (err: any) {
-      lastError = `Exception ${model}: ${err?.message || err}`;
-      console.warn(`⚠️ Exception sur ${model}, essai du suivant...`);
+    } else {
+      const errText = await response.text();
+      if (response.status === 429) {
+        return { error: 'Quota gratuit quotidien Google Gemini atteint (limit: 20 requêtes/jour pour la clé gratuite). Basculement automatique en mode de secours.' };
+      }
+      return { error: `Statut HTTP ${response.status} de Gemini API: ${errText.substring(0, 150)}` };
     }
+  } catch (err: any) {
+    return { error: `Exception réseau Gemini API: ${err?.message || err}` };
   }
 
-  return { error: lastError || 'Quota dépassé ou tous les modèles Gemini indisponibles.' };
+  return { error: 'Échec de l\'analyse Gemini Vision.' };
 }
 
 /**
