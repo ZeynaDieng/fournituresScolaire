@@ -3,11 +3,10 @@ import nodemailer from "nodemailer";
 // Configuration email
 const EMAIL_CONFIG = {
   service: "gmail",
-  user: process.env.NOTIFICATION_EMAIL_USER || process.env.EMAIL_USER || "zeynash1@gmail.com",
-  password:
-    process.env.NOTIFICATION_EMAIL_PASSWORD || process.env.EMAIL_PASSWORD || "roaeavueygugiwpt",
-  adminEmail: process.env.ADMIN_EMAIL || "zeynash1@gmail.com",
-  fromName: process.env.FROM_NAME || "Fournitures Scolaires",
+  user: "zeynash1@gmail.com",
+  password: "roaeavueygugiwpt",
+  adminEmail: "zeynash1@gmail.com",
+  fromName: "Fournitures Scolaires EduShop",
 };
 
 // Créer le transporteur email

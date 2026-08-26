@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const targetEmail = body.targetEmail || process.env.ADMIN_EMAIL || process.env.EMAIL_USER || "zeynash1@gmail.com";
     const user = process.env.NOTIFICATION_EMAIL_USER || process.env.EMAIL_USER || "zeynash1@gmail.com";
-    const pass = process.env.NOTIFICATION_EMAIL_PASSWORD || process.env.EMAIL_PASSWORD || "roaeavueygugiwpt";
+    const pass = "roaeavueygugiwpt";
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
