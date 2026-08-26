@@ -305,128 +305,123 @@ RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
    - "Matériel de géométrie" -> normalizedName: "Matériels / Kit de Géométrie", quantity: 1.
 
 Retourne UNIQUEMENT un objet JSON strict au format exact :
-{
-  "overallConfidenceScore": 95,
-  "items": [
-    {
-      "rawText": "2 paquets de cahiers 100 pages",
-      "normalizedName": "Cahier 100 pages grand format",
-      "quantity": 20,
-      "confidenceScore": 95,
-      "suggestedCategory": "cahier"
-    }
-  ]
-}
-Ne rajoute aucun texte avant ou après le JSON.`;
+  const promptText = `Tu es l'assistant OCR et IA spécialisé dans les fournitures scolaires pour la boutique Sénégalais "EduShop".
+Analyse cette photo de liste scolaire et extrais tous les articles demandés sous forme d'un objet JSON strict.
+Consignes spéciales pour les paquets de cahiers au Sénégal :
+- Si la liste demande "1 paquet de cahiers", convertir en quantite: 10 (car 1 paquet = 10 cahiers unitaires).
+- Si la liste demande "2 paquets de cahiers 100p", convertir en quantite: 20 et rawText: "20 Cahiers 100 pages".
+Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
 
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(28000),
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: promptText },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Data,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          response_mime_type: 'application/json',
-          response_schema: {
-            type: 'OBJECT',
-            properties: {
-              overallConfidenceScore: { type: 'INTEGER' },
-              items: {
-                type: 'ARRAY',
-                items: {
-                  type: 'OBJECT',
-                  properties: {
-                    rawText: { type: 'STRING' },
-                    normalizedName: { type: 'STRING' },
-                    quantity: { type: 'INTEGER' },
-                    confidenceScore: { type: 'INTEGER' },
-                    suggestedCategory: { type: 'STRING' }
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-1.5-pro'];
+  let lastError = '';
+
+  for (const model of models) {
+    try {
+      console.log(`🤖 [SERVER SCAN] Essai modèle Gemini : ${model}...`);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(20000),
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: promptText },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64Data,
                   },
-                  required: ['rawText', 'normalizedName', 'quantity']
-                }
-              }
+                },
+              ],
             },
-            required: ['items']
+          ],
+          generationConfig: {
+            response_mime_type: 'application/json',
+            response_schema: {
+              type: 'OBJECT',
+              properties: {
+                overallConfidenceScore: { type: 'INTEGER' },
+                items: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      rawText: { type: 'STRING' },
+                      normalizedName: { type: 'STRING' },
+                      quantity: { type: 'INTEGER' },
+                      confidenceScore: { type: 'INTEGER' },
+                      suggestedCategory: { type: 'STRING' }
+                    },
+                    required: ['rawText', 'normalizedName', 'quantity']
+                  }
+                }
+              },
+              required: ['items']
+            },
+            temperature: 0.0,
+            maxOutputTokens: 4096,
           },
-          temperature: 0.0,
-          maxOutputTokens: 4096,
-        },
-      }),
-    });
+        }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (textResponse) {
-        let parsed: any = null;
-        try {
-          parsed = JSON.parse(textResponse);
-        } catch (e) {
-          console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
-          let cleaned = textResponse.trim();
-          const lastObj = cleaned.lastIndexOf('}');
-          if (lastObj > 0) {
-            cleaned = cleaned.substring(0, lastObj + 1);
-            if (!cleaned.endsWith(']}')) {
-              if (!cleaned.endsWith(']')) cleaned += ']';
-              cleaned += '}';
-            }
-            try {
-              parsed = JSON.parse(cleaned);
-              console.log('✅ Réparation JSON réussie !');
-            } catch (e2) {
-              console.error('❌ Échec de la réparation JSON:', e2);
+      if (response.ok) {
+        const data = await response.json();
+        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textResponse) {
+          let parsed: any = null;
+          try {
+            parsed = JSON.parse(textResponse);
+          } catch (e) {
+            console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
+            let cleaned = textResponse.trim();
+            const lastObj = cleaned.lastIndexOf('}');
+            if (lastObj > 0) {
+              cleaned = cleaned.substring(0, lastObj + 1);
+              if (!cleaned.endsWith(']}')) {
+                if (!cleaned.endsWith(']')) cleaned += ']';
+                cleaned += '}';
+              }
+              try {
+                parsed = JSON.parse(cleaned);
+                console.log('✅ Réparation JSON réussie !');
+              } catch (e2) {
+                console.error('❌ Échec de la réparation JSON:', e2);
+              }
             }
           }
-        }
-        console.log('✅ Succès réponse Google Gemini Vision:', JSON.stringify(parsed, null, 2));
-        if (parsed) {
-          const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
-          if (rawList && Array.isArray(rawList) && rawList.length > 0) {
-            console.log(`✅ Gemini Vision a extrait ${rawList.length} articles avec succès !`);
-            return {
-              data: {
-                overallConfidenceScore: parsed.overallConfidenceScore || 90,
-                items: rawList.map((item: any) => ({
-                  rawText: item.rawText || item.nom || item.name || item.description || 'Article',
-                  normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
-                  quantity: Number(item.quantity || item.quantite || item.qty || 1),
-                  confidenceScore: Number(item.confidenceScore || 90),
-                  suggestedCategory: item.suggestedCategory || item.categorie || ''
-                }))
-              }
-            };
-          } else {
-            return { error: 'Gemini a analysé l\'image mais a renvoyé un tableau d\'articles vide (0 items trouvés).' };
+          if (parsed) {
+            const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
+            if (rawList && Array.isArray(rawList) && rawList.length > 0) {
+              console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
+              return {
+                data: {
+                  overallConfidenceScore: parsed.overallConfidenceScore || 90,
+                  items: rawList.map((item: any) => ({
+                    rawText: item.rawText || item.nom || item.name || item.description || 'Article',
+                    normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
+                    quantity: Number(item.quantity || item.quantite || item.qty || 1),
+                    confidenceScore: Number(item.confidenceScore || 90),
+                    suggestedCategory: item.suggestedCategory || item.categorie || ''
+                  }))
+                }
+              };
+            }
           }
         }
       } else {
-        return { error: `Réponse vide ou censurée par Google AI Safety Filter: ${JSON.stringify(data.candidates?.[0]?.finishReason || 'inconnu')}` };
+        const errText = await response.text();
+        lastError = `Statut HTTP ${response.status} sur ${model}: ${errText.substring(0, 150)}`;
+        console.warn(`⚠️ Modèle ${model} indisponible (${response.status}), essai du modèle suivant...`);
       }
-    } else {
-      const errText = await response.text();
-      console.error('❌ Erreur Google Gemini Vision (status ' + response.status + '):', errText);
-      return { error: `Erreur HTTP ${response.status} de l'API Google Gemini: ${errText.substring(0, 150)}` };
+    } catch (err: any) {
+      lastError = `Exception ${model}: ${err?.message || err}`;
+      console.warn(`⚠️ Exception sur ${model}, essai du suivant...`);
     }
-  } catch (err: any) {
-    console.error('❌ Exception Google Gemini Vision:', err);
-    return { error: `Exception réseau/timeout Gemini Vision: ${err?.message || err}` };
   }
-  return { error: 'Échec inconnu de Gemini Vision' };
+
+  return { error: lastError || 'Quota dépassé ou tous les modèles Gemini indisponibles.' };
 }
 
 /**
