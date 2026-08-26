@@ -340,7 +340,7 @@ Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(25000),
+        signal: AbortSignal.timeout(12000),
         body: JSON.stringify({
           contents: [
             {
