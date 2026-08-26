@@ -174,12 +174,12 @@
           </p>
         </div>
 
-        <!-- Section 1: Parcours & Choix de l'Assistant Rentrée (Du commencement à la fin) -->
-        <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-200/60 space-y-3">
+        <!-- Section 1: Parcours & Choix de l'Assistant Rentrée (Affiché UNIQUEMENT si le client a utilisé l'Assistant) -->
+        <div v-if="detailOrder && detailOrder.configuratorChoice" class="bg-blue-50/60 p-5 rounded-2xl border border-blue-200/60 space-y-3">
           <h4 class="font-display text-sm font-extrabold text-[#0F3D91] flex items-center justify-between">
             <span class="flex items-center gap-2">
               <span>✨</span>
-              <span>Détails & Choix Personnalisés du Client</span>
+              <span>Détails & Choix Personnalisés du Client (Assistant Rentrée Zen)</span>
             </span>
             <span class="text-xs font-extrabold px-3 py-1 bg-[#0F3D91] text-white rounded-full">
               Couleur : {{ extractPackColor(detailOrder) }}
@@ -209,6 +209,22 @@
           </div>
         </div>
 
+        <!-- Section 1 bis : Badge Liste Scolaire Scannée par IA -->
+        <div v-else-if="detailOrder && (detailOrder.schoolListRef || (detailOrder.sourcingItems && detailOrder.sourcingItems.length > 0))" class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="font-display text-sm font-extrabold text-amber-900 flex items-center gap-2">
+              <span>📄</span>
+              <span>Commande issue d'une Liste Scolaire Scannée (IA & OCR)</span>
+            </h4>
+            <span v-if="detailOrder.schoolListRef" class="text-xs font-extrabold px-3 py-1 bg-amber-800 text-white rounded-full">
+              Réf Scan : {{ detailOrder.schoolListRef }}
+            </span>
+          </div>
+          <p class="text-xs text-amber-800 font-medium">
+            Le client a scanné sa liste scolaire. Les fournitures disponibles en magasin sont prêtes ci-dessous, et les fournitures spécifiques à rechercher sont indiquées dans la section <strong>Mission Sourcing</strong>.
+          </p>
+        </div>
+
         <!-- Section 2: Informations de Livraison & Contact -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-2">
@@ -229,35 +245,66 @@
         </div>
 
         <!-- Section 3: FICHE DE PRÉPARATION COLIS - Liste Intégrale des Fournitures à Mettre dans le Sac -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="font-display text-sm font-extrabold text-slate-950 flex items-center gap-2">
-              <span>📋</span>
-              <span>Fiche de Préparation Colis & Détail des Fournitures à Emballer</span>
-            </h4>
-            <span class="text-[11px] font-bold text-slate-500">
-              Couleur à mettre dans le sac : <strong class="text-[#0F3D91]">{{ extractPackColor(detailOrder) }}</strong>
-            </span>
+        <div class="space-y-4">
+          <!-- Bloc A: Articles Prêts en Stock -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="font-display text-sm font-extrabold text-slate-950 flex items-center gap-2">
+                <span>📦</span>
+                <span>Fournitures Disponibles en Stock à Emballer</span>
+              </h4>
+              <span v-if="detailOrder.configuratorChoice" class="text-[11px] font-bold text-slate-500">
+                Couleur sac : <strong class="text-[#0F3D91]">{{ extractPackColor(detailOrder) }}</strong>
+              </span>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5">
+              <div 
+                v-for="(item, idx) in getDetailedPackingList(detailOrder)" 
+                :key="idx" 
+                class="flex items-center justify-between text-xs p-2.5 bg-white rounded-xl border border-slate-200/60"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="px-2 py-1 rounded-lg bg-blue-100 text-[#0F3D91] font-extrabold text-xs">
+                    {{ item.qty }}
+                  </span>
+                  <div>
+                    <span class="font-extrabold text-slate-900 block">{{ item.name }}</span>
+                    <span v-if="item.note" class="text-[11px] text-slate-500 font-medium block">{{ item.note }}</span>
+                  </div>
+                </div>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                  ✓ Prêt à emballer
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5">
-            <div 
-              v-for="(item, idx) in getDetailedPackingList(detailOrder)" 
-              :key="idx" 
-              class="flex items-center justify-between text-xs p-2.5 bg-white rounded-xl border border-slate-200/60"
-            >
-              <div class="flex items-center gap-3">
-                <span class="px-2 py-1 rounded-lg bg-blue-100 text-[#0F3D91] font-extrabold text-xs">
-                  {{ item.qty }}
-                </span>
-                <div>
-                  <span class="font-extrabold text-slate-900 block">{{ item.name }}</span>
-                  <span v-if="item.note" class="text-[11px] text-slate-500 font-medium block">{{ item.note }}</span>
+          <!-- Bloc B: Mission Sourcing / Articles Hors Stock à Rechercher pour le Client -->
+          <div v-if="detailOrder && detailOrder.sourcingItems && detailOrder.sourcingItems.length > 0" class="space-y-2">
+            <h4 class="font-display text-sm font-extrabold text-amber-900 flex items-center gap-2">
+              <span>🔍</span>
+              <span>Mission Sourcing — Articles Hors Stock à Rechercher par l'Équipe EduShop ({{ detailOrder.sourcingItems.length }})</span>
+            </h4>
+            <div class="bg-amber-50/60 rounded-2xl p-4 border border-amber-200 space-y-2.5">
+              <div 
+                v-for="(sItem, sIdx) in detailOrder.sourcingItems" 
+                :key="sIdx" 
+                class="flex items-center justify-between text-xs p-2.5 bg-white rounded-xl border border-amber-200/80"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 font-extrabold text-xs">
+                    {{ sItem.quantity || 1 }}x
+                  </span>
+                  <div>
+                    <span class="font-extrabold text-slate-900 block">{{ sItem.normalizedName || sItem.rawText }}</span>
+                    <span class="text-[11px] text-slate-500 font-medium block">Texte brut scanné : "{{ sItem.rawText }}"</span>
+                  </div>
                 </div>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 shrink-0">
+                  🔎 À rechercher / Acheter
+                </span>
               </div>
-              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                ✓ Prêt à emballer
-              </span>
             </div>
           </div>
         </div>

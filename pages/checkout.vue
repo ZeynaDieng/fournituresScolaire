@@ -272,7 +272,20 @@ async function submitOrder() {
     const finalPhone = form.value.phone || "+221770000000";
     const finalEmail = form.value.email || `${finalPhone.replace(/[^0-9]/g, "")}@edushop.sn`;
 
-    const orderPayload = {
+    let activeSourcingItems: any[] = [];
+    if (activeSchoolListRef && process.client) {
+      const savedSLRStr = localStorage.getItem("active_school_list_request");
+      if (savedSLRStr) {
+        try {
+          const slrObj = JSON.parse(savedSLRStr);
+          if (slrObj.extractedItems) {
+            activeSourcingItems = slrObj.extractedItems.filter((i: any) => i.matchType === 'sourcing' || !i.matchedProductPrice);
+          }
+        } catch (e) {}
+      }
+    }
+
+    const orderPayload: any = {
       customerName: finalName,
       customerPhone: finalPhone,
       customerEmail: finalEmail,
@@ -280,6 +293,7 @@ async function submitOrder() {
       deliveryType: deliveryType.value,
       shippingFee: shippingCost.value,
       items: currentItemsCloned,
+      sourcingItems: activeSourcingItems,
       amount: totalPrice.value,
       total: totalPrice.value,
       paymentMethod: selectedPayment.value === "paytech" ? "Paiement en ligne (PayTech)" : "Paiement à la livraison (Espèces)",
