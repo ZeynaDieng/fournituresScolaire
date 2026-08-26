@@ -65,32 +65,30 @@
             </div>
           </div>
 
-          <!-- Résultat de l'analyse IA (Optimisé Mobile UX) -->
-          <div id="scanned-result-card" v-if="scannedRequest && !isScanning" class="pt-4 space-y-5 bg-white text-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-200 shadow-xl scroll-mt-24">
+          <!-- Résultat de l'analyse IA (Épuré & Ultra-Lisible) -->
+          <div id="scanned-result-card" v-if="scannedRequest && !isScanning" class="pt-4 space-y-4 bg-white text-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-200 shadow-xl scroll-mt-24">
             <!-- Header Référence & Badge de Confiance -->
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
                 <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold block">RÉFÉRENCE UNIQUE</span>
                 <span class="font-display font-extrabold text-lg sm:text-xl text-[#0F3D91]">{{ scannedRequest.id }}</span>
               </div>
-              <div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-[11px] sm:text-xs font-extrabold px-3 py-1.5 rounded-full border border-emerald-200">
-                <span>✅ Liste analysée — Confiance {{ scannedRequest.overallConfidenceLevel }}</span>
+              <div class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 text-[11px] sm:text-xs font-extrabold px-3 py-1.5 rounded-full border border-emerald-200">
+                <span>Liste analysée — Confiance {{ scannedRequest.overallConfidenceLevel }}</span>
               </div>
             </div>
 
-            <!-- Messages d'information recommandés -->
-            <div class="space-y-1.5 text-xs sm:text-sm font-semibold bg-slate-50/70 p-3 sm:p-4 rounded-2xl border border-slate-150">
-              <p class="text-emerald-800 flex items-start gap-2">
-                <span class="shrink-0 mt-0.5">✅</span>
-                <span>Les articles disponibles sont prêts à être commandés immédiatement.</span>
+            <!-- Messages d'information épurés -->
+            <div class="space-y-1 text-xs sm:text-sm font-semibold bg-slate-50 p-3 rounded-2xl border border-slate-150">
+              <p class="text-emerald-800">
+                Les articles disponibles sont prêts à être commandés immédiatement.
               </p>
-              <p class="text-amber-800 flex items-start gap-2">
-                <span class="shrink-0 mt-0.5">🔍</span>
-                <span>Les autres articles sont déjà en cours de recherche auprès de nos fournisseurs.</span>
+              <p class="text-amber-800">
+                Les autres articles sont en cours de recherche auprès de nos fournisseurs.
               </p>
             </div>
 
-            <!-- Filtres Onglets Mobile (Tous | Prêts | En recherche) -->
+            <!-- Filtres Onglets Épurés -->
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
               <button
                 @click="activeFilter = 'all'"
@@ -104,7 +102,7 @@
                 :class="activeFilter === 'available' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'"
                 class="text-xs font-extrabold px-3.5 py-2 rounded-full shrink-0 transition-all"
               >
-                Prêts immédiatement ({{ scannedRequest.exactMatchesCount + scannedRequest.equivalentMatchesCount }})
+                Prêts ({{ scannedRequest.exactMatchesCount + scannedRequest.equivalentMatchesCount }})
               </button>
               <button
                 @click="activeFilter = 'sourcing'"
@@ -115,55 +113,42 @@
               </button>
             </div>
 
-            <!-- Liste des articles extraits (Matchs + Sourcing) -->
+            <!-- Liste des articles épurée sans images ni icônes parasites -->
             <div class="space-y-2 pt-1">
-              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-[420px] overflow-y-auto">
+              <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-[440px] overflow-y-auto">
                 <div
                   v-for="item in filteredExtractedItems"
                   :key="item.id"
                   class="p-3 sm:p-4 flex items-center justify-between gap-3 bg-white hover:bg-slate-50 transition-colors"
                 >
-                  <!-- Vignette produit + Détails -->
-                  <div class="flex items-center gap-3 min-w-0 flex-1">
-                    <img
-                      v-if="item.matchedProductImage"
-                      :src="item.matchedProductImage"
-                      :alt="item.normalizedName"
-                      class="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl border border-slate-200 shrink-0 bg-slate-50"
-                    />
-                    <div v-else class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border border-amber-200 bg-amber-50 flex items-center justify-center shrink-0 text-amber-700 text-lg">
-                      🔍
+                  <!-- Quantité + Nom + Statut texte clair -->
+                  <div class="space-y-1 min-w-0 flex-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="bg-slate-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">
+                        {{ item.quantity }}x
+                      </span>
+                      <span class="font-bold text-slate-900 text-xs sm:text-sm">
+                        {{ item.normalizedName }}
+                      </span>
                     </div>
 
-                    <div class="space-y-0.5 min-w-0 flex-1">
-                      <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="bg-slate-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">
-                          {{ item.quantity }}x
-                        </span>
-                        <span class="font-bold text-slate-900 text-xs sm:text-sm truncate">
-                          {{ item.normalizedName }}
-                        </span>
-                      </div>
+                    <p v-if="item.matchedProductName && item.matchedProductName !== item.normalizedName" class="text-[11px] text-slate-500 font-medium truncate">
+                      Retenu : {{ item.matchedProductName }}
+                    </p>
 
-                      <p v-if="item.matchedProductName && item.matchedProductName !== item.normalizedName" class="text-[11px] text-slate-500 font-medium truncate">
-                        Retenu : {{ item.matchedProductName }}
-                      </p>
-
-                      <!-- Badge statut pour mobile -->
-                      <div class="pt-0.5">
-                        <span
-                          v-if="item.matchType === 'sourcing'"
-                          class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md inline-block"
-                        >
-                          🔍 En cours de recherche fournisseur
-                        </span>
-                        <span
-                          v-else
-                          class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md inline-block"
-                        >
-                          ✅ Disponible en stock
-                        </span>
-                      </div>
+                    <div>
+                      <span
+                        v-if="item.matchType === 'sourcing'"
+                        class="text-[10px] font-extrabold bg-amber-50 text-amber-800 px-2 py-0.5 rounded-md inline-block border border-amber-200"
+                      >
+                        En recherche fournisseur
+                      </span>
+                      <span
+                        v-else
+                        class="text-[10px] font-extrabold bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-md inline-block border border-emerald-200"
+                      >
+                        Disponible en stock
+                      </span>
                     </div>
                   </div>
 
@@ -172,7 +157,7 @@
                     <span v-if="item.matchedProductPrice" class="font-extrabold text-xs sm:text-sm text-[#0F3D91] block">
                       {{ useFormatter().formatPrice(item.matchedProductPrice * item.quantity) }}
                     </span>
-                    <span v-else class="text-[11px] font-extrabold text-amber-700 bg-amber-50 px-2 py-1 rounded-md inline-block">
+                    <span v-else class="text-[11px] font-extrabold text-amber-700 bg-amber-50 px-2 py-1 rounded-md inline-block border border-amber-200">
                       Sur devis
                     </span>
                   </div>
