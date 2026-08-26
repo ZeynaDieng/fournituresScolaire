@@ -631,7 +631,7 @@ function orderScannedAvailableItems() {
           id: item.matchedProductId,
           name: item.matchedProductName || item.normalizedName,
           price: item.matchedProductPrice,
-          image: item.matchedProductImage || "https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop",
+          image: item.matchedProductImage || "https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg",
           type: "product",
           schoolListRef: req.id,
         },
