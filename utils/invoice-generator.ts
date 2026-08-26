@@ -269,7 +269,11 @@ export function printOfficialInvoice(order: OrderInvoiceData) {
         <div style="font-size: 12px; color: #334155; line-height: 1.6;">
           <strong>Réf. Facture :</strong> #FAC-${order.ref || '2026'}<br/>
           <strong>Date d'émission :</strong> ${order.createdAt || new Date().toLocaleDateString('fr-FR')}<br/>
-          <strong>Règlement :</strong> <span style="color: #15803d; font-weight: bold;">ACQUITTÉ (${order.paymentMethod || 'WAVE / ORANGE MONEY'})</span>
+          <strong>Règlement :</strong> ${
+            (order.paymentMethod && (order.paymentMethod.toLowerCase().includes('livraison') || order.paymentMethod.toLowerCase().includes('espèces') || order.paymentMethod.toLowerCase().includes('cash')))
+              ? '<span style="color: #0F3D91; font-weight: bold;">À LA LIVRAISON (ESPÈCES)</span>'
+              : `<span style="color: #15803d; font-weight: bold;">ACQUITTÉ (${(order.paymentMethod || 'EN LIGNE').toUpperCase()})</span>`
+          }
         </div>
       </div>
     </div>

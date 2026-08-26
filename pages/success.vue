@@ -131,7 +131,11 @@ const triggerInvoiceDownload = () => {
 
 onMounted(() => {
   if (process.client) {
-    const saved = localStorage.getItem("last_order");
+    const queryRef = route.query.ref as string;
+    let saved = queryRef ? localStorage.getItem(`order_${queryRef}`) : null;
+    if (!saved) {
+      saved = localStorage.getItem("last_order");
+    }
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -141,17 +145,25 @@ onMounted(() => {
           price: Number(i.price || i.unitPrice || 0),
         })) : [];
 
-        const calculatedTotal = Number(parsed.total || parsed.amount || (calculatedItems.length > 0 ? calculatedItems.reduce((sum: number, it: any) => sum + (it.price * it.quantity), 0) : 0));
+        const itemsSum = calculatedItems.reduce((sum: number, it: any) => sum + (it.price * it.quantity), 0);
+        const shippingFee = Number(parsed.shippingFee || 0);
+        const calculatedTotal = Number(parsed.total || parsed.amount || (itemsSum + shippingFee));
+
+        let pmLabel = parsed.paymentMethod || "Paiement à la livraison (Espèces)";
+        if (pmLabel === "paytech") pmLabel = "Paiement en ligne";
+        else if (pmLabel === "cash") pmLabel = "Paiement à la livraison (Espèces)";
+        else if (pmLabel === "wave") pmLabel = "Wave Mobile Money";
+        else if (pmLabel === "om") pmLabel = "Orange Money";
 
         orderData.value = {
-          ref: parsed.orderRef || (route.query.ref as string) || `REF-${Date.now().toString().slice(-6)}`,
+          ref: parsed.orderRef || queryRef || `REF-${Date.now().toString().slice(-6)}`,
           customerName: parsed.customerName || "Client EduShop",
           phone: parsed.customerPhone || "",
           email: parsed.customerEmail || "",
           city: "Dakar",
           address: parsed.address || "",
           total: calculatedTotal,
-          paymentMethod: parsed.paymentMethod?.toUpperCase() || "PAYTECH",
+          paymentMethod: pmLabel,
           createdAt: new Date().toLocaleDateString("fr-FR"),
           configuratorChoice: parsed.configuratorChoice || undefined,
           items: calculatedItems,

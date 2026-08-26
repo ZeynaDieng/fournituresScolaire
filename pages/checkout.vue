@@ -214,9 +214,13 @@ onMounted(() => {
   }
 });
 
+const selectedPayment = ref("cash");
+
 const paymentMethods = [
-  { id: "paytech", name: "Paiement en ligne (PayTech)", desc: "Paiement sécurisé par Wave, Orange Money, Free Money ou Carte Bancaire", badge: "Recommandé" },
-  { id: "cash", name: "Paiement à la livraison", desc: "Réglez directement en espèces lors de la livraison" },
+  { id: "cash", name: "💵 Paiement à la livraison / au retrait", desc: "Réglez directement en espèces lors de la livraison ou en magasin", badge: "Sans frais" },
+  { id: "wave", name: "💙 Wave Mobile Money", desc: "Paiement direct sécurisé via l'application Wave" },
+  { id: "om", name: "🧡 Orange Money", desc: "Paiement direct sécurisé par Orange Money" },
+  { id: "paytech", name: "💳 Carte Bancaire / Autre", desc: "Paiement sécurisé par carte bancaire ou carte internationale" },
 ];
 
 const cartSubtotal = computed(() => {
@@ -229,7 +233,7 @@ const cartSubtotal = computed(() => {
 });
 
 const shippingCost = computed(() => {
-  return 0; // Pas d'ajout automatique de frais de livraison
+  return deliveryType.value === "home" ? 2500 : 0;
 });
 
 const totalPrice = computed(() => cartSubtotal.value + shippingCost.value);
@@ -264,6 +268,8 @@ async function submitOrder() {
       }
     }
 
+    const currentItemsCloned = JSON.parse(JSON.stringify(cartStore.items || []));
+
     const orderPayload = {
       customerName: `${form.value.firstName} ${form.value.lastName}`.trim(),
       customerPhone: form.value.phone,
@@ -271,10 +277,10 @@ async function submitOrder() {
       address: deliveryType.value === "store" ? "Retrait en Magasin (Ouakam, Dakar)" : form.value.address,
       deliveryType: deliveryType.value,
       shippingFee: shippingCost.value,
-      items: cartStore.items,
+      items: currentItemsCloned,
       amount: totalPrice.value,
       total: totalPrice.value,
-      paymentMethod: selectedPayment.value,
+      paymentMethod: selectedPayment.value === "cash" ? "Paiement à la livraison (Espèces)" : (selectedPayment.value === "wave" ? "Wave" : (selectedPayment.value === "om" ? "Orange Money" : "Paiement en ligne")),
       configuratorChoice: activeConfigurator,
       schoolListRef: activeSchoolListRef,
       orderRef: `REF-${Date.now().toString().slice(-6)}`,
@@ -283,6 +289,7 @@ async function submitOrder() {
     if (process.client) {
       // 1. Sauvegarde dernière commande pour facture automatique
       localStorage.setItem("last_order", JSON.stringify(orderPayload));
+      localStorage.setItem(`order_${orderPayload.orderRef}`, JSON.stringify(orderPayload));
 
       // 2. Notification WhatsApp automatique pour la demande de liste scolaire si présente
       if (activeSchoolListRef) {
