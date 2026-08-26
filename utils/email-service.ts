@@ -1,11 +1,10 @@
 import nodemailer from "nodemailer";
 
 // Configuration email
-const envPass = process.env.NOTIFICATION_EMAIL_PASSWORD || process.env.EMAIL_PASSWORD || "";
 const EMAIL_CONFIG = {
   service: "gmail",
   user: "zeynash1@gmail.com",
-  password: (envPass && !envPass.includes("zmru")) ? envPass : "roaeavueygugiwpt",
+  password: "roaeavueygugiwpt",
   adminEmail: "zeynash1@gmail.com",
   fromName: "Fournitures Scolaires EduShop",
 };
