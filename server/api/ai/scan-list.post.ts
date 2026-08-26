@@ -308,18 +308,24 @@ async function callGeminiVision(base64Image: string, apiKeys: string[]) {
 
   const promptText = `Tu es l'expert officiel d'EduShop au Sénégal pour le déchiffrage de listes de fournitures scolaires (manuscrites et imprimées).
 
-RÈGLES MÉTIER ET COMPRÉHENSION DU LANGAGE HUMAIN (SÉNÉGAL) :
-1. "PAQUET DE CAHIERS" :
-   - Au Sénégal, les écoles demandent souvent "1 paquet de cahiers [X] pages" ou "2 paquets de cahiers [X] pages".
-   - 1 paquet standard de cahiers contient 10 cahiers unitaires (ex: 1 paquet de 100 pages = 10 cahiers de 100 pages).
-   - Si la liste demande "2 paquets de cahiers 100 pages", convertis en 20 cahiers unitaires de 100 pages (quantity: 20, normalizedName: "Cahier 100 pages grand format", rawText: "2 paquets de cahiers 100 pages").
-   - Si la liste demande "1 paquet de cahiers 200 pages", quantity: 10, normalizedName: "Cahier 200 pages grand format".
-2. "COPIES DOUBLES & DESSIN" :
-   - "Paquet de copies doubles" -> normalizedName: "Paquet de Copies Doubles PM", quantity: 1.
-   - "Cahier de dessin" -> normalizedName: "Cahier de Dessin PM", quantity: 1.
-3. "MATÉRIELS ET STYLOS" :
-   - "Stylo bleu / bic" -> normalizedName: "Stylo Bille Bleu", quantity: 1.
-   - "Matériel de géométrie" -> normalizedName: "Matériels / Kit de Géométrie", quantity: 1.
+DICTIONNAIRE ET COMPRÉHENSION DU LANGAGE HUMAIN & ABBRÉVIATIONS AU SÉNÉGAL :
+1. ABBRÉVIATIONS DE FORMATS :
+   - "GM" = Grand Format (21x29.7 cm ou 24x32 cm). Ex: "Cahier 100p GM" -> normalizedName: "Cahier 100 pages grand format".
+   - "PM" = Petit Format (17x22 cm). Ex: "Copies doubles PM" -> normalizedName: "Paquet de Copies Doubles PM".
+   - "TP" = Travaux Pratiques (1 page dessin / 1 page lignée). Ex: "Cahier TP 100p" -> normalizedName: "Cahier de Travaux Pratiques 100p".
+   - "DO" = Double Ouverture / Double Compartiment (pour les trousses).
+2. CONVERSION DE CONDITIONNEMENT (PAQUETS) :
+   - "1 paquet de cahiers" = 10 cahiers unitaires. Ex: "1 paquet de cahiers 100p" -> quantity: 10, normalizedName: "Cahier 100 pages grand format".
+   - "2 paquets de cahiers 100p" -> quantity: 20.
+3. LIGNAGES ET TYPES :
+   - "Seyes" / "Grands carreaux" = Lignage Seyes standard.
+   - "Quadrillé" / "5x5" / "Petits carreaux" = Cahier quadrillé pour calcul.
+   - "Dessin" = Cahier de dessin.
+4. FOURNITURES COURANTES :
+   - "Stylo bleu / bic" = Stylo Bille Bleu.
+   - "Bic rouge" = Stylo Bille Rouge.
+   - "Matériel de géométrie" / "Kit de géométrie" / "Règle + équerre + rapporteur" = Matériels / Kit de Géométrie.
+   - "Velleda" = Ardoise Velleda + Feutre effaçable.
 
 Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
 
