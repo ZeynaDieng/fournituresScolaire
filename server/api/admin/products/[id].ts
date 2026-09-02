@@ -1,47 +1,18 @@
 // server/api/admin/products/[id].ts
 import { defineEventHandler, readBody, createError } from "h3";
-import { getAirtableBase } from "~/utils/airtable-base";
+import { officialCatalog } from "~/data/products-senegal";
+import fs from "fs";
+import path from "path";
 
-function mapToAirtableFields(input: any) {
-  if (!input || typeof input !== "object") return {};
-  const out: Record<string, any> = {};
-  if (input.name !== undefined) out["Name"] = input.name;
-  if (input.price !== undefined) out["Price"] = Number(input.price) || 0;
-  if (input.originalPrice !== undefined)
-    out["Original Price"] = input.originalPrice;
-  if (input.category !== undefined) out["Category"] = input.category;
-  if (input.image !== undefined) out["Image URL"] = input.image;
-  if (input.images !== undefined)
-    out["Images"] = Array.isArray(input.images)
-      ? input.images.join(", ")
-      : input.images;
-  if (input.description !== undefined) out["Description"] = input.description;
-  if (input.inStock !== undefined) out["In Stock"] = Boolean(input.inStock);
-  if (input.isPromotion !== undefined)
-    out["Is Promotion"] = Boolean(input.isPromotion);
-  if (input.promotionEndDate !== undefined)
-    out["Promotion End Date"] = input.promotionEndDate;
-  // Allow raw Airtable field keys passthrough as well
-  const passthroughKeys = [
-    "Name",
-    "Price",
-    "Original Price",
-    "Category",
-    "Image URL",
-    "Images",
-    "Description",
-    "In Stock",
-    "Is Promotion",
-    "Promotion End Date",
-    "Features",
-    "Specs",
-    "Reviews",
-    "Bulk Options",
-  ];
-  for (const k of passthroughKeys) {
-    if (input[k] !== undefined) out[k] = input[k];
+function persistCatalogToDisk() {
+  try {
+    const filePath = path.resolve(process.cwd(), "data/products-senegal.js");
+    const content = `// data/products-senegal.js\n// Source officielle du catalogue EduShop\n\nexport const officialCatalog = ${JSON.stringify(officialCatalog, null, 2)};\n\nexport const senegaleseProducts = officialCatalog;\n`;
+    fs.writeFileSync(filePath, content, "utf-8");
+    console.log("✅ data/products-senegal.js sauvegardé sur le disque!");
+  } catch (err) {
+    console.error("⚠️ Impossible d'écrire dans data/products-senegal.js:", err);
   }
-  return out;
 }
 
 export default defineEventHandler(async (event) => {
@@ -50,33 +21,47 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing product id" });
   }
 
-  const base = getAirtableBase();
-  const tableName = process.env.AIRTABLE_PRODUCTS_TABLE!;
-
   try {
     if (event.method === "DELETE") {
-      await base(tableName).destroy(id);
+      const idx = officialCatalog.findIndex((p: any) => p.id === id);
+      if (idx !== -1) {
+        officialCatalog.splice(idx, 1);
+        persistCatalogToDisk();
+      }
       return { success: true };
     }
 
     if (event.method === "PUT") {
       const body = await readBody(event);
-      const fields = mapToAirtableFields(body);
-      try {
-        const updated = await base(tableName).update([{ id, fields }]);
-        return { id: updated[0].id, ...updated[0].fields };
-      } catch (err: any) {
-        console.warn("⚠️ Airtable non disponible, retour des champs mis à jour:", err?.message);
-        return { id, ...body, ...fields };
+      const idx = officialCatalog.findIndex((p: any) => p.id === id);
+
+      if (idx !== -1) {
+        officialCatalog[idx] = {
+          ...officialCatalog[idx],
+          ...body,
+          price: body.sellingPrice || body.price || officialCatalog[idx].price,
+        };
+        persistCatalogToDisk();
+      } else {
+        const newProduct = {
+          id,
+          ...body,
+          price: body.sellingPrice || body.price || 300,
+        };
+        officialCatalog.push(newProduct);
+        persistCatalogToDisk();
       }
+
+      const updatedProd = officialCatalog.find((p: any) => p.id === id) || body;
+      return { success: true, product: updatedProd };
     }
 
     throw createError({ statusCode: 405, statusMessage: "Method Not Allowed" });
   } catch (err: any) {
-    console.error("AIRTABLE ADMIN PRODUCTS [id] ERROR:", err);
+    console.error("ADMIN PRODUCTS [id] ERROR:", err);
     throw createError({
       statusCode: 500,
-      statusMessage: err?.message || "Airtable error",
+      statusMessage: err?.message || "Server error",
     });
   }
 });

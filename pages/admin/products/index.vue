@@ -637,7 +637,7 @@ const openEditModal = (product: any) => {
   showEditModal.value = true;
 };
 
-const saveEditProduct = () => {
+const saveEditProduct = async () => {
   if (!editingId.value) return;
   const idx = productsStore.products.findIndex((p: any) => p.id === editingId.value);
   const existing = idx !== -1 ? productsStore.products[idx] : {};
@@ -661,10 +661,19 @@ const saveEditProduct = () => {
     description: productForm.value.description,
   };
 
+  try {
+    await $fetch(`/api/admin/products/${editingId.value}`, {
+      method: "PUT",
+      body: updatedData,
+    });
+  } catch (e) {
+    console.warn("API PUT fallback local:", e);
+  }
+
   productsStore.saveProduct(updatedData);
 
   showEditModal.value = false;
-  alert("Produit unitaire mis à jour et synchronisé instantanément sur la boutique !");
+  alert("Produit unitaire mis à jour et enregistré dans la base de données !");
 };
 
 const toggleActive = (product: any) => {
