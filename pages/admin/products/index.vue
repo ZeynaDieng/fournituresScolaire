@@ -640,29 +640,31 @@ const openEditModal = (product: any) => {
 const saveEditProduct = () => {
   if (!editingId.value) return;
   const idx = productsStore.products.findIndex((p: any) => p.id === editingId.value);
-  if (idx !== -1) {
-    const existing = productsStore.products[idx];
-    productsStore.products[idx] = {
-      ...existing,
-      name: productForm.value.name,
-      costPrice: productForm.value.costPrice,
-      sellingPrice: productForm.value.sellingPrice,
-      price: productForm.value.sellingPrice,
-      category: productForm.value.category,
-      isActive: productForm.value.isActive,
-      stock: productForm.value.stock,
-      inStock: productForm.value.stock > 0,
-      lowStockThreshold: productForm.value.lowStockThreshold,
-      schoolLevel: productForm.value.schoolLevel,
-      format: productForm.value.format,
-      unit: productForm.value.unit,
-      image: productForm.value.image || existing.image,
-      description: productForm.value.description,
-    };
-  }
+  const existing = idx !== -1 ? productsStore.products[idx] : {};
+
+  const updatedData = {
+    ...existing,
+    id: editingId.value,
+    name: productForm.value.name,
+    costPrice: productForm.value.costPrice,
+    sellingPrice: productForm.value.sellingPrice,
+    price: productForm.value.sellingPrice,
+    category: productForm.value.category,
+    isActive: productForm.value.isActive,
+    stock: productForm.value.stock,
+    inStock: productForm.value.stock > 0,
+    lowStockThreshold: productForm.value.lowStockThreshold,
+    schoolLevel: productForm.value.schoolLevel,
+    format: productForm.value.format,
+    unit: productForm.value.unit,
+    image: productForm.value.image || existing.image,
+    description: productForm.value.description,
+  };
+
+  productsStore.saveProduct(updatedData);
 
   showEditModal.value = false;
-  alert("Produit unitaire mis à jour dans le catalogue !");
+  alert("Produit unitaire mis à jour et synchronisé instantanément sur la boutique !");
 };
 
 const toggleActive = (product: any) => {

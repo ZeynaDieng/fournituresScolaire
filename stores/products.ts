@@ -207,7 +207,7 @@ export const useProductsStore = defineStore("products", {
         isActive: true,
       }));
 
-      this.products = (officialCatalog as any[]).map((item) => ({
+      let baseProducts = (officialCatalog as any[]).map((item) => ({
         id: item.id,
         name: item.name,
         slug: item.slug,
@@ -229,6 +229,24 @@ export const useProductsStore = defineStore("products", {
         images: [item.image || "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&q=80&w=500"],
         description: item.description || "",
       }));
+
+      // Fusion avec les modifications du Backoffice stockées dans localStorage
+      if (process.client) {
+        try {
+          const savedProds = localStorage.getItem("edushop_custom_products");
+          if (savedProds) {
+            const parsed: Product[] = JSON.parse(savedProds);
+            const map = new Map<string, Product>();
+            baseProducts.forEach((p) => map.set(p.id, p));
+            parsed.forEach((p) => map.set(p.id, { ...map.get(p.id), ...p }));
+            baseProducts = Array.from(map.values());
+          }
+        } catch (e) {
+          console.error("Erreur lecture custom products:", e);
+        }
+      }
+
+      this.products = baseProducts;
 
       this.promotions = [
         {
@@ -353,6 +371,31 @@ export const useProductsStore = defineStore("products", {
     // Ajouter un produit
     addProduct(product: Product): void {
       this.products.push(product);
+      if (process.client) {
+        try {
+          localStorage.setItem("edushop_custom_products", JSON.stringify(this.products));
+        } catch (e) {
+          console.error("Erreur enregistrement custom products:", e);
+        }
+      }
+    },
+
+    // Sauvegarder/Mettre à jour un produit et persister dans localStorage
+    saveProduct(product: Partial<Product> & { id: string }): void {
+      const idx = this.products.findIndex((p: Product) => p.id === product.id);
+      if (idx !== -1) {
+        this.products[idx] = { ...this.products[idx], ...product };
+      } else {
+        this.products.push(product as Product);
+      }
+
+      if (process.client) {
+        try {
+          localStorage.setItem("edushop_custom_products", JSON.stringify(this.products));
+        } catch (e) {
+          console.error("Erreur enregistrement custom products:", e);
+        }
+      }
     },
 
     // Ajouter un pack
