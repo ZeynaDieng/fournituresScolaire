@@ -73,7 +73,6 @@
               : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80'
           "
         >
-          <span>{{ cat.icon }}</span>
           <span>{{ cat.label }}</span>
           <span
             v-if="cat.key === 'Packs'"
@@ -411,14 +410,14 @@ const inStockOnly = ref(false);
 const sortBy = ref("popular");
 
 const quickFilterCategories = [
-  { key: "Toutes", label: "Tout", icon: "✨" },
-  { key: "Packs", label: "Packs scolaires", icon: "📦" },
-  { key: "Cahiers", label: "Cahiers", icon: "📓" },
-  { key: "Stylos", label: "Stylos & Crayon", icon: "✏️" },
-  { key: "Manuels", label: "Manuels", icon: "📚" },
-  { key: "Fournitures", label: "Fournitures", icon: "✂️" },
-  { key: "Protège-cahiers", label: "Protège-cahiers", icon: "🛡️" },
-  { key: "Géométrie", label: "Géométrie", icon: "📐" },
+  { key: "Toutes", label: "Tout" },
+  { key: "Packs", label: "Packs scolaires" },
+  { key: "Cahiers", label: "Cahiers" },
+  { key: "Stylos", label: "Stylos & Crayon" },
+  { key: "Manuels", label: "Manuels" },
+  { key: "Fournitures", label: "Fournitures" },
+  { key: "Protège-cahiers", label: "Protège-cahiers" },
+  { key: "Géométrie", label: "Géométrie" },
 ];
 
 const sidebarCategories = [
