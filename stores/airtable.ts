@@ -192,15 +192,22 @@ export const useAirtableStore = defineStore("airtable", {
     // Récupérer tous les produits depuis Airtable
     async fetchProducts() {
       const productsStore = useProductsStore();
-      if (productsStore.products.length === 0) {
-        productsStore.initializeDemoData();
-      }
+      productsStore.initializeDemoData();
 
-      this.products = await this._smartFetch<Product>(
+      const fetched = await this._smartFetch<Product>(
         "products",
         "/api/airtable/products",
         productsStore.products as any
       );
+
+      // Fusionner les produits modifiés/ajoutés du Backoffice (stockés dans productsStore)
+      const map = new Map<string, any>();
+      (fetched || []).forEach((p: any) => map.set(p.id, p));
+      (productsStore.products || []).forEach((p: any) => {
+        map.set(p.id, { ...(map.get(p.id) || {}), ...p });
+      });
+
+      this.products = Array.from(map.values());
 
       // Extraire les catégories uniques
       if (this.products.length > 0) {

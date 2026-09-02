@@ -451,23 +451,32 @@ const featuredPacks = computed(() => {
   return packs.slice(0, 3);
 });
 
-// Tous les produits
+// Tous les produits (avec fusion dynamique des données du Backoffice)
 const allProducts = computed(() => {
-  const activeProds = productsStore.products.filter((p: any) => p.isActive !== false);
+  const map = new Map<string, any>();
+  if (airtableStore.products && airtableStore.products.length > 0) {
+    airtableStore.products.forEach((p: any) => map.set(p.id, p));
+  }
+  if (productsStore.products && productsStore.products.length > 0) {
+    productsStore.products.forEach((p: any) => map.set(p.id, { ...(map.get(p.id) || {}), ...p }));
+  }
+
+  const combined = Array.from(map.values());
+  const activeProds = combined.filter((p: any) => p.isActive !== false);
 
   return activeProds.map((p) => {
     const priceVal = p.sellingPrice ?? p.price ?? 300;
     return {
       id: p.id,
-      name: p.name,
-      category: p.category || "Fournitures",
-      schoolLevel: p.schoolLevel || "Tous niveaux",
+      name: p.name || p.Name,
+      category: p.category || p.Category || "Fournitures",
+      schoolLevel: p.schoolLevel || p.SchoolLevel || "Tous niveaux",
       format: p.format || "Standard",
       unit: p.unit || "Unité",
       price: priceVal,
       priceFormatted: `${priceVal.toLocaleString("fr-FR")} F CFA`,
       inStock: p.inStock !== false && (p.stock ?? 50) > 0,
-      image: p.image || "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=600&h=600&q=80",
+      image: p.image || p["Image URL"] || "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=600&h=600&q=80",
       description: p.description || "",
     };
   });
