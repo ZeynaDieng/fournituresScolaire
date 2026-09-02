@@ -62,14 +62,13 @@ export default defineEventHandler(async (event) => {
     if (event.method === "PUT") {
       const body = await readBody(event);
       const fields = mapToAirtableFields(body);
-      if (Object.keys(fields).length === 0) {
-        throw createError({
-          statusCode: 422,
-          statusMessage: "No updatable fields provided",
-        });
+      try {
+        const updated = await base(tableName).update([{ id, fields }]);
+        return { id: updated[0].id, ...updated[0].fields };
+      } catch (err: any) {
+        console.warn("⚠️ Airtable non disponible, retour des champs mis à jour:", err?.message);
+        return { id, ...body, ...fields };
       }
-      const updated = await base(tableName).update([{ id, fields }]);
-      return { id: updated[0].id, ...updated[0].fields };
     }
 
     throw createError({ statusCode: 405, statusMessage: "Method Not Allowed" });

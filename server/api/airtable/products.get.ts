@@ -2,12 +2,7 @@
 import { AirtableService } from "../../../utils/airtable";
 import { officialCatalog } from "../../../data/products-senegal";
 
-let memoryProductsCache: any = null;
-
 export default defineEventHandler(async (event) => {
-  if (memoryProductsCache) {
-    return memoryProductsCache;
-  }
 
   try {
     let products: any[] = [];
