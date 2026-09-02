@@ -1,6 +1,7 @@
 // server/api/admin/products/[id].ts
 import { defineEventHandler, readBody, createError } from "h3";
 import { officialCatalog } from "~/data/products-senegal";
+import { getAirtableBase } from "~/utils/airtable-base";
 import fs from "fs";
 import path from "path";
 
@@ -12,6 +13,68 @@ function persistCatalogToDisk() {
     console.log("✅ data/products-senegal.js sauvegardé sur le disque!");
   } catch (err) {
     console.error("⚠️ Impossible d'écrire dans data/products-senegal.js:", err);
+  }
+}
+
+async function syncProductToAirtable(product: any) {
+  try {
+    const base = getAirtableBase();
+    const table = base("Products");
+    const fields: any = {
+      Name: product.name,
+      Price: Number(product.sellingPrice || product.price) || 0,
+      Category: product.category || "Fournitures",
+      Description: product.description || "",
+      "Image URL": product.image || "",
+      "In Stock": product.inStock !== false && (product.stock ?? 50) > 0,
+      "Local ID": product.id,
+    };
+
+    if (product.costPrice) fields["Cost Price"] = Number(product.costPrice);
+    if (product.originalPrice) fields["Original Price"] = Number(product.originalPrice);
+
+    let existingRecordId: string | null = null;
+    if (product.id && product.id.startsWith("rec")) {
+      existingRecordId = product.id;
+    } else {
+      const records = await table
+        .select({
+          filterByFormula: `OR({Local ID} = '${product.id}', LOWER({Name}) = '${(product.name || '').toLowerCase().replace(/'/g, "\\'")}')`,
+          maxRecords: 1,
+        })
+        .all();
+
+      if (records.length > 0) {
+        existingRecordId = records[0].id;
+      }
+    }
+
+    if (existingRecordId) {
+      await table.update(existingRecordId, fields);
+      console.log(`✅ Airtable Product ${existingRecordId} mis à jour dans le Cloud!`);
+    } else {
+      const created = await table.create([{ fields }]);
+      console.log(`✅ Airtable Product ${created[0].id} créé dans le Cloud!`);
+    }
+  } catch (err: any) {
+    console.warn("⚠️ Airtable Cloud sync warning:", err?.message || err);
+  }
+}
+
+async function deleteProductFromAirtable(id: string) {
+  try {
+    const base = getAirtableBase();
+    const table = base("Products");
+    if (id.startsWith("rec")) {
+      await table.destroy(id);
+    } else {
+      const records = await table.select({ filterByFormula: `{Local ID} = '${id}'`, maxRecords: 1 }).all();
+      if (records.length > 0) {
+        await table.destroy(records[0].id);
+      }
+    }
+  } catch (e: any) {
+    console.warn("⚠️ Airtable delete warning:", e?.message);
   }
 }
 
@@ -28,12 +91,14 @@ export default defineEventHandler(async (event) => {
         officialCatalog.splice(idx, 1);
         persistCatalogToDisk();
       }
+      await deleteProductFromAirtable(id);
       return { success: true };
     }
 
     if (event.method === "PUT") {
       const body = await readBody(event);
       const idx = officialCatalog.findIndex((p: any) => p.id === id);
+      let updatedProduct: any;
 
       if (idx !== -1) {
         officialCatalog[idx] = {
@@ -41,19 +106,21 @@ export default defineEventHandler(async (event) => {
           ...body,
           price: body.sellingPrice || body.price || officialCatalog[idx].price,
         };
+        updatedProduct = officialCatalog[idx];
         persistCatalogToDisk();
       } else {
-        const newProduct = {
+        updatedProduct = {
           id,
           ...body,
           price: body.sellingPrice || body.price || 300,
         };
-        officialCatalog.push(newProduct);
+        officialCatalog.push(updatedProduct);
         persistCatalogToDisk();
       }
 
-      const updatedProd = officialCatalog.find((p: any) => p.id === id) || body;
-      return { success: true, product: updatedProd };
+      await syncProductToAirtable(updatedProduct);
+
+      return { success: true, product: updatedProduct };
     }
 
     throw createError({ statusCode: 405, statusMessage: "Method Not Allowed" });

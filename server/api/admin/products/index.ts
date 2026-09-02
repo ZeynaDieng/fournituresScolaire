@@ -1,6 +1,7 @@
 // server/api/admin/products/index.ts
 import { defineEventHandler, readBody, createError } from "h3";
 import { officialCatalog } from "~/data/products-senegal";
+import { getAirtableBase } from "~/utils/airtable-base";
 import fs from "fs";
 import path from "path";
 
@@ -12,6 +13,30 @@ function persistCatalogToDisk() {
     console.log("✅ data/products-senegal.js sauvegardé sur le disque!");
   } catch (err) {
     console.error("⚠️ Impossible d'écrire dans data/products-senegal.js:", err);
+  }
+}
+
+async function syncProductToAirtable(product: any) {
+  try {
+    const base = getAirtableBase();
+    const table = base("Products");
+    const fields: any = {
+      Name: product.name,
+      Price: Number(product.sellingPrice || product.price) || 0,
+      Category: product.category || "Fournitures",
+      Description: product.description || "",
+      "Image URL": product.image || "",
+      "In Stock": product.inStock !== false && (product.stock ?? 50) > 0,
+      "Local ID": product.id,
+    };
+
+    if (product.costPrice) fields["Cost Price"] = Number(product.costPrice);
+    if (product.originalPrice) fields["Original Price"] = Number(product.originalPrice);
+
+    const created = await table.create([{ fields }]);
+    console.log(`✅ Airtable Product ${created[0].id} créé dans le Cloud!`);
+  } catch (err: any) {
+    console.warn("⚠️ Airtable Cloud sync warning:", err?.message || err);
   }
 }
 
@@ -44,6 +69,8 @@ export default defineEventHandler(async (event) => {
 
     officialCatalog.unshift(newProduct);
     persistCatalogToDisk();
+
+    await syncProductToAirtable(newProduct);
 
     return { success: true, product: newProduct };
   }

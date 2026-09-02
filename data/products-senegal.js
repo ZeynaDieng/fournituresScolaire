@@ -8,7 +8,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 300,
     "sellingPrice": 500,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://www.lalibrairiedesecoles.com/wp-content/uploads/2026/05/9782916788005_ECRITURE_CP_CV-scaled-1.jpg",
     "description": "Cahier d'écriture modèles et lignes d'apprentissage",
     "isActive": true,
     "stock": 100,
@@ -23,7 +23,8 @@ export const officialCatalog = [
     "keywords": "Cahier d'écriture, ecriture, modele 2, cahier ecriture",
     "images": [
       "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
-    ]
+    ],
+    "price": 500
   },
   {
     "id": "rame-papier-a4",
