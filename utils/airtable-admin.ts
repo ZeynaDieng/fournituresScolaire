@@ -1,5 +1,6 @@
 import { getAirtableBase } from "./airtable-base";
-import { senegaleseProducts, senegalesePacks } from "../data/products-senegal";
+import { senegaleseProducts } from "../data/products-senegal";
+import { senegalesePacks } from "../data/packs-senegal";
 
 export async function getAirtableStats() {
   try {

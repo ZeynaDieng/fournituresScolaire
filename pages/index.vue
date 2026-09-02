@@ -23,9 +23,9 @@
           :to="`/packs?level=${lv.key}`"
           class="group relative bg-white/80 rounded-3xl border border-slate-200/90 p-6 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between"
         >
-          <!-- Top Card Image Container -->
-          <div class="relative h-44 w-full mb-6 rounded-2xl bg-[#F8F6F0] overflow-hidden flex items-center justify-center p-4">
-            <img :src="lv.image" :alt="lv.title" class="max-h-full max-w-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-300" />
+          <!-- Top Card Image Container (Full-bleed edge-to-edge) -->
+          <div class="relative h-48 w-full mb-6 rounded-2xl bg-[#F8F6F0] overflow-hidden">
+            <img :src="lv.image" :alt="lv.title" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" />
           </div>
 
           <div>
@@ -190,12 +190,12 @@
           :to="`/products/${product.id}`"
           class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between"
         >
-          <!-- Product Image Container -->
-          <div class="relative aspect-square bg-[#F8F6F0] p-6 flex items-center justify-center overflow-hidden">
+          <!-- Product Image Container (Full-bleed) -->
+          <div class="relative aspect-square bg-[#F8F6F0] overflow-hidden">
             <img
               :src="product.image"
               :alt="product.name"
-              class="max-h-full max-w-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-300"
+              class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
             />
           </div>
 
@@ -461,37 +461,86 @@ onMounted(async () => {
   }
 });
 
-// Niveaux scolaires avec visuels photos professionnels (Screenshot 2)
-const levels = [
-  {
-    key: "prescolaire",
-    title: "Préscolaire",
-    sub: "3 – 5 ANS",
-    count: 2,
-    image: "https://i.pinimg.com/736x/8c/4f/b8/8c4fb8bd40f1a67e063ffb2223f4190b.jpg", // Red backpack photo
-  },
-  {
-    key: "primaire",
-    title: "Primaire",
-    sub: "CP – CM2",
-    count: 6,
-    image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg", // Stack of books photo
-  },
-  {
-    key: "college",
-    title: "Collège",
-    sub: "6ᵉ – 3ᵉ",
-    count: 4,
-    image: "https://i.pinimg.com/736x/10/54/a3/1054a36c0ce9460b0a1e2aafa65c9a20.jpg", // Abacus & geometry photo
-  },
-  {
-    key: "lycee",
-    title: "Lycée",
-    sub: "2NDE – TERM.",
-    count: 4,
-    image: "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg", // High school supplies photo
-  },
-];
+// Niveaux scolaires avec décompte dynamique en temps réel des packs existants
+const levels = computed(() => {
+  const allPacks = (airtableStore.packs && airtableStore.packs.length > 0)
+    ? airtableStore.packs
+    : productsStore.packs;
+
+  const countForLevel = (key: string) => {
+    return allPacks.filter((p: any) => {
+      const levelStr = (p.schoolLevel || p.level || p.niveau || "").toLowerCase();
+      const nameStr = (p.name || p.nom || "").toLowerCase();
+      const text = `${levelStr} ${nameStr}`;
+
+      if (key === "prescolaire") {
+        return (
+          text.includes("prescolaire") ||
+          text.includes("préscolaire") ||
+          text.includes("maternelle") ||
+          text.includes("tps") ||
+          text.includes("ps") ||
+          text.includes("ms") ||
+          text.includes("gs")
+        );
+      }
+      if (key === "primaire") {
+        return (
+          text.includes("primaire") ||
+          text.includes("elementaire") ||
+          text.includes("élémentaire") ||
+          /\b(ci|cp|ce1|ce2|cm1|cm2)\b/i.test(text)
+        );
+      }
+      if (key === "college") {
+        return (
+          text.includes("college") ||
+          text.includes("collège") ||
+          /\b(6e|6eme|6ème|5e|5eme|5ème|4e|4eme|4ème|3e|3eme|3ème)\b/i.test(text)
+        );
+      }
+      if (key === "lycee") {
+        return (
+          text.includes("lycee") ||
+          text.includes("lycée") ||
+          /\b(2nde|seconde|1ere|1ère|premiere|première|term|terminale|tle)\b/i.test(text)
+        );
+      }
+      return false;
+    }).length;
+  };
+
+  return [
+    {
+      key: "prescolaire",
+      title: "Préscolaire",
+      sub: "3 – 5 ANS",
+      count: countForLevel("prescolaire"),
+      image: "https://i.pinimg.com/736x/8c/4f/b8/8c4fb8bd40f1a67e063ffb2223f4190b.jpg",
+    },
+    {
+      key: "primaire",
+      title: "Primaire",
+      sub: "CP – CM2",
+      count: countForLevel("primaire"),
+      image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+    },
+    {
+      key: "college",
+      title: "Collège",
+      sub: "6ᵉ – 3ᵉ",
+      count: countForLevel("college"),
+      image: "https://i.pinimg.com/736x/10/54/a3/1054a36c0ce9460b0a1e2aafa65c9a20.jpg",
+    },
+    {
+      key: "lycee",
+      title: "Lycée",
+      sub: "2NDE – TERM.",
+      count: countForLevel("lycee"),
+      image: "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg",
+    },
+  ];
+});
 
 // Produits réels liés aux fiches détails (Screenshot 5)
 const catalogueProducts = computed(() => {

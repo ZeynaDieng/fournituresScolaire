@@ -114,25 +114,25 @@
                 </button>
               </div>
 
-              <!-- Main Product Image -->
+              <!-- Main Product Image (Full-bleed edge-to-edge) -->
               <div
-                class="aspect-square bg-[#F8F6F0] rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 flex items-center justify-center p-8"
+                class="aspect-square bg-[#F8F6F0] rounded-3xl overflow-hidden shadow-sm border border-slate-200/80"
               >
                 <img
                   :src="selectedImage || product.image"
                   :alt="product.name"
-                  class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             </div>
 
-            <!-- Thumbnail Gallery -->
+            <!-- Thumbnail Gallery (Full-bleed) -->
             <div class="grid grid-cols-4 gap-4">
               <button
                 v-for="(image, index) in productImages"
                 :key="index"
                 @click="selectedImage = image"
-                class="aspect-square bg-[#F8F6F0] rounded-2xl overflow-hidden border-2 transition-all duration-300 flex items-center justify-center p-2"
+                class="aspect-square bg-[#F8F6F0] rounded-2xl overflow-hidden border-2 transition-all duration-300"
                 :class="{
                   'border-[#0F3D91] shadow-md':
                     selectedImage === image || (!selectedImage && index === 0),
@@ -143,7 +143,7 @@
                 <img
                   :src="image"
                   :alt="`${product.name} - Image ${index + 1}`"
-                  class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 hover:scale-105"
+                  class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
               </button>
             </div>
@@ -275,6 +275,39 @@
 
             <!-- Quantity & Actions -->
             <div class="space-y-6">
+              <!-- Selector Couleurs (Si disponible) -->
+              <div v-if="availableColors.length > 0" class="space-y-3 p-4 bg-white rounded-2xl border border-slate-200/80">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+                    Sélectionner la Couleur : <span class="text-[#0F3D91] font-black text-sm">{{ selectedColor }}</span>
+                  </label>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <button
+                    v-for="color in availableColors"
+                    :key="color"
+                    @click="selectedColor = color"
+                    class="px-3.5 py-2 rounded-xl text-xs font-extrabold border-2 transition-all cursor-pointer flex items-center gap-2"
+                    :class="selectedColor === color ? 'border-[#0F3D91] bg-[#0F3D91]/10 text-[#0F3D91] shadow-xs scale-105' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300'"
+                  >
+                    <span
+                      class="w-3.5 h-3.5 rounded-full border border-slate-300 shadow-xs inline-block"
+                      :style="{
+                        backgroundColor: color.toLowerCase() === 'bleu' ? '#1D4ED8' :
+                                         color.toLowerCase() === 'rouge' ? '#EF4444' :
+                                         color.toLowerCase() === 'vert' ? '#10B981' :
+                                         color.toLowerCase() === 'jaune' ? '#F59E0B' :
+                                         color.toLowerCase() === 'noir' ? '#111827' :
+                                         color.toLowerCase() === 'rose' ? '#EC4899' :
+                                         color.toLowerCase() === 'violet' ? '#8B5CF6' :
+                                         color.toLowerCase() === 'orange' ? '#F97316' : '#94A3B8'
+                      }"
+                    ></span>
+                    <span>{{ color }}</span>
+                  </button>
+                </div>
+              </div>
+
               <!-- Quantity Selector -->
               <div class="flex items-center gap-4">
                 <label class="text-sm font-bold text-slate-900">
@@ -709,20 +742,40 @@ function decreaseQuantity() {
   if (quantity.value > 1) quantity.value--;
 }
 
-function toggleWishlist() {
-  isWishlisted.value = !isWishlisted.value;
-}
+const selectedColor = ref("Bleu");
+
+const availableColors = computed(() => {
+  if (product.value && Array.isArray((product.value as any).colors) && (product.value as any).colors.length > 0) {
+    return (product.value as any).colors;
+  }
+  const name = (product.value?.name || "").toLowerCase();
+  const cat = (product.value?.category || "").toLowerCase();
+  if (
+    name.includes("stylo") ||
+    name.includes("protège") ||
+    name.includes("cahier") ||
+    name.includes("ardoise") ||
+    name.includes("crayon") ||
+    cat.includes("stylo") ||
+    cat.includes("fourniture")
+  ) {
+    return ["Bleu", "Rouge", "Vert", "Jaune", "Noir"];
+  }
+  return [];
+});
 
 function addToCart() {
   if (!product.value || !product.value.inStock) return;
 
   isLoading.value = true;
 
+  const colorSuffix = availableColors.value.length > 0 && selectedColor.value ? ` (${selectedColor.value})` : '';
+
   // Ajouter au panier via le store
   cartStore.addItem(
     {
       id: product.value.id,
-      name: product.value.name,
+      name: `${product.value.name}${colorSuffix}`,
       price: product.value.price,
       image: product.value.image,
       type: "product",
@@ -733,7 +786,7 @@ function addToCart() {
   setTimeout(() => {
     isLoading.value = false;
     showSuccess(
-      `${quantity.value} ${product.value.name} ajouté(s) au panier !`
+      `${quantity.value} ${product.value.name}${colorSuffix} ajouté(s) au panier !`
     );
   }, 500);
 }
@@ -867,11 +920,12 @@ onMounted(async () => {
 });
 
 useHead({
-  title: computed(() => (product.value ? `${product.value.name} - EduShop` : 'Produit - EduShop')),
+  title: computed(() => product.value?.metaTitle || (product.value ? `${product.value.name} - Fourniture Scolaire Sénégal | EduShop` : 'Produit - EduShop')),
   meta: [
-    { name: 'description', content: computed(() => product.value?.description || 'Fournitures scolaires de qualité au Sénégal.') },
-    { property: 'og:title', content: computed(() => (product.value ? `${product.value.name} | EduShop Sénégal` : 'EduShop')) },
-    { property: 'og:description', content: computed(() => product.value?.description || 'Achetez vos fournitures scolaires au meilleur prix au Sénégal.') },
+    { name: 'description', content: computed(() => product.value?.metaDescription || product.value?.description || 'Fournitures scolaires de qualité au Sénégal.') },
+    { name: 'keywords', content: computed(() => product.value?.keywords || 'fourniture scolaire, Sénégal, EduShop, Dakar') },
+    { property: 'og:title', content: computed(() => product.value?.metaTitle || (product.value ? `${product.value.name} | EduShop Sénégal` : 'EduShop')) },
+    { property: 'og:description', content: computed(() => product.value?.metaDescription || product.value?.description || 'Achetez vos fournitures scolaires au meilleur prix au Sénégal.') },
     { property: 'og:image', content: computed(() => product.value?.image || 'https://www.e-du.shop/og-image.jpg') },
     { property: 'og:type', content: 'product' },
   ],

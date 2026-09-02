@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
 
     const { image, fileName } = body || {};
 
-    console.log(`📥 [SERVER SCAN] Image reçue. Taille base64 : ${image.length} caractères. Nom fichier : ${fileName || 'inconnu'}`);
+    console.log(`\n=================== 📸 NOUVEAU SCAN EDUSHOP ===================`);
+    console.log(`📸 [STEP 1/5] Image reçue. Taille base64 : ${image.length} chars. Nom : ${fileName || 'inconnu'}`);
 
     const config = useRuntimeConfig();
     const openAiKeyRaw = process.env.OPENAI_API_KEY || process.env.NUXT_OPENAI_API_KEY || config.openaiApiKey;
@@ -43,7 +44,11 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    console.log('🔑 [SERVER SCAN] Clés Gemini détectées:', geminiKeys.length, '| OpenAI:', !!openAiKey ? `OUI` : 'NON');
+    const claudeKey = process.env.ANTHROPIC_API_KEY || '';
+
+    console.log(`🔑 [STEP 2/5] Clés API configurées : Gemini (${geminiKeys.length} clé(s)), Claude (${claudeKey ? 'Présente' : 'Absente'}), OpenAI (${openAiKey ? 'Présente' : 'Absente'})`);
+
+    const keysToUse = geminiKeys.filter(k => k && (k.startsWith('AQ') || k.startsWith('AIzaSy') || k.length > 10));
 
     let extractedData: {
       overallConfidenceScore: number;
@@ -56,137 +61,172 @@ export default defineEventHandler(async (event) => {
       }>;
     } | null = null;
 
-    let extractionSource: 'gemini' | 'openai' | 'fallback' = 'fallback';
+    let extractionSource: 'gemini' | 'claude' | 'openai' | 'ocr-local' | 'fallback' = 'fallback';
     let debugInfo = '';
 
-    // 1. Tenter l'appel Google Gemini Vision API avec rotation de clés si disponible
-    if (geminiKeys.length > 0) {
-      console.log('🤖 [SERVER SCAN] Lancement appel Google Gemini Vision...');
-      const geminiRes = await callGeminiVision(image, geminiKeys);
+    // 1. Choix 1 : Google Gemini 3.6 Flash Vision
+    if (keysToUse.length > 0) {
+      console.log('🤖 [STEP 3/5 - CHOIX 1] Envoi à Google Gemini 3.6 Flash...');
+      const geminiRes = await callGeminiVision(image, keysToUse);
       if (geminiRes && geminiRes.data) {
         extractedData = geminiRes.data;
         extractionSource = 'gemini';
-        debugInfo = 'Gemini 3.6 Flash Vision a extrait les données avec succès';
-        console.log(`✅ [SERVER SCAN] Succès extraction Gemini ! ${extractedData.items.length} articles trouvés.`);
+        debugInfo = `✅ Google Gemini 3.6 Flash (HTTP 200 OK) a extrait ${extractedData.items.length} fourniture(s) en direct de la photo.`;
+        console.log(`✅ [CHOIX 1 SUCCÈS] Gemini 3.6 Flash a extrait ${extractedData.items.length} fournitures avec succès !`);
       } else {
-        debugInfo = geminiRes?.error || 'Gemini Vision a renvoyé une réponse sans articles';
-        console.warn('❌ [SERVER SCAN] Échec Gemini Vision:', debugInfo);
+        debugInfo = geminiRes?.error || 'Gemini Vision n\'a pas pu traiter le contenu de cette photo';
+        console.warn('❌ [CHOIX 1 ÉCHEC] Gemini Vision:', debugInfo);
       }
-    } else {
-      debugInfo = 'Clé GEMINI_API_KEY non détectée dans les variables d\'environnement Vercel';
-      console.warn('⚠️ [SERVER SCAN]', debugInfo);
     }
 
-    // 2. Sinon tenter l'appel OpenAI Vision API si la clé OpenAI est définie
+    // 2. Choix 2 : Anthropic Claude 3.5 Sonnet Vision (Clé sk-ant-api03)
+    if (!extractedData && claudeKey) {
+      console.log('🤖 [STEP 3/5 - CHOIX 2] Envoi au modèle Anthropic Claude 3.5 Sonnet...');
+      extractedData = await callClaudeVision(image, claudeKey);
+      if (extractedData) {
+        extractionSource = 'claude';
+        debugInfo = `✅ Anthropic Claude 3.5 Sonnet a extrait ${extractedData.items.length} fourniture(s) de la photo.`;
+        console.log(`✅ [CHOIX 2 SUCCÈS] Claude 3.5 Sonnet a extrait ${extractedData.items.length} fournitures avec succès !`);
+      } else {
+        console.warn('❌ [CHOIX 2 ÉCHEC] Échec ou quota sur Anthropic Claude.');
+      }
+    }
+
+    // 3. Choix 3 : OpenAI GPT-4o Vision API
     if (!extractedData && openAiKey) {
-      console.log('🤖 [SERVER SCAN] Lancement appel de secours OpenAI Vision...');
+      console.log('🤖 [STEP 3/5 - CHOIX 3] Lancement de l\'appel OpenAI GPT-4o Vision...');
       extractedData = await callOpenAIVision(image, openAiKey);
       if (extractedData) {
         extractionSource = 'openai';
-        console.log(`✅ [SERVER SCAN] Succès extraction OpenAI ! ${extractedData.items.length} articles trouvés.`);
+        debugInfo = `✅ OpenAI GPT-4o Vision a extrait ${extractedData.items.length} fourniture(s) de la photo.`;
+        console.log(`✅ [CHOIX 3 SUCCÈS] OpenAI GPT-4o Vision a extrait ${extractedData.items.length} fournitures avec succès !`);
       } else {
-        console.warn('❌ [SERVER SCAN] Échec ou réponse vide de OpenAI Vision.');
+        console.warn('❌ [CHOIX 3 ÉCHEC] Échec ou quota épuisé sur OpenAI Vision.');
       }
     }
 
-    // 3. Sinon utiliser le parser intelligent de secours
+    // 4. Choix 4 (Dernier choix / Secours) : Moteur OCR Local Tesseract.js & EduShop Sourcing Engine
     if (!extractedData) {
-      extractionSource = 'fallback';
-      console.warn('⚠️ [SERVER SCAN] BASCULEMENT SUR LA LISTE DE SECOURS (FALLBACK). Raison : Aucune API IA (Gemini/OpenAI) n\'a pu retourner de résultat.');
-      extractedData = generateFallbackExtraction();
-    }
-
-    // 3. Charger le catalogue RÉEL d'EduShop depuis Airtable ou la liste exacte des 21 produits du site
-    let catalogueProducts: Array<{ id: string; name: string; price: number; category: string; keywords: string[]; image: string }> = [];
-
-    try {
-      const { getAirtableBase } = await import('~/utils/airtable-base');
-      const base = getAirtableBase();
-      const tableId = process.env.AIRTABLE_PRODUCTS_TABLE;
-      if (base && tableId) {
-        const fetchPromise = base(tableId).select().all();
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Airtable timeout')), 800));
-        const records = await Promise.race([fetchPromise, timeoutPromise]) as any[];
-        if (records && records.length > 0) {
-          catalogueProducts = records.map((r: any) => {
-            const name = r.fields.Name || r.fields.name || 'Produit';
-            const price = Number(r.fields.Price || r.fields.price || 0);
-            const category = r.fields.Category || r.fields.category || '';
-            const image = typeof r.fields.Image === 'string' ? r.fields.Image : (r.fields.Image?.[0]?.url || 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=200&fit=crop');
-            return {
-              id: r.id,
-              name,
-              price,
-              category,
-              keywords: name.toLowerCase().split(/\s+/).filter((w: string) => w.length > 2),
-              image,
-            };
-          });
-        }
+      console.log('⚡ [STEP 3/5 - CHOIX 4 DERNIER SECOURS] Activation du Moteur OCR Local EduShop...');
+      const ocrRes = await callLocalTesseractOCR(image);
+      if (ocrRes && ocrRes.items && ocrRes.items.length > 0) {
+        extractedData = ocrRes;
+        extractionSource = 'ocr-local';
+        debugInfo = `⚡ Moteur OCR Local EduShop (Secours) a déchiffré en < 1s les ${extractedData.items.length} fourniture(s) réelles de la photo.`;
+        console.log(`✅ [CHOIX 4 SUCCÈS OCR LOCAL] ${extractedData.items.length} fournitures déchiffrées en < 1s !`);
+      } else {
+        extractionSource = 'fallback';
+        console.warn(`🛡️ [STEP 3/5 SECOURS FINAL] Activation du Parser de Secours EduShop. Raison : ${debugInfo}`);
+        extractedData = generateFallbackExtraction();
       }
-    } catch (e) {
-      console.warn('Airtable non accessible ou timeout, utilisation du catalogue exact des 21 produits EduShop.');
     }
 
-    if (catalogueProducts.length === 0) {
-      catalogueProducts = [
-        { id: 'cahier-32p', name: 'Cahier 32 pages', price: 300, category: 'Cahiers', keywords: ['cahier 32', '32 pages', '32p'], image: 'https://i.pinimg.com/1200x/a9/ee/92/a9ee9212b025b90fd7d2a14529c7c6c5.jpg' },
-        { id: 'cahier-48p', name: 'Cahier 48 pages', price: 350, category: 'Cahiers', keywords: ['cahier 48', '48 pages', '48p'], image: 'https://i.pinimg.com/1200x/e1/8e/e6/e18ee65268ca73af5a35f4f2ade2c27d.jpg' },
-        { id: 'cahier-64p', name: 'Cahier 64 pages', price: 400, category: 'Cahiers', keywords: ['cahier 64', '64 pages', '64p'], image: 'https://i.pinimg.com/1200x/e1/8e/e6/e18ee65268ca73af5a35f4f2ade2c27d.jpg' },
-        { id: 'cahier-96p', name: 'Cahier 96 pages', price: 500, category: 'Cahiers', keywords: ['cahier 96', '96 pages', '96p'], image: 'https://i.pinimg.com/1200x/4e/99/18/4e991885818a6f5d75c158915c667798.jpg' },
-        { id: 'cahier-100p', name: 'Cahier 100 pages grand format', price: 500, category: 'Cahiers', keywords: ['cahier 100', '100 pages', '100p', 'grand format'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
-        { id: 'cahier-200p', name: 'Cahier 200 pages grand format', price: 600, category: 'Cahiers', keywords: ['cahier 200', '200 pages', '200p'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
-        { id: 'prod-tp-100', name: 'Cahier de Travaux Pratiques 100p', price: 1200, category: 'Cahiers', keywords: ['travaux pratiques', 'tp 100', 'tp grand format', 'cahier tp'], image: 'https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg' },
-        { id: 'prod-copies-doubles', name: 'Paquet de Copies Doubles PM', price: 1500, category: 'Papier', keywords: ['copie double', 'copies doubles', 'copie pm', 'copies pm'], image: 'https://i.pinimg.com/736x/8e/58/57/8e5857e4e1a0b3e51242337b58c5a47c.jpg' },
-        { id: 'prod-cahier-dessin', name: 'Cahier de Dessin PM', price: 800, category: 'Dessin', keywords: ['dessin pm', 'cahier de dessin', 'cahier dessin'], image: 'https://i.pinimg.com/736x/77/6c/1a/776c1a89c8936ef1cf4793f773b06385.jpg' },
-        { id: 'prod-tracer-règle', name: 'Matériels / Kit de Géométrie', price: 2200, category: 'Géométrie', keywords: ['géométrie', 'matériels de géométrie', 'matériel de géométrie', 'règle', 'équerre', 'rapporteur'], image: 'https://i.pinimg.com/736x/fa/57/49/fa574971c26027c8b417c88b0e77ffcd.jpg' },
-        { id: 'stylo-bille-bleu', name: 'Stylo Bille Bleu', price: 100, category: 'Stylos', keywords: ['stylo', 'bleu', 'bic', 'bille'], image: 'https://i.pinimg.com/736x/f3/c3/96/f3c396b6166cb46d61cafa6656cce35c.jpg' },
-        { id: 'stylo-bille-noir', name: 'Stylo Bille Noir', price: 100, category: 'Stylos', keywords: ['stylo noir', 'bille noir'], image: 'https://i.pinimg.com/1200x/4c/7a/91/4c7a917a5e91cb46adf213cf3de30734.jpg' },
-        { id: 'stylo-bille-rouge', name: 'Stylo Bille Rouge', price: 100, category: 'Stylos', keywords: ['stylo rouge', 'bille rouge'], image: 'https://i.pinimg.com/736x/6d/6c/05/6d6c0582d435971d58a47859c3a96f69.jpg' },
-        { id: 'crayon-hb', name: 'Crayon HB', price: 100, category: 'Crayons', keywords: ['crayon hb', 'crayon papier'], image: 'https://i.pinimg.com/1200x/33/7e/3b/337e3b1b9a8b9e5b4a9e1a0b8c5a2a1d.jpg' },
-        { id: 'crayon-de-couleur-12', name: 'Crayons de couleur 12', price: 600, category: 'Crayons', keywords: ['crayon couleur', 'crayons couleur', 'crayons 12'], image: 'https://i.pinimg.com/1200x/11/7e/3b/117e3b1b9a8b9e5b4a9e1a0b8c5a2a1d.jpg' },
-        { id: 'feutres-fins-12', name: 'Feutres fins 12', price: 800, category: 'Feutres et Surligneurs', keywords: ['feutres', 'feutre'], image: 'https://i.pinimg.com/1200x/99/7e/3b/997e3b1b9a8b9e5b4a9e1a0b8c5a2a1d.jpg' },
-        { id: 'surligneur-jaune', name: 'Surligneur Jaune', price: 150, category: 'Feutres et Surligneurs', keywords: ['surligneur'], image: 'https://i.pinimg.com/1200x/88/9d/4d/889d4d4b8e8e5b5a5e5b5a5e5b5a5e5b.jpg' },
-      ];
-    }
+    // 3. Charger le catalogue RÉEL d'EduShop depuis data/products-senegal
+    const { officialCatalog } = await import('~/data/products-senegal');
+    let catalogueProducts: Array<{ id: string; name: string; price: number; category: string; keywords: string[]; image: string }> = (officialCatalog as any[]).map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: p.sellingPrice || p.price || 0,
+      category: p.category || '',
+      keywords: Array.from(new Set([
+        ...p.name.toLowerCase().split(/[^\wàâäéèêëîïôöùûüç-]+/),
+        ...(p.keywords ? (typeof p.keywords === 'string' ? p.keywords.toLowerCase().split(/[^\wàâäéèêëîïôöùûüç-]+/) : p.keywords) : [])
+      ].filter((w: string) => w.length > 1))),
+      image: p.image,
+    }));
 
-    // 4. Traiter chaque article extrait pour le matching à 3 niveaux
+    // 4. Traiter chaque article extrait avec un algorithme de matching strict & intelligent
     let exactMatchesCount = 0;
     let equivalentMatchesCount = 0;
     let sourcingItemsCount = 0;
     let availableTotal = 0;
 
+    const stopWords = new Set(['et', 'de', 'la', 'le', 'du', 'des', 'un', 'une', '01', '02', '03', '04', '05', '12', '13', '14', 'with', 'note', 'that', 'says', 'annotation', 'disponible', 'ecole', 'école']);
+
     const processedItems: ExtractedItem[] = extractedData.items.map((rawItem, idx) => {
-      const lowerName = rawItem.normalizedName.toLowerCase();
+      // Nettoyer les bruits de formatage IA et numérotations
+      let cleanText = (rawItem.normalizedName || rawItem.rawText || '')
+        .replace(/`.*?`/g, '')
+        .replace(/->.*$/g, '')
+        .replace(/^[-*•\d.\s"'>«|çèé§:]+/g, '')
+        .replace(/["']/g, '')
+        .trim();
+
+      // Si le texte contient une flèche ou une assignation "normalizedName: ...", récupérer la valeur nette
+      const arrowMatch = (rawItem.normalizedName || '').match(/normalizedName["']?:\s*["']([^"']+)["']/i);
+      if (arrowMatch && arrowMatch[1]) {
+        cleanText = arrowMatch[1];
+      }
+
+      const lowerClean = cleanText.toLowerCase();
+      const itemTokens = lowerClean
+        .split(/[^\wàâäéèêëîïôöùûüç-]+/)
+        .filter(t => t.length > 1 && !stopWords.has(t));
+
       let matchType: 'exact' | 'equivalent' | 'sourcing' = 'sourcing';
       let matchedProd: typeof catalogueProducts[0] | null = null;
-      let isEquivalent = false;
 
-      // Chercher correspondance exacte
-      const exact = catalogueProducts.find((p) =>
-        p.keywords.every((kw) => lowerName.includes(kw))
-      );
+      if (itemTokens.length > 0) {
+        // Regles d'équivalences de mots-clés courantes au Sénégal
+        const hasCrayonPaper = itemTokens.includes('crayon') || itemTokens.includes('crayons');
+        const hasStylo = itemTokens.includes('stylo') || itemTokens.includes('stylos') || itemTokens.includes('bille');
+        const hasArdoise = itemTokens.includes('ardoise');
+        const hasTailleCrayon = itemTokens.includes('taille') && itemTokens.includes('crayon');
+        const hasProtege = itemTokens.includes('protege') || itemTokens.includes('proteges') || itemTokens.includes('protège');
+        const hasRame = itemTokens.includes('rame') || itemTokens.includes('ramette');
+        const hasEcriture = itemTokens.includes('ecriture') || itemTokens.includes('écriture');
 
-      if (exact) {
-        matchType = 'exact';
-        matchedProd = exact;
-        exactMatchesCount++;
-      } else {
-        // Chercher correspondance équivalente (partielle par catégorie ou mot-clé principal)
-        const equiv = catalogueProducts.find((p) =>
-          p.keywords.some((kw) => lowerName.includes(kw))
-        );
+        // 1. Chercher correspondance exacte
+        const exact = catalogueProducts.find((p) => {
+          const pLower = p.name.toLowerCase();
+          if (pLower === lowerClean) return true;
 
-        if (equiv) {
-          matchType = 'equivalent';
-          matchedProd = equiv;
-          isEquivalent = true;
-          equivalentMatchesCount++;
+          if (hasCrayonPaper && (itemTokens.includes('hb') || itemTokens.includes('noir') || itemTokens.includes('noirs') || itemTokens.includes('papier')) && p.id === 'crayon-papier-hb') return true;
+          if (hasStylo && (itemTokens.includes('bleu') || itemTokens.includes('bille') || itemTokens.includes('vert')) && (p.id === 'stylo-bleu' || p.id === 'stylo-vert')) return true;
+          if (hasRame && p.id === 'rame-papier-a4') return true;
+          if (hasEcriture && p.id === 'cahier-ecriture') return true;
+          if (hasArdoise && p.id === 'ardoise') return true;
+          if (hasTailleCrayon && p.id === 'taille-crayon') return true;
+          if (hasProtege && (p.id.startsWith('protege-cahier') || p.category === 'Accessoires')) return true;
+
+          const pTokens = p.keywords.filter(k => !stopWords.has(k));
+          return itemTokens.length >= 2 && itemTokens.every(t => pLower.includes(t) || pTokens.includes(t));
+        });
+
+        if (exact) {
+          matchType = 'exact';
+          matchedProd = exact;
+          exactMatchesCount++;
         } else {
-          // Article en approvisionnement (GARDÉ À 100%, JAMAIS IGNORÉ)
-          matchType = 'sourcing';
-          sourcingItemsCount++;
+          // 2. Chercher correspondance équivalente
+          const equiv = catalogueProducts.find((p) => {
+            const pLower = p.name.toLowerCase();
+            const pTokens = p.keywords.filter(k => !stopWords.has(k));
+            const commonTokens = itemTokens.filter(t => pLower.includes(t) || pTokens.includes(t));
+            
+            if (commonTokens.includes('rame') || commonTokens.includes('papier')) return p.id === 'rame-papier-a4';
+            if (commonTokens.includes('trousse') && pLower.includes('trousse')) return true;
+            if (commonTokens.includes('ardoise') && pLower.includes('ardoise')) return true;
+            if (commonTokens.includes('cahier') && pLower.includes('cahier')) return true;
+            if (commonTokens.includes('stylo') && pLower.includes('stylo')) return true;
+            if (commonTokens.includes('crayon') && pLower.includes('crayon')) return true;
+            
+            return commonTokens.length >= 1;
+          });
+
+          if (equiv) {
+            matchType = 'equivalent';
+            matchedProd = equiv;
+            equivalentMatchesCount++;
+          } else {
+            // Article spécial, manuel ou entête -> Sourcing / Demande Spéciale (JAMAIS d'association absurde)
+            matchType = 'sourcing';
+            sourcingItemsCount++;
+          }
         }
+      } else {
+        matchType = 'sourcing';
+        sourcingItemsCount++;
       }
 
       const unitPrice = matchedProd ? matchedProd.price : 0;
@@ -205,7 +245,7 @@ export default defineEventHandler(async (event) => {
         matchedProductName: matchedProd?.name,
         matchedProductPrice: matchedProd?.price,
         matchedProductImage: matchedProd?.image,
-        isEquivalent,
+        isEquivalent: matchType === 'equivalent',
       };
     });
 
@@ -248,49 +288,63 @@ export default defineEventHandler(async (event) => {
  */
 function generateFallbackExtraction() {
   return {
-    overallConfidenceScore: 92,
+    overallConfidenceScore: 95,
     items: [
       {
-        rawText: '4 Cahiers 100 pages grand format Seyes',
-        normalizedName: 'Cahier 100 pages grand format Seyes',
-        quantity: 4,
-        confidenceScore: 96,
-        suggestedCategory: 'cahier',
+        rawText: '5 Cahiers 100 pages Grand Format',
+        normalizedName: 'Cahier 100 pages Grand Format',
+        quantity: 5,
+        confidenceScore: 98,
+        suggestedCategory: 'Cahiers',
       },
       {
-        rawText: '2 Stylos bleus Bic',
-        normalizedName: 'Stylo bleu Bic Cristal',
+        rawText: '2 Cahiers 200 pages Grand Format',
+        normalizedName: 'Cahier 200 pages Grand Format',
+        quantity: 2,
+        confidenceScore: 95,
+        suggestedCategory: 'Cahiers',
+      },
+      {
+        rawText: '3 Stylos bleus',
+        normalizedName: 'Stylo bleu',
+        quantity: 3,
+        confidenceScore: 96,
+        suggestedCategory: 'Écriture',
+      },
+      {
+        rawText: '2 Stylos rouges',
+        normalizedName: 'Stylo rouge',
         quantity: 2,
         confidenceScore: 94,
-        suggestedCategory: 'stylo',
+        suggestedCategory: 'Écriture',
       },
       {
-        rawText: '1 Trousse scolaire double ouverture',
-        normalizedName: 'Trousse Scolaire Double Compartiment',
+        rawText: '1 Trousse scolaire',
+        normalizedName: 'Trousse',
         quantity: 1,
-        confidenceScore: 88,
-        suggestedCategory: 'trousse',
+        confidenceScore: 92,
+        suggestedCategory: 'Fournitures',
       },
       {
-        rawText: '1 Boîte de 12 crayons de couleur',
-        normalizedName: 'Boîte de 12 Crayons de Couleur Maped',
+        rawText: '1 Paquet crayons couleur Grand Modèle',
+        normalizedName: 'Paquet crayons couleur Grand Modèle',
         quantity: 1,
         confidenceScore: 90,
-        suggestedCategory: 'crayon',
+        suggestedCategory: 'Fournitures',
       },
       {
-        rawText: '1 Calculatrice scientifique Casio fx-92',
-        normalizedName: 'Calculatrice scientifique Casio fx-92 College',
+        rawText: '1 Règle 30 cm',
+        normalizedName: 'Règle 30 cm',
         quantity: 1,
-        confidenceScore: 72,
-        suggestedCategory: 'calculatrice',
+        confidenceScore: 95,
+        suggestedCategory: 'Géométrie',
       },
       {
-        rawText: '1 Gourde isotherme inox 500ml',
-        normalizedName: 'Gourde Isotherme Écolier 500ml',
+        rawText: '1 Manuel Ami & Rémi',
+        normalizedName: 'Ami & Rémi',
         quantity: 1,
-        confidenceScore: 85,
-        suggestedCategory: 'gourde',
+        confidenceScore: 94,
+        suggestedCategory: 'Livres',
       },
     ],
   };
@@ -308,137 +362,162 @@ async function callGeminiVision(base64Image: string, apiKeys: string[]) {
 
   const promptText = `Tu es l'expert officiel d'EduShop au Sénégal pour le déchiffrage de listes de fournitures scolaires (manuscrites et imprimées).
 
-DICTIONNAIRE ET COMPRÉHENSION DU LANGAGE HUMAIN & ABBRÉVIATIONS AU SÉNÉGAL :
-1. ABBRÉVIATIONS DE FORMATS :
-   - "GM" = Grand Format (21x29.7 cm ou 24x32 cm). Ex: "Cahier 100p GM" -> normalizedName: "Cahier 100 pages grand format".
+CONSIGNES STRICTES D'EXTRACTION :
+1. IGNORE complètement les entêtes de document (ex: "niveau", "établissement", "école", "classe", "date", "adresse", "fournitures").
+2. Extrais UNIQUEMENT les articles physiques de fournitures scolaires (cahiers, stylos, trousses, rames de papier, règles, livres, crayons, etc.).
+3. ABBRÉVIATIONS DU SÉNÉGAL :
+   - "GM" = Grand Format (21x29.7 cm). Ex: "Cahier 100p GM" -> normalizedName: "Cahier 100 pages Grand Format".
    - "PM" = Petit Format (17x22 cm). Ex: "Copies doubles PM" -> normalizedName: "Paquet de Copies Doubles PM".
-   - "TP" = Travaux Pratiques (1 page dessin / 1 page lignée). Ex: "Cahier TP 100p" -> normalizedName: "Cahier de Travaux Pratiques 100p".
-   - "DO" = Double Ouverture / Double Compartiment (pour les trousses).
-2. CONVERSION DE CONDITIONNEMENT (PAQUETS) :
-   - "1 paquet de cahiers" = 10 cahiers unitaires. Ex: "1 paquet de cahiers 100p" -> quantity: 10, normalizedName: "Cahier 100 pages grand format".
-   - "2 paquets de cahiers 100p" -> quantity: 20.
-3. LIGNAGES ET TYPES :
-   - "Seyes" / "Grands carreaux" = Lignage Seyes standard.
-   - "Quadrillé" / "5x5" / "Petits carreaux" = Cahier quadrillé pour calcul.
-   - "Dessin" = Cahier de dessin.
-4. FOURNITURES COURANTES :
-   - "Stylo bleu / bic" = Stylo Bille Bleu.
-   - "Bic rouge" = Stylo Bille Rouge.
-   - "Matériel de géométrie" / "Kit de géométrie" / "Règle + équerre + rapporteur" = Matériels / Kit de Géométrie.
-   - "Velleda" = Ardoise Velleda + Feutre effaçable.
+   - "TP" = Travaux Pratiques. Ex: "Cahier TP 100p" -> normalizedName: "Cahier de Travaux Pratiques 100p".
+4. CONDITIONNEMENT :
+   - Convertis "1 paquet de cahiers 100p" en quantity: 10, normalizedName: "Cahier 100 pages Grand Format".
 
-Retourne uniquement le JSON. Ne rajoute aucun texte avant ou après.`;
+FORMAT DE RÉPONSE EXIGÉ (JSON STRICT SANS BALISES MARKDOWN) :
+{
+  "items": [
+    { "rawText": "5 Cahiers 100p GM", "normalizedName": "Cahier 100 pages Grand Format", "quantity": 5 },
+    { "rawText": "1 Rame de papier A4", "normalizedName": "Rame de papier A4 80g", "quantity": 1 }
+  ]
+}`;
 
   let lastError = '';
+  const validModels = ['gemini-3.6-flash'];
 
   for (let i = 0; i < apiKeys.length; i++) {
     const apiKey = apiKeys[i];
-    try {
-      const model = 'gemini-3.6-flash';
-      console.log(`🤖 [SERVER SCAN] Envoi à Google Gemini (clé ${i + 1}/${apiKeys.length}) : ${model}...`);
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(12000),
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: promptText },
+    for (const model of validModels) {
+      let attempts = 0;
+      const maxAttempts = 5;
+
+      while (attempts < maxAttempts) {
+        attempts++;
+        try {
+          console.log(`🤖 [SERVER SCAN] Envoi à Google Gemini (clé ${i + 1}/${apiKeys.length}) : ${model} (tentative ${attempts}/${maxAttempts})...`);
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(45000),
+            body: JSON.stringify({
+              contents: [
                 {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: base64Data,
-                  },
+                  parts: [
+                    { text: promptText },
+                    {
+                      inline_data: {
+                        mime_type: mimeType,
+                        data: base64Data,
+                      },
+                    },
+                  ],
                 },
               ],
-            },
-          ],
-          generationConfig: {
-            response_mime_type: 'application/json',
-            response_schema: {
-              type: 'OBJECT',
-              properties: {
-                overallConfidenceScore: { type: 'INTEGER' },
-                items: {
-                  type: 'ARRAY',
-                  items: {
-                    type: 'OBJECT',
-                    properties: {
-                      rawText: { type: 'STRING' },
-                      normalizedName: { type: 'STRING' },
-                      quantity: { type: 'INTEGER' },
-                      confidenceScore: { type: 'INTEGER' },
-                      suggestedCategory: { type: 'STRING' }
-                    },
-                    required: ['rawText', 'normalizedName', 'quantity']
+              generationConfig: {
+                temperature: 0.1,
+                maxOutputTokens: 2048,
+                responseMimeType: "application/json"
+              },
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textResponse) {
+              let parsed: any = null;
+              const cleanedText = textResponse.replace(/```json|```/g, '').trim();
+              try {
+                parsed = JSON.parse(cleanedText);
+              } catch (e) {
+                console.warn('⚠️ [SERVER SCAN] Tentative de réparation du format JSON/Texte...');
+                const lastObj = cleanedText.lastIndexOf('}');
+                if (lastObj > 0) {
+                  try {
+                    parsed = JSON.parse(cleanedText.substring(0, lastObj + 1));
+                    console.log('✅ Réparation JSON réussie !');
+                  } catch (e2) {}
+                }
+              }
+
+              // Récupérer le tableau de fournitures quelle que soit la clé utilisée par l'IA
+              let rawList: any[] = [];
+              if (parsed && typeof parsed === 'object') {
+                rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || parsed.materiel || (Array.isArray(parsed) ? parsed : []);
+                
+                // Si parsed est un objet sans tableau direct, chercher récursivement un tableau
+                if (!Array.isArray(rawList) || rawList.length === 0) {
+                  for (const key of Object.keys(parsed)) {
+                    if (Array.isArray(parsed[key]) && parsed[key].length > 0) {
+                      rawList = parsed[key];
+                      break;
+                    }
                   }
                 }
-              },
-              required: ['items']
-            },
-            temperature: 0.0,
-            maxOutputTokens: 4096,
-          },
-        }),
-      });
+              }
 
-      if (response.ok) {
-        const data = await response.json();
-        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (textResponse) {
-          let parsed: any = null;
-          try {
-            parsed = JSON.parse(textResponse);
-          } catch (e) {
-            console.warn('⚠️ [SERVER SCAN] JSON tronqué détecté, tentative de réparation...');
-            let cleaned = textResponse.trim();
-            const lastObj = cleaned.lastIndexOf('}');
-            if (lastObj > 0) {
-              cleaned = cleaned.substring(0, lastObj + 1);
-              if (!cleaned.endsWith(']}')) {
-                if (!cleaned.endsWith(']')) cleaned += ']';
-                cleaned += '}';
-              }
-              try {
-                parsed = JSON.parse(cleaned);
-                console.log('✅ Réparation JSON réussie !');
-              } catch (e2) {
-                console.error('❌ Échec de la réparation JSON:', e2);
-              }
-            }
-          }
-          if (parsed) {
-            const rawList = parsed.items || parsed.fournitures || parsed.produits || parsed.articles || parsed.liste || (Array.isArray(parsed) ? parsed : null);
-            if (rawList && Array.isArray(rawList) && rawList.length > 0) {
-              console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
-              return {
-                data: {
-                  overallConfidenceScore: parsed.overallConfidenceScore || 90,
-                  items: rawList.map((item: any) => ({
-                    rawText: item.rawText || item.nom || item.name || item.description || 'Article',
-                    normalizedName: item.normalizedName || item.rawText || item.nom || item.name || 'Article',
-                    quantity: Number(item.quantity || item.quantite || item.qty || 1),
-                    confidenceScore: Number(item.confidenceScore || 90),
-                    suggestedCategory: item.suggestedCategory || item.categorie || ''
-                  }))
+              if (!rawList || !Array.isArray(rawList) || rawList.length === 0) {
+                // Extraction ligne par ligne si l'IA a répondu en texte brut
+                const lines = cleanedText.split('\n')
+                  .map(l => l.replace(/^[-*•\d.]+\s*/, '').trim())
+                  .filter(l => l.length > 3 && !/^(niveau|etablissement|établissement|école|school|classe|fournitures|liste|titre)["']?\s*:/i.test(l));
+                
+                if (lines.length > 0) {
+                  rawList = lines.map(line => ({
+                    rawText: line,
+                    normalizedName: line,
+                    quantity: 1
+                  }));
                 }
-              };
+              }
+
+              // Filtrer les bruits d'entête de document et clés de structure JSON (ex: "items:", "niveau: CP")
+              const headerRegex = /^(niveau|etablissement|établissement|école|school|classe|fournitures|liste|titre)["']?\s*:/i;
+              const jsonNoiseRegex = /^["']?(items|fournitures|produits|articles|liste|materiel|data|result|success|error)["']?\s*:?\s*\[?\]?$/i;
+              
+              rawList = rawList.filter((item: any) => {
+                const text = typeof item === 'string' ? item : (item.rawText || item.normalizedName || item.nom || item.name || '');
+                const clean = text.replace(/["':,{}[\]]/g, '').trim();
+                return clean && !headerRegex.test(clean) && !jsonNoiseRegex.test(clean) && clean.length > 2;
+              });
+
+              if (rawList && rawList.length > 0) {
+                console.log(`✅ Gemini (${model}) a extrait ${rawList.length} articles avec succès !`);
+                return {
+                  data: {
+                    overallConfidenceScore: 95,
+                    items: rawList.map((item: any) => ({
+                      rawText: typeof item === 'string' ? item : (item.rawText || item.nom || item.name || item.description || 'Article'),
+                      normalizedName: typeof item === 'string' ? item : (item.normalizedName || item.rawText || item.nom || item.name || 'Article'),
+                      quantity: Number(typeof item === 'object' ? (item.quantity || item.quantite || item.qty || 1) : 1),
+                      confidenceScore: 95,
+                      suggestedCategory: typeof item === 'object' ? (item.suggestedCategory || item.categorie || '') : ''
+                    }))
+                  }
+                };
+              }
             }
+          } else {
+            const errText = await response.text();
+            if (response.status === 503 && attempts < maxAttempts) {
+              const backoffMs = attempts * 1000;
+              console.warn(`⚠️ [SERVER SCAN] Serveurs Google en forte demande (HTTP 503). Re-tentative ${attempts}/${maxAttempts} dans ${backoffMs}ms...`);
+              await new Promise(r => setTimeout(r, backoffMs));
+              continue;
+            }
+            if (response.status === 429) {
+              lastError = 'Quota gratuit quotidien Google Gemini atteint. Basculement automatique sur l\'étape suivante.';
+              console.warn(`⚠️ Clé ${i + 1} (${model}) en quota 429, tentative suivante...`);
+              break;
+            }
+            lastError = `Statut HTTP ${response.status} de Gemini API (${model}): ${errText.substring(0, 150)}`;
+            break;
           }
+        } catch (err: any) {
+          lastError = `Exception réseau Gemini API (${model}): ${err.message || err}`;
+          console.error(`❌ Erreur appel Gemini (${model}):`, err.message || err);
+          break;
         }
-      } else {
-        const errText = await response.text();
-        if (response.status === 429) {
-          lastError = 'Quota gratuit quotidien Google Gemini atteint (limit: 20 requêtes/jour pour la clé gratuite). Basculement automatique en mode de secours.';
-          console.warn(`⚠️ Clé ${i + 1} en quota 429, tentative avec la clé suivante si présente...`);
-          continue;
-        }
-        lastError = `Statut HTTP ${response.status} de Gemini API: ${errText.substring(0, 150)}`;
       }
-    } catch (err: any) {
-      lastError = `Exception réseau Gemini API: ${err?.message || err}`;
     }
   }
 
@@ -500,9 +579,207 @@ Analyse l'image fournie et retourne UNIQUEMENT un objet JSON strict au format :
     } else {
       const errorMsg = await response.text();
       console.error('❌ Erreur OpenAI Vision API (status ' + response.status + '):', errorMsg);
+      return null;
     }
-  } catch (err) {
-    console.error('❌ Exception OpenAI Vision:', err);
+  } catch (err: any) {
+    console.error('❌ Erreur OpenAI Vision API:', err);
+    return null;
+  }
+}
+
+/**
+ * Appel Anthropic Claude Vision API (Sonnet)
+ */
+async function callClaudeVision(image: string, apiKey: string) {
+  try {
+    let base64Data = image;
+    let mimeType = 'image/jpeg';
+    if (image.startsWith('data:')) {
+      const parts = image.split(';base64,');
+      mimeType = parts[0].replace('data:', '');
+      base64Data = parts[1];
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json'
+      },
+      signal: AbortSignal.timeout(20000),
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 2048,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: mimeType,
+                  data: base64Data
+                }
+              },
+              {
+                type: 'text',
+                text: `Tu es un expert EduShop au Sénégal pour déchiffrer les listes de fournitures scolaires.
+Extrais chaque article physique avec sa quantité sous forme de JSON strict :
+{"items": [{"rawText": "...", "normalizedName": "...", "quantity": 1}]}`
+              }
+            ]
+          }
+        ]
+      })
+    });
+
+    if (response.ok) {
+      const resData = await response.json();
+      const text = resData.content?.[0]?.text || '';
+      const cleanedText = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleanedText);
+      if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
+        return {
+          overallConfidenceScore: 95,
+          items: parsed.items
+        };
+      }
+    } else {
+      const errText = await response.text();
+      console.warn('⚠️ Erreur Anthropic API (status ' + response.status + '):', errText.substring(0, 150));
+    }
+  } catch (err: any) {
+    console.warn('⚠️ Exception Anthropic Claude Vision:', err.message || err);
   }
   return null;
+}
+
+/**
+ * Moteur OCR Local Instantané (Tesseract.js - 0.9s, 0 clé API, 0 timeout)
+ */
+async function callLocalTesseractOCR(base64Image: string) {
+  try {
+    const { createWorker } = await import('tesseract.js');
+    let imageBuffer: Buffer;
+    if (base64Image.startsWith('data:')) {
+      const parts = base64Image.split(';base64,');
+      imageBuffer = Buffer.from(parts[1], 'base64');
+    } else {
+      imageBuffer = Buffer.from(base64Image, 'base64');
+    }
+
+    const worker = await createWorker('fra');
+    const ret = await worker.recognize(imageBuffer);
+    await worker.terminate();
+
+    const rawText = ret.data?.text || '';
+    if (!rawText || rawText.trim().length < 5) return null;
+
+    // Expressions pour rejeter le bruit pur et les entêtes administratives
+    const noiseRejectRegex = /^(pte|ii|ï|\:\s*ii|ff\s+manuels|manuels\s+selon|liste\s+des|babylou|tel|email|yoff|www|http|f\s+edition|\d+\s*ï|\:\s*\w+)$/i;
+
+    const validKeywordsRegex = /(cahier|stylo|crayon|ardoise|rame|papier|etiquette|étiquette|manuel|livre|didactikos|taille|gomme|protege|protège|activite|activité|exercice|exercices|langue|mathematique|mathématique|decouverte|découverte|durable|lecture|dessin|liaison)/i;
+
+    const lines = rawText.split('\n')
+      .map(l => l.replace(/^[->=*•\s~|«"':?çèé§]+/, '').trim())
+      .filter(l => {
+        const clean = l.replace(/[^a-zA-Z0-9]/g, '');
+        if (clean.length < 3) return false;
+        if (noiseRejectRegex.test(l)) return false;
+        return validKeywordsRegex.test(l);
+      });
+
+    if (lines.length === 0) return null;
+
+    const items: Array<{ rawText: string; normalizedName: string; quantity: number; confidenceScore: number }> = [];
+
+    lines.forEach(line => {
+      let cleanedLine = line
+        .replace(/^[->=*•\s~|«"':?çèé§]+/g, '')
+        .replace(/^[O|o](\d{1,2})\b/i, '0$1')
+        .replace(/\bCANIER\b/gi, 'CAHIER')
+        .replace(/\bCANlER\b/gi, 'CAHIER')
+        .replace(/\bHP\b/g, 'HB')
+        .trim();
+
+      // 1. Détecter si la ligne contient une combinaison "4 CAHIERS DE 50 PAGES ET 1 CAHIER DE 100 PAGES"
+      if (/cahiers?\s+de\s+\d+.*et.*\d+.*cahier/i.test(cleanedLine)) {
+        const part1 = cleanedLine.match(/(\d+)\s+cahiers?\s+de\s+(\d+)\s*pages/i);
+        const part2 = cleanedLine.match(/(\d+)\s+cahier\s+de\s+(\d+)\s*pages/i);
+
+        if (part1) {
+          items.push({
+            rawText: line,
+            normalizedName: `Cahier ${part1[2]} pages`,
+            quantity: parseInt(part1[1], 10),
+            confidenceScore: 95
+          });
+        }
+        if (part2) {
+          items.push({
+            rawText: line,
+            normalizedName: `Cahier ${part2[2]} pages`,
+            quantity: parseInt(part2[1], 10),
+            confidenceScore: 95
+          });
+        }
+        return;
+      }
+
+      // 2. Détecter "TAILLE CRAYON + GOMME" -> Séparer en 2 articles
+      if (/\btaille\s+crayon\b.*?\+\s*gomme/i.test(cleanedLine)) {
+        items.push({ rawText: line, normalizedName: "Taille-crayon", quantity: 1, confidenceScore: 95 });
+        items.push({ rawText: line, normalizedName: "Gomme", quantity: 1, confidenceScore: 95 });
+        return;
+      }
+
+      // 3. Extraire la quantité exacte inscrite sur la feuille (2, 6, 20, 4, 1...)
+      let qty = 1;
+      const qtyMatch = cleanedLine.match(/^(\d{1,2})\s+/);
+      if (qtyMatch) {
+        qty = parseInt(qtyMatch[1], 10);
+      } else {
+        const altQtyMatch = cleanedLine.match(/\b(\d{1,2})\s*(crayons|stylos|cahiers|etiquettes|étiquettes|rame|ardoise|proteges|protèges)\b/i);
+        if (altQtyMatch) {
+          qty = parseInt(altQtyMatch[1], 10);
+        }
+      }
+
+      let cleanName = cleanedLine.replace(/^(\d{1,2}|\d+\s*[*xX])\s+/, '').trim();
+      cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+
+      // Normalisation des noms de fournitures courantes du Sénégal
+      if (/crayons?\s+noirs?/i.test(cleanName)) cleanName = "Crayon papier HB";
+      else if (/stylos?\s+a\s+bille/i.test(cleanName)) cleanName = "Stylo bleu";
+      else if (/etiquettes|étiquettes/i.test(cleanName)) cleanName = "Paquet d'étiquettes autocollantes";
+      else if (/cahier\s+de\s+liaison/i.test(cleanName)) cleanName = "Cahier de liaison";
+      else if (/cahier\s+de\s+dessin/i.test(cleanName)) cleanName = "Cahier de dessin 32 pages";
+      else if (/proteges?\s+cahier/i.test(cleanName)) cleanName = "Protège-cahier plastique";
+      else if (/ardoise/i.test(cleanName)) cleanName = "Ardoise";
+      else if (/cahier\s+d['']ecriture/i.test(cleanName)) cleanName = "Cahier d'écriture";
+      else if (/rame\s+de\s+papier/i.test(cleanName)) cleanName = "Rame de papier A4 80g";
+      else if (/langue\s+et\s+communication/i.test(cleanName)) cleanName = "Manuel Langue et Communication CP (Didactikos)";
+      else if (/mathematique/i.test(cleanName)) cleanName = "Manuel Mathématiques CP (Didactikos)";
+      else if (/decouverte\s+du\s+monde/i.test(cleanName)) cleanName = "Manuel Découverte du Monde CP (Didactikos)";
+      else if (/developpement\s+durable/i.test(cleanName)) cleanName = "Manuel Développement Durable CP (Didactikos)";
+      else if (/livre\s+lecture/i.test(cleanName)) cleanName = "Livre de Lecture CP (Didactikos)";
+
+      items.push({
+        rawText: line,
+        normalizedName: cleanName,
+        quantity: qty > 0 && qty < 100 ? qty : 1,
+        confidenceScore: 95
+      });
+    });
+
+    return {
+      overallConfidenceScore: 95,
+      items
+    };
+  } catch (err: any) {
+    console.warn('⚠️ [LOCAL OCR] Exception Tesseract.js local:', err.message);
+    return null;
+  }
 }

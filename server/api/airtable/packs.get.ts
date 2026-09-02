@@ -2,42 +2,23 @@
 // API publique des packs avec vraies données Airtable (token côté serveur)
 
 import { getAirtableBase } from "~/utils/airtable-base";
-
-import { senegalesePacks } from "~/data/products-senegal";
+import { officialPacks } from "~/data/packs-senegal";
 
 // Données de fallback au cas où Airtable ne fonctionne pas
-const fallbackPacksData: any[] = [
-  ...senegalesePacks.primaire.map((p: any, i: number) => ({
-    id: `fb-pri-${i}`,
-    name: p.name,
-    level: p.level,
-    price: p.price,
-    originalPrice: p.originalPrice,
-    image: "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
-    description: `Pack complet pour le niveau ${p.level}.`,
-    contents: p.contents,
-    isPopular: p.isPopular,
-    inStock: true,
-    isPromotion: !!p.originalPrice,
-    promotionEndDate: new Date("2025-12-31"),
-  })),
-  ...senegalesePacks.college.map((p: any, i: number) => ({
-    id: `fb-col-${i}`,
-    name: p.name,
-    level: p.level,
-    price: p.price,
-    originalPrice: p.originalPrice,
-    image: "https://i.pinimg.com/1200x/1d/c1/de/1dc1de98d4ae9813ed13b1c17dc3043e.jpg",
-    description: `Pack complet pour le niveau ${p.level}.`,
-    contents: p.contents,
-    isPopular: p.isPopular,
-    inStock: true,
-    isPromotion: !!p.originalPrice,
-    promotionEndDate: new Date("2025-12-31"),
-  })),
-];
-
-
+const fallbackPacksData: any[] = (officialPacks || []).map((p: any) => ({
+  id: p.id,
+  name: p.name || p.nom,
+  level: p.schoolLevel || p.niveau,
+  price: p.calculatedSellingPrice || p.prix_pack || p.price,
+  originalPrice: p.originalPrice || null,
+  image: p.coverImage || p.image || "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+  description: p.description || "",
+  contents: (p.items || []).map((i: any) => `${i.quantity || i.quantite}x ${i.productName}`),
+  isPopular: p.isPopular ?? true,
+  inStock: p.inStock ?? true,
+  isPromotion: !!p.originalPrice,
+  promotionEndDate: new Date("2026-12-31"),
+}));
 
 function transformAirtableToPublicFormat(
   airtableRecord: any,
@@ -76,36 +57,24 @@ export default defineEventHandler(async (event) => {
 
   try {
     const base = getAirtableBase();
-    const records = await base(process.env.AIRTABLE_PACKS_TABLE!)
-      .select()
-      .all();
+    if (!base) {
+      console.warn("⚠️ Base Airtable non configurée, utilisation du fallback.");
+      return { success: true, data: fallbackPacksData };
+    }
 
-    if (records && records.length > 0) {
-      const transformedPacks = records.map((record) =>
-        transformAirtableToPublicFormat(record.fields, record.id)
-      );
+    const records = await base("Packs").select().all();
+    const formattedData = records.map((record) =>
+      transformAirtableToPublicFormat(record.fields, record.id)
+    );
 
-      memoryPacksCache = {
-        success: true,
-        data: transformedPacks,
-        source: "airtable",
-      };
+    if (formattedData.length > 0) {
+      memoryPacksCache = { success: true, data: formattedData };
       return memoryPacksCache;
     }
-  } catch (airtableError: any) {
-    // En cas d'erreur ou 429 Airtable, utiliser les données de fallback en cache mémoire
-    memoryPacksCache = {
-      success: true,
-      data: fallbackPacksData,
-      source: "fallback",
-    };
-    return memoryPacksCache;
-  }
 
-  memoryPacksCache = {
-    success: true,
-    data: fallbackPacksData,
-    source: "fallback",
-  };
-  return memoryPacksCache;
+    return { success: true, data: fallbackPacksData };
+  } catch (error: any) {
+    console.warn("⚠️ Erreur lors de la récupération Airtable, utilisation du fallback:", error.message);
+    return { success: true, data: fallbackPacksData };
+  }
 });

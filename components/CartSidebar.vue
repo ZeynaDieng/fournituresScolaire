@@ -44,7 +44,7 @@
             <img
               :src="item.image"
               :alt="item.name"
-              class="w-16 h-16 object-cover rounded-lg bg-white"
+              class="w-16 h-16 object-contain mix-blend-multiply rounded-lg bg-slate-50 p-1"
             />
             <div class="flex-grow">
               <h3 class="font-semibold">{{ item.name }}</h3>

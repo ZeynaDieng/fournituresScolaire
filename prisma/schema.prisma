@@ -31,28 +31,33 @@ model User {
 }
 
 model Pack {
-  id           Int      @id @default(autoincrement())
-  name         String
-  level        String?
-  price        Int
-  originalPrice Int?
-  image        String
-  description  String?
-  contents     String?   // JSON string array
-  isPopular    Boolean   @default(false)
-  inStock      Boolean   @default(true)
-  stockQuantity Int     @default(0)
-  isPromotion  Boolean   @default(false)
-  promotionEndDate DateTime?
-  reviews      Review[] // Relation avec les avis
-  wishlists    Wishlist[]
-  inventory    Inventory[]
-  rating       Float?
-  reviewCount  Int       @default(0)
-  soldCount    Int       @default(0)
-  isActive     Boolean   @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          Int        @id @default(autoincrement())
+  name        String
+  schoolLevel String     // Maternelle, Primaire, Collège, Lycée, Tous niveaux
+  schoolName  String?    // Ex: Sainte-Marie de Hann, Lamine Guèye...
+  coverImage  String?    // Image de couverture du pack
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  items       PackItem[]
+  reviews     Review[]
+  wishlists   Wishlist[]
+  inventory   Inventory[]
+}
+
+model PackItem {
+  id        Int      @id @default(autoincrement())
+  packId    Int
+  productId Int
+  quantity  Int      @default(1)
+
+  pack      Pack     @relation(fields: [packId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {
@@ -60,6 +65,8 @@ model Product {
   name         String
   price        Int
   originalPrice Int?
+  costPrice    Int?     // Prix d'achat (Back Office Administrateur uniquement)
+  sellingPrice Int?     // Prix de vente
   category     String
   image        String
   images       String?   // JSON string array
@@ -67,7 +74,12 @@ model Product {
   specs        String?   // JSON string array [{label, value}]
   features     String?   // JSON string array [{label, value}]
   inStock      Boolean   @default(true)
-  stockQuantity Int     @default(0)
+  stockQuantity Int     @default(50)
+  stock        Int       @default(50)
+  lowStockThreshold Int  @default(10)
+  schoolLevel  String?   @default("Tous niveaux") // Maternelle, Primaire, Collège, Lycée, Tous niveaux
+  format       String?   @default("Standard")     // PF, GF, GM, A4, A5, Standard
+  unit         String?   @default("Unité")        // Unité, Paquet, Lot
   minStock     Int      @default(5)
   isPromotion  Boolean   @default(false)
   promotionEndDate DateTime?
@@ -84,9 +96,16 @@ model Product {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  slug         String?   @unique
+  metaTitle    String?
+  metaDescription String?
+  keywords     String?
+  packItems    PackItem[]
+
   wishlists    Wishlist[]
   inventory    Inventory[]
 }
+
 
 model Order {
   id         Int      @id @default(autoincrement())

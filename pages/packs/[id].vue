@@ -38,9 +38,9 @@
               </span>
             </div>
 
-            <!-- Image principale -->
+            <!-- Image principale (Full-bleed) -->
             <div
-              class="group relative overflow-hidden rounded-3xl bg-[#F8F6F0] aspect-[4/3] shadow-sm border border-slate-200/80 flex items-center justify-center p-8"
+              class="group relative overflow-hidden rounded-3xl bg-[#F8F6F0] aspect-[4/3] shadow-sm border border-slate-200/80"
             >
               <transition name="image-fade" mode="out-in">
                 <div
@@ -67,7 +67,7 @@
                   :key="pack?.image"
                   :src="pack?.image"
                   :alt="pack?.name || 'Pack éducatif'"
-                  class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                   @error="handleImageError"
                   @load="

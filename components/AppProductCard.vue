@@ -9,15 +9,15 @@
       </span>
     </div>
 
-    <!-- Image Container -->
-    <div class="relative aspect-[4/3] overflow-hidden bg-[#F7F5EF] flex items-center justify-center p-4">
+    <!-- Image Container (Full-bleed) -->
+    <NuxtLink :to="`/products/${product.id}`" class="relative aspect-[4/3] overflow-hidden bg-[#F7F5EF] block cursor-pointer">
       <img
         :src="product.image"
         :alt="product.name"
-        class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
       />
-    </div>
+    </NuxtLink>
 
     <!-- Content -->
     <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">

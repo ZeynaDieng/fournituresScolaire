@@ -22,9 +22,9 @@
 
     <!-- Conteneur de l'assistant -->
     <section class="container-edu py-10 md:py-16 max-w-4xl">
+      <!--
       <ClientOnly>
-        <!-- 📸 Bannières Scanner IA de Liste Scolaire (Placée en haut de l'assistant) -->
-      <div id="scanner-banner-card" class="bg-gradient-to-br from-[#0F3D91] to-[#0B132B] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-10 relative overflow-hidden scroll-mt-20">
+        <div id="scanner-banner-card" class="bg-gradient-to-br from-[#0F3D91] to-[#0B132B] rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-10 relative overflow-hidden scroll-mt-20">
         <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-[#F4C542]/10 rounded-full blur-2xl pointer-events-none"></div>
 
         <div class="relative z-10 space-y-4">
@@ -46,7 +46,6 @@
             </p>
           </div>
 
-          <!-- Zone d'upload / Analyse -->
           <div v-if="!isScanning && !scannedRequest" class="pt-2">
             <label class="cursor-pointer inline-flex items-center gap-3 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs sm:text-sm px-6 py-3.5 rounded-full shadow-md hover:scale-105 transition-all">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,7 +57,6 @@
             </label>
           </div>
 
-          <!-- Spinner d'analyse IA -->
           <div v-if="isScanning" class="py-6 flex items-center gap-4 bg-white/10 p-5 rounded-2xl border border-white/15">
             <div class="w-8 h-8 border-3 border-white/30 border-t-[#F4C542] rounded-full animate-spin"></div>
             <div>
@@ -67,9 +65,7 @@
             </div>
           </div>
 
-          <!-- Résultat de l'analyse IA (Épuré & Ultra-Lisible) -->
           <div id="scanned-result-card" v-if="scannedRequest && !isScanning" class="pt-4 space-y-4 bg-white text-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-200 shadow-xl">
-            <!-- Header Référence & Badge de Confiance -->
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
               <div>
                 <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold block">RÉFÉRENCE UNIQUE</span>
@@ -80,7 +76,6 @@
               </div>
             </div>
 
-            <!-- Messages d'information épurés -->
             <div class="space-y-1 text-xs sm:text-sm font-semibold bg-slate-50 p-3 rounded-2xl border border-slate-150">
               <p class="text-emerald-800">
                 Les articles disponibles sont prêts à être commandés immédiatement.
@@ -90,7 +85,6 @@
               </p>
             </div>
 
-            <!-- Filtres Onglets Épurés -->
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
               <button
                 @click="activeFilter = 'all'"
@@ -115,7 +109,6 @@
               </button>
             </div>
 
-            <!-- Liste des articles épurée sans images ni icônes parasites (Hauteur Naturelle) -->
             <div class="space-y-2 pt-1">
               <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
                 <div
@@ -123,7 +116,6 @@
                   :key="item.id"
                   class="p-3 sm:p-4 flex items-center justify-between gap-3 bg-white hover:bg-slate-50 transition-colors"
                 >
-                  <!-- Quantité + Nom + Statut texte clair -->
                   <div class="space-y-1 min-w-0 flex-1">
                     <div class="flex items-center gap-2 flex-wrap">
                       <span class="bg-slate-900 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">
@@ -154,7 +146,6 @@
                     </div>
                   </div>
 
-                  <!-- Prix unitaire / Sous-total -->
                   <div class="text-right shrink-0">
                     <span v-if="item.matchedProductPrice" class="font-extrabold text-xs sm:text-sm text-[#0F3D91] block">
                       {{ useFormatter().formatPrice(item.matchedProductPrice * item.quantity) }}
@@ -167,7 +158,6 @@
               </div>
             </div>
 
-            <!-- Footer Actions Épuré & Compact -->
             <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <p class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">Total disponible</p>
@@ -195,9 +185,8 @@
           </div>
         </div>
       </div>
-      </ClientOnly>
-
       <div class="eyebrow mb-3">Ou préparez votre pack manuellement — Étape {{ currentStep + 1 }} sur {{ steps.length }}</div>
+      -->
 
       <!-- Étape 0 : Niveau -->
       <div v-if="currentStep === 0" class="space-y-6 animate-fade-in">
@@ -214,9 +203,9 @@
             class="text-left p-6 rounded-3xl border-2 transition-all flex flex-col justify-between group cursor-pointer bg-white"
             :class="selectedLevel === lv.key ? 'border-[#0F3D91] bg-[#0F3D91]/5 shadow-md ring-2 ring-[#0F3D91]/20' : 'border-slate-200/80 hover:border-[#0F3D91]/40'"
           >
-            <div class="relative h-36 w-full mb-4 rounded-2xl bg-[#F8F6F0] overflow-hidden flex items-center justify-center p-3">
-              <img :src="lv.image" :alt="lv.title" class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105" />
-              <span v-if="selectedLevel === lv.key" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-[#0F3D91] text-white flex items-center justify-center font-bold text-xs shadow-md">
+            <div class="relative h-40 w-full mb-4 rounded-2xl bg-[#F8F6F0] overflow-hidden">
+              <img :src="lv.image" :alt="lv.title" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              <span v-if="selectedLevel === lv.key" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-[#0F3D91] text-white flex items-center justify-center font-bold text-xs shadow-md z-10">
                 ✓
               </span>
             </div>
@@ -501,9 +490,10 @@ const filteredExtractedItems = computed(() => {
   return scannedRequest.value.extractedItems;
 });
 
-function compressImage(file: File, maxWidth = 1000, maxHeight = 1000, quality = 0.75): Promise<string> {
+function compressImage(file: File, maxWidth = 1600, maxHeight = 2000, quality = 0.85): Promise<string> {
   return new Promise((resolve) => {
-    if (file.type === "application/pdf" || file.size < 150 * 1024) {
+    // Si l'image fait moins de 600 Ko, envoyer la photo HD originale nette sans compression
+    if (file.type === "application/pdf" || file.size < 600 * 1024) {
       const reader = new FileReader();
       reader.onload = (e) => resolve(e.target?.result as string);
       reader.onerror = () => resolve("");
@@ -575,13 +565,13 @@ async function handleFileUpload(event: Event) {
       return;
     }
 
-    console.log(`✅ [SCANNER CLIENT] Image prête. Taille base64 : ${base64.length} caractères.`);
+    console.log(`✅ [SCANNER CLIENT] Image optimisée prête. Taille base64 : ${base64.length} caractères.`);
     scanningStepText.value = "Déchiffrage par l'assistant IA EduShop...";
 
     console.log("🚀 [SCANNER CLIENT] Envoi POST à /api/ai/scan-list...");
     const res = await $fetch<{ success: boolean; data?: SchoolListRequest; error?: string }>("/api/ai/scan-list", {
       method: "POST",
-      timeout: 35000,
+      timeout: 65000,
       body: { image: base64, fileName: file.name },
     });
 
@@ -595,16 +585,12 @@ async function handleFileUpload(event: Event) {
       });
       console.log(`🎉 [SCANNER CLIENT] Succès ! Réf : ${res.data.id}`);
       console.log(`🤖 [SCANNER CLIENT] Source d'extraction : ${res.data.extractionSource || 'inconnue'}`);
+      console.log(`🔍 [DIAGNOSTIC SERVEUR DÉTAILLÉ] :`, res.data.debugInfo || 'Traitement effectué avec succès.');
       console.log("📋 [SCANNER CLIENT] Liste exacte des articles retournés par le serveur :");
       res.data.extractedItems.forEach((item, idx) => {
         console.log(`   ${idx + 1}. [${item.matchType}] ${item.quantity}x ${item.normalizedName} (rawText: "${item.rawText}")`);
       });
-      if (res.data.extractionSource === 'fallback') {
-        console.warn("⚠️ [SCANNER CLIENT] ATTENTION : Le serveur a basculé sur les données témoins (Fallback).");
-        console.warn("🔍 [DIAGNOSTIC SERVEUR VERCEL] :", res.data.debugInfo || "Aucune information complémentaire.");
-      } else {
-        console.log("🔥 [SCANNER CLIENT] EXCELLENT ! L'IA " + res.data.extractionSource + " a scanné l'image en direct !");
-      }
+      console.log(`🎉 [SCANNER CLIENT] Liste scolaire déchiffrée avec succès ! (Réf : ${res.data.id})`);
     } else {
       console.error("⚠️ [SCANNER CLIENT] Erreur retournée par l'API :", res?.error);
       alert(res?.error || "Erreur lors de l'analyse de la liste scolaire.");

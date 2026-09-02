@@ -200,7 +200,7 @@
                   <img
                     :src="item.image"
                     :alt="item.name"
-                    class="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-slate-200/60"
+                    class="w-12 h-12 object-contain mix-blend-multiply bg-white rounded-xl p-1 border border-slate-200/60"
                   />
                   <div>
                     <h4 class="font-bold text-xs sm:text-sm text-slate-900 line-clamp-1">

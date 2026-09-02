@@ -93,8 +93,8 @@ export default defineNuxtPlugin(() => {
     // Vérifier immédiatement au chargement de la page
     handlePageVisibility();
 
-    // Nettoyer à la destruction
-    onBeforeUnmount(() => {
+    // Nettoyer à la fermeture de page
+    window.addEventListener("beforeunload", () => {
       window.removeEventListener("message", handlePaymentMessage);
       document.removeEventListener("visibilitychange", handlePageVisibility);
     });

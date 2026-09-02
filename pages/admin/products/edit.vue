@@ -92,6 +92,17 @@
           </div>
           <div>
             <label class="block text-sm font-medium mb-1"
+              >Couleurs disponibles (séparées par virgule)</label
+            >
+            <input
+              v-model="colorsString"
+              type="text"
+              placeholder="Bleu, Rouge, Vert, Jaune, Noir"
+              class="w-full border rounded px-3 py-2 text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1"
               >Image principale (URL)</label
             >
             <input
@@ -246,10 +257,13 @@ onMounted(() => {
 
 // Champs complexes sécurisés
 const imagesString = ref("");
+const colorsString = ref("");
+
 watch(
   form,
   (val) => {
     imagesString.value = (val.Images ?? []).join(", ");
+    colorsString.value = Array.isArray(val.colors) ? val.colors.join(", ") : (val.colors || "");
   },
   { immediate: true }
 );
@@ -262,6 +276,13 @@ const imagesArray = computed(() =>
 );
 watch(imagesString, () => {
   form.value.Images = imagesArray.value;
+});
+
+watch(colorsString, () => {
+  form.value.colors = colorsString.value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 });
 
 function handleClose() {

@@ -25,7 +25,7 @@
 
         <ul v-else class="divide-y divide-slate-200 border-y border-slate-200 bg-white rounded-3xl p-6 shadow-soft">
           <li v-for="item in cartStore.items" :key="item.id" class="py-5 flex gap-4 items-center">
-            <img :src="item.image" :alt="item.name" class="h-20 w-20 rounded-2xl object-cover bg-slate-100 shrink-0" />
+            <img :src="item.image" :alt="item.name" class="h-20 w-20 rounded-2xl object-contain mix-blend-multiply bg-slate-50 p-1 shrink-0" />
             <div class="flex-1 min-w-0">
               <p class="font-bold text-[#0F3D91] text-base truncate">{{ item.name }}</p>
               <p class="text-xs text-slate-500 mt-0.5">{{ formatPrice(item.price) }} / unité</p>

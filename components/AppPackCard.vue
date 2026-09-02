@@ -4,12 +4,12 @@
       class="bg-white rounded-3xl border-2 border-slate-200/90 hover:border-[#0F3D91] overflow-hidden shadow-soft hover:shadow-lift transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col h-full justify-between isolate"
       style="-webkit-mask-image: -webkit-radial-gradient(white, black);"
     >
-      <!-- Promotion & Level Badges & Image -->
-      <div class="relative overflow-hidden bg-[#F7F5EF] aspect-[4/3] w-full flex items-center justify-center p-4">
+      <!-- Promotion & Level Badges & Image (Full-bleed) -->
+      <div class="relative overflow-hidden bg-[#F7F5EF] aspect-[4/3] w-full block">
         <img
           :src="pack.image"
           :alt="pack.name"
-          class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
 

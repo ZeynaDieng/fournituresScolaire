@@ -77,7 +77,7 @@
                 <img 
                   :src="item.image || '/images/placeholder-product.png'" 
                   :alt="item.name"
-                  class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  class="w-full h-48 object-contain mix-blend-multiply p-2 hover:scale-105 transition-transform duration-300"
                 >
               </div>
               <div class="p-4">

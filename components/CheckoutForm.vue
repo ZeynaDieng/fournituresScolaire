@@ -183,7 +183,7 @@
                 <img
                   :src="item.image"
                   :alt="item.name"
-                  class="w-12 h-12 object-cover rounded mr-3 bg-white"
+                  class="w-12 h-12 object-contain mix-blend-multiply rounded mr-3 bg-slate-50 p-1"
                 />
                 <div>
                   <h4 class="font-medium text-gray-900">{{ item.name }}</h4>
