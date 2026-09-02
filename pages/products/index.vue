@@ -84,54 +84,6 @@
         </button>
       </div>
 
-      <!-- Section Packs Scolaires en Vedette (Mise en avant visuelle) -->
-      <section v-if="featuredPacks.length > 0 && (currentCategory === 'Toutes' || currentCategory === 'Packs')" class="space-y-3 pt-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="bg-[#F4C542] text-slate-950 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full">
-              PACKS COMPLETS
-            </span>
-            <h2 class="font-display font-extrabold text-sm sm:text-base text-slate-900">
-              Packs Scolaires Clé en Main
-            </h2>
-          </div>
-          <NuxtLink to="/packs" class="text-xs font-bold text-[#0F3D91] hover:underline">
-            Tout voir →
-          </NuxtLink>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div
-            v-for="pack in featuredPacks"
-            :key="pack.id"
-            class="bg-gradient-to-br from-white to-[#F7F5EF] rounded-3xl border-2 border-[#0F3D91]/30 hover:border-[#0F3D91] p-3 sm:p-4 shadow-sm hover:shadow-md transition-all flex gap-3 items-center relative overflow-hidden"
-          >
-            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shrink-0 bg-white border border-slate-200/80">
-              <img :src="pack.image" :alt="pack.name" class="w-full h-full object-cover" />
-            </div>
-
-            <div class="flex-1 min-w-0 space-y-1">
-              <span class="inline-block bg-[#0F3D91] text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
-                {{ pack.schoolLevel || pack.level || 'PACK' }}
-              </span>
-              <h3 class="font-display font-extrabold text-xs sm:text-sm text-slate-900 truncate">
-                {{ pack.name }}
-              </h3>
-              <p class="text-[11px] font-extrabold text-[#0F3D91]">
-                {{ formatPriceVal(pack.price) }}
-              </p>
-
-              <button
-                @click.prevent.stop="quickAddPackToCart(pack)"
-                class="mt-1 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-black text-[11px] px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <span>+ Ajouter Pack</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- Main Layout: Sidebar Filtres (Desktop) + Grille/Liste Produits -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-2">
         
