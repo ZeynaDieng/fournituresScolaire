@@ -30,7 +30,6 @@ async function syncProductToAirtable(product: any) {
       "Local ID": product.id,
     };
 
-    if (product.costPrice) fields["Cost Price"] = Number(product.costPrice);
     if (product.originalPrice) fields["Original Price"] = Number(product.originalPrice);
 
     const records = await table.select().all();

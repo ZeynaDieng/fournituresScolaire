@@ -658,6 +658,7 @@ const addNewProduct = async () => {
   }
 
   productsStore.saveProduct(createdObj as any);
+  await airtableStore.fetchProducts();
 
   showAddModal.value = false;
   alert("Produit unitaire créé et enregistré dans la base de données Cloud !");
@@ -711,11 +712,13 @@ const saveEditProduct = async () => {
       method: "PUT",
       body: updatedData,
     });
+    console.log(`✅ Produit ${editingId.value} mis à jour sur Airtable Cloud!`);
   } catch (e) {
     console.warn("API PUT fallback local:", e);
   }
 
   productsStore.saveProduct(updatedData);
+  await airtableStore.fetchProducts();
 
   showEditModal.value = false;
   alert("Produit unitaire mis à jour et enregistré dans la base de données !");
