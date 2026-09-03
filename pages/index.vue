@@ -314,85 +314,63 @@
       </div>
     </section>
 
-    <!-- 7. Ce qu'ils disent - Témoignages (Screenshot 2) -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-slate-200/60" id="temoignages">
-      <div class="mb-12">
-        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91]">CE QU'ILS DISENT</span>
-        <h2 class="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-950">
-          <span class="text-[#0F3D91]">240</span> familles nous font confiance au Sénégal.
-        </h2>
+    <!-- 7. Ce qu'ils disent - Témoignages (Carrousel Horizontal Glissant) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 border-t border-slate-200/60 overflow-hidden" id="temoignages">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#0F3D91]">CE QU'ILS DISENT</span>
+          <h2 class="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-950">
+            <span class="text-[#0F3D91]">240</span> familles nous font confiance au Sénégal.
+          </h2>
+        </div>
+
+        <!-- Flèches de Navigation Carrousel -->
+        <div class="flex items-center gap-3 shrink-0">
+          <button
+            @click="scrollTestimonials(-1)"
+            class="w-12 h-12 rounded-full border-2 border-slate-200 hover:border-[#0F3D91] hover:bg-[#0F3D91] hover:text-white text-slate-800 font-extrabold flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 text-lg"
+            aria-label="Avis précédent"
+          >
+            ←
+          </button>
+          <button
+            @click="scrollTestimonials(1)"
+            class="w-12 h-12 rounded-full border-2 border-slate-200 hover:border-[#0F3D91] hover:bg-[#0F3D91] hover:text-white text-slate-800 font-extrabold flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 text-lg"
+            aria-label="Avis suivant"
+          >
+            →
+          </button>
+        </div>
       </div>
 
-      <!-- 3 Testimonial Cards Grid -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <!-- Card 1 -->
-        <div class="bg-white rounded-3xl border-2 border-slate-200/80 p-8 shadow-soft flex flex-col justify-between space-y-6">
+      <!-- Piste de Cartes de Témoignages (Glissement Horizontal Fluidifié) -->
+      <div
+        ref="testimonialsTrack"
+        class="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-6 px-1 scroll-smooth"
+      >
+        <div
+          v-for="(item, index) in homeTestimonials"
+          :key="index"
+          class="w-[88vw] sm:w-[380px] md:w-[420px] shrink-0 snap-start bg-white rounded-3xl border-2 border-slate-200/80 p-6 sm:p-8 shadow-soft flex flex-col justify-between space-y-6 hover:border-[#0F3D91]/40 transition-all duration-300"
+        >
           <div class="space-y-4">
             <div class="flex text-[#F4C542] text-sm gap-1">
-              ★★★★★
+              {{ item.stars }}
             </div>
-            <p class="font-display text-lg font-bold text-slate-950 leading-snug">
-              En 10 minutes j'avais commandé le pack CM1 de mon fils. Livré à domicile dès le lendemain.
+            <p class="font-display text-base sm:text-lg font-bold text-slate-950 leading-snug">
+              "{{ item.text }}"
             </p>
           </div>
 
           <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91]">
+            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91] shrink-0">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <div>
-              <p class="font-bold text-xs text-slate-950">Aïssatou D.</p>
-              <p class="text-[11px] text-slate-400 font-semibold">Maman d'élève à Dakar</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="bg-white rounded-3xl border-2 border-slate-200/80 p-8 shadow-soft flex flex-col justify-between space-y-6">
-          <div class="space-y-4">
-            <div class="flex text-[#F4C542] text-sm gap-1">
-              ★★★★★
-            </div>
-            <p class="font-display text-lg font-bold text-slate-950 leading-snug">
-              Fini le stress et les allers-retours au marché Sandaga sous la chaleur. Les fournitures sont d'excellente qualité.
-            </p>
-          </div>
-
-          <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91]">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <div>
-              <p class="font-bold text-xs text-slate-950">Moussa S.</p>
-              <p class="text-[11px] text-slate-400 font-semibold">Parent d'élève à Thiès</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="bg-white rounded-3xl border-2 border-slate-200/80 p-8 shadow-soft flex flex-col justify-between space-y-6">
-          <div class="space-y-4">
-            <div class="flex text-[#F4C542] text-sm gap-1">
-              ★★★★★
-            </div>
-            <p class="font-display text-lg font-bold text-slate-950 leading-snug">
-              Je recommande EduShop à tous les parents. Les packs préparés sont 100% conformes au programme scolaire.
-            </p>
-          </div>
-
-          <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0F3D91]">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <div>
-              <p class="font-bold text-xs text-slate-950">Fatou N.</p>
-              <p class="text-[11px] text-slate-400 font-semibold">Institutrice à Mbour</p>
+              <p class="font-bold text-xs text-slate-950">{{ item.name }}</p>
+              <p class="text-[11px] text-slate-400 font-semibold">{{ item.role }}</p>
             </div>
           </div>
         </div>
@@ -443,7 +421,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useAirtableStore } from "~/stores/airtable";
 import { useProductsStore } from "~/stores/products";
 import packPrimaireImg from "~/assets/images/pack-primaire.jpg";
@@ -451,6 +429,47 @@ import AppHeroSection from "~/components/AppHeroSection.vue";
 
 const airtableStore = useAirtableStore();
 const productsStore = useProductsStore();
+
+const testimonialsTrack = ref<HTMLElement | null>(null);
+
+const scrollTestimonials = (direction: number) => {
+  if (!testimonialsTrack.value) return;
+  const scrollAmount = 380 * direction;
+  testimonialsTrack.value.scrollBy({ left: scrollAmount, behavior: "smooth" });
+};
+
+const homeTestimonials = [
+  {
+    stars: "★★★★★",
+    text: "En 10 minutes j'avais commandé le pack CM1 de mon fils. Livré à domicile dès le lendemain.",
+    name: "Aïssatou D.",
+    role: "Maman d'élève à Dakar",
+  },
+  {
+    stars: "★★★★★",
+    text: "Fini le stress et les allers-retours au marché Sandaga sous la chaleur. Les fournitures sont d'excellente qualité.",
+    name: "Moussa S.",
+    role: "Parent d'élève à Thiès",
+  },
+  {
+    stars: "★★★★★",
+    text: "Je recommande EduShop à tous les parents. Les packs préparés sont 100% conformes au programme scolaire.",
+    name: "Fatou N.",
+    role: "Institutrice à Mbour",
+  },
+  {
+    stars: "★★★★★",
+    text: "Service client très réactif sur WhatsApp. La livraison a été ponctuelle et les cahiers parfaitement emballés.",
+    name: "Ousmane K.",
+    role: "Parent d'élève à Saint-Louis",
+  },
+  {
+    stars: "★★★★★",
+    text: "Gain de temps formidable pour la rentrée. Prix très compétitifs et paiement facile par Wave.",
+    name: "Mariama B.",
+    role: "Maman d'élève à Ziguinchor",
+  },
+];
 
 onMounted(async () => {
   if (productsStore.products.length === 0) {
