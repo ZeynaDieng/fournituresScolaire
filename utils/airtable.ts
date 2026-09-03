@@ -70,9 +70,7 @@ export class AirtableService {
 
   static async getProducts(): Promise<AirtableProduct[]> {
     try {
-      const records = await base(
-        process.env.AIRTABLE_PRODUCTS_TABLE || "Products"
-      )
+      const records = await base("Products")
         .select({
           sort: [{ field: "Name", direction: "asc" }],
         })
