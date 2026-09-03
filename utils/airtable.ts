@@ -74,8 +74,6 @@ export class AirtableService {
         process.env.AIRTABLE_PRODUCTS_TABLE || "Products"
       )
         .select({
-          view: "Grid view",
-          filterByFormula: "{In Stock} = TRUE()",
           sort: [{ field: "Name", direction: "asc" }],
         })
         .all();
