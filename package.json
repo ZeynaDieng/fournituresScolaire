@@ -8,7 +8,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "prisma generate || true && nuxt prepare",
     "setup:prod": "node scripts/setup-production-db.js",
     "setup:supabase": "node scripts/setup-supabase.js",
     "setup:vercel": "node scripts/setup-vercel-env.js",
@@ -85,7 +85,6 @@
     "tailwindcss"
   ],
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": "20.x"
   }
 }
