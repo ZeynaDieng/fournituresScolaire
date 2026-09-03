@@ -32,8 +32,8 @@ export const officialCatalog = [
     "category": "Papier",
     "costPrice": 2000,
     "sellingPrice": 3000,
-    "image": "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&h=600&q=80",
-    "description": "Rame de 500 feuilles de papier blanc A4 80g",
+    "image": "/images/products/rame-papier-a4.jpg",
+    "description": "Rame de 500 feuilles de papier blanc A4 80g PaperOne Premium All Purpose",
     "isActive": true,
     "stock": 80,
     "inStock": true,
@@ -42,11 +42,11 @@ export const officialCatalog = [
     "format": "Grand Format (21x29,7 cm)",
     "unit": "Unité",
     "slug": "rame-de-papier-a4",
-    "metaTitle": "Rame de papier A4 80g - EduShop Sénégal",
-    "metaDescription": "Rame de papier A4 80g pour impressions et devoirs scolaires.",
-    "keywords": "Rame de papier A4, rame de papier, rame papier, papier a4",
+    "metaTitle": "Rame de papier A4 80g PaperOne - EduShop Sénégal",
+    "metaDescription": "Rame de papier A4 80g PaperOne 500 feuilles pour impressions et devoirs scolaires.",
+    "keywords": "Rame de papier A4, rame de papier, rame papier, PaperOne, papier a4",
     "images": [
-      "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&h=600&q=80"
+      "/images/products/rame-papier-a4.jpg"
     ]
   },
   {
