@@ -301,9 +301,10 @@
             <div class="col-span-2 space-y-2">
               <label class="block font-bold text-slate-700 uppercase mb-1">Photo du produit</label>
               <div class="flex items-center gap-2">
-                <label class="px-4 py-2.5 bg-[#0F3D91]/10 text-[#0F3D91] font-bold rounded-xl cursor-pointer text-xs shrink-0">
-                  <span>📁 Choisir photo...</span>
-                  <input type="file" accept="image/*" @change="handleFileUpload" class="hidden" />
+                <label class="px-4 py-2.5 bg-[#0F3D91]/10 text-[#0F3D91] font-bold rounded-xl cursor-pointer text-xs shrink-0 flex items-center gap-1.5">
+                  <span v-if="!uploadingImage">📁 Choisir photo...</span>
+                  <span v-else class="animate-pulse text-amber-700">⏳ Transfert Cloud...</span>
+                  <input type="file" accept="image/*" @change="handleFileUpload" class="hidden" :disabled="uploadingImage" />
                 </label>
                 <input v-model="productForm.image" type="text" class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs" placeholder="https://..." />
               </div>
@@ -413,9 +414,10 @@
             <div class="col-span-2 space-y-2">
               <label class="block font-bold text-slate-700 uppercase mb-1">Photo du produit</label>
               <div class="flex items-center gap-2">
-                <label class="px-4 py-2.5 bg-[#0F3D91]/10 text-[#0F3D91] font-bold rounded-xl cursor-pointer text-xs shrink-0">
-                  <span>📁 Choisir photo...</span>
-                  <input type="file" accept="image/*" @change="handleFileUpload" class="hidden" />
+                <label class="px-4 py-2.5 bg-[#0F3D91]/10 text-[#0F3D91] font-bold rounded-xl cursor-pointer text-xs shrink-0 flex items-center gap-1.5">
+                  <span v-if="!uploadingImage">📁 Choisir photo...</span>
+                  <span v-else class="animate-pulse text-amber-700">⏳ Transfert Cloud...</span>
+                  <input type="file" accept="image/*" @change="handleFileUpload" class="hidden" :disabled="uploadingImage" />
                 </label>
                 <input v-model="productForm.image" type="text" class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs" />
               </div>
@@ -558,14 +560,35 @@ const formatPrice = (val: number) => {
   return new Intl.NumberFormat("fr-FR").format(val) + " F CFA";
 };
 
-const handleFileUpload = (event: Event) => {
+const uploadingImage = ref(false);
+
+const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
     const file = target.files[0];
+    uploadingImage.value = true;
+
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       if (e.target?.result) {
-        productForm.value.image = e.target.result as string;
+        const base64 = e.target.result as string;
+        productForm.value.image = base64; // Aperçu immédiat
+
+        try {
+          const res: any = await $fetch("/api/admin/upload-image", {
+            method: "POST",
+            body: { base64 },
+          });
+
+          if (res && res.success && res.url) {
+            productForm.value.image = res.url;
+            console.log("✅ Image hébergée dans le Cloud avec succès:", res.url);
+          }
+        } catch (err) {
+          console.warn("⚠️ Upload Cloud fallback local:", err);
+        } finally {
+          uploadingImage.value = false;
+        }
       }
     };
     reader.readAsDataURL(file);
