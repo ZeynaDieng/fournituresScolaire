@@ -182,13 +182,13 @@
         </NuxtLink>
       </div>
 
-      <!-- 4 Product Cards Grid (Screenshot 5) -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- 4 Product Cards Grid (Screenshot 5 - 2 colonnes en mobile) -->
+      <div class="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
         <NuxtLink
           v-for="product in catalogueProducts"
           :key="product.id"
           :to="`/products/${product.id}`"
-          class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between"
+          class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 group flex flex-col justify-between"
         >
           <!-- Product Image Container (Full-bleed) -->
           <div class="relative aspect-square bg-[#F8F6F0] overflow-hidden">
@@ -200,21 +200,21 @@
           </div>
 
           <!-- Product Details -->
-          <div class="p-5 space-y-2 flex-1 flex flex-col justify-between">
+          <div class="p-3 sm:p-5 space-y-2 flex-1 flex flex-col justify-between">
             <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
+              <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block mb-1">
                 {{ product.brand }}
               </span>
-              <h3 class="font-display text-sm font-bold text-slate-900 group-hover:text-[#0F3D91] transition-colors leading-snug line-clamp-2">
+              <h3 class="font-display text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#0F3D91] transition-colors leading-snug line-clamp-2 min-h-[2rem]">
                 {{ product.name }}
               </h3>
             </div>
 
-            <div class="pt-3 flex items-center justify-between border-t border-slate-100">
-              <span class="font-display text-base font-extrabold text-slate-950">
+            <div class="pt-2 sm:pt-3 flex items-center justify-between border-t border-slate-100">
+              <span class="font-display text-xs sm:text-base font-extrabold text-slate-950">
                 {{ product.priceFormatted }}
               </span>
-              <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <span class="text-[10px] sm:text-xs font-bold text-slate-700 flex items-center gap-0.5 sm:gap-1">
                 <span class="text-[#F4C542]">★</span> {{ product.rating }}
               </span>
             </div>
