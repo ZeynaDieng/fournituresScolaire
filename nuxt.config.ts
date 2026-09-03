@@ -4,7 +4,7 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt", "@vueuse/nuxt"],
-  ssr: true,
+  ssr: false,
 
   css: ["@/assets/css/main.css", "@/assets/css/animations.css"],
   
