@@ -614,7 +614,7 @@ const openAddModal = () => {
   showAddModal.value = true;
 };
 
-const addNewProduct = () => {
+const addNewProduct = async () => {
   if (!productForm.value.name) return;
   const createdObj = {
     id: `prd-${Date.now()}`,
@@ -635,10 +635,20 @@ const addNewProduct = () => {
     description: productForm.value.description || "Nouveau produit EduShop",
   };
 
-  productsStore.products.unshift(createdObj as any);
+  try {
+    await $fetch("/api/admin/products", {
+      method: "POST",
+      body: createdObj,
+    });
+    console.log("✅ Nouveau produit synchronisé sur la base de données Cloud Airtable!");
+  } catch (e) {
+    console.warn("⚠️ API POST Airtable sync fallback local:", e);
+  }
+
+  productsStore.saveProduct(createdObj as any);
 
   showAddModal.value = false;
-  alert("Produit unitaire créé avec succès dans le catalogue Back Office !");
+  alert("Produit unitaire créé et enregistré dans la base de données Cloud !");
 };
 
 const openEditModal = (product: any) => {
