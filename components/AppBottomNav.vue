@@ -31,7 +31,7 @@
           <!-- Counter Badge -->
           <span
             v-if="cartStore.itemCount > 0"
-            class="absolute -top-2 -right-2 bg-[#F4C542] text-slate-950 text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold"
+            class="absolute -top-2 -right-3 bg-red-600 text-white text-[10px] rounded-full min-w-[20px] h-[20px] flex items-center justify-center font-black border-2 border-white shadow-xs"
           >
             {{ cartStore.itemCount > 99 ? "99+" : cartStore.itemCount }}
           </span>

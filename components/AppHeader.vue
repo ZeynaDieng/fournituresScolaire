@@ -66,8 +66,24 @@
           </button>
         </div>
 
-        <!-- Mobile Single Hamburger Menu Toggle (Screenshot exact match) -->
+        <!-- Mobile Navigation Actions (Cart + Menu) -->
         <div class="flex items-center gap-2 md:hidden">
+          <button
+            @click="cartStore.toggleCart()"
+            class="relative p-2 text-slate-900 hover:text-[#0F3D91] cursor-pointer rounded-full hover:bg-slate-100 transition-colors"
+            aria-label="Voir le Panier"
+          >
+            <svg class="w-6 h-6 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span
+              v-if="cartStore.itemCount > 0"
+              class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm"
+            >
+              {{ cartStore.itemCount > 99 ? '99+' : cartStore.itemCount }}
+            </span>
+          </button>
+
           <button
             @click="toggleMobileMenu"
             class="p-2 text-slate-900 hover:text-[#0F3D91] focus:outline-none cursor-pointer"
