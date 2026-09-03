@@ -550,14 +550,17 @@ const catalogueProducts = computed(() => {
   }
   const storeProds = [...customProds, ...productsStore.products];
   if (storeProds.length > 0) {
-    return storeProds.slice(0, 4).map((p) => ({
-      id: p.id,
-      brand: p.category ? p.category.toUpperCase() : "EDUSHOP",
-      name: p.name,
-      priceFormatted: `${p.price.toLocaleString("fr-FR")} F CFA`,
-      rating: "4.9",
-      image: p.image,
-    }));
+    return storeProds.slice(0, 4).map((p) => {
+      const priceVal = Number(p.sellingPrice || p.price || p.Price || 300);
+      return {
+        id: p.id,
+        brand: p.category ? p.category.toUpperCase() : "EDUSHOP",
+        name: p.name || p.Name || "Produit",
+        priceFormatted: `${priceVal.toLocaleString("fr-FR")} F CFA`,
+        rating: "4.9",
+        image: p.image || p["Image URL"] || "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg",
+      };
+    });
   }
   return [
     {

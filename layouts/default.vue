@@ -80,5 +80,7 @@ useHead({
 });
 
 // Auto-save du panier
-useCartAutoSave();
+if (process.client) {
+  useCartAutoSave();
+}
 </script>
