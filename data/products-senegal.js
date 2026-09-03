@@ -1,5 +1,5 @@
 // data/products-senegal.js
-// Catalogue officiel des fournitures scolaires au Sénégal
+// Source officielle du catalogue EduShop
 
 export const officialCatalog = [
   {
@@ -199,7 +199,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 200,
     "sellingPrice": 300,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier 32 pages petit format Séyès",
     "isActive": true,
     "stock": 150,
@@ -213,7 +213,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier 32 pages (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier 32 pages, Cahiers, fourniture scolaire Sénégal, achat Cahier 32 pages Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -245,7 +245,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 300,
     "sellingPrice": 400,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier 64 pages format standard",
     "isActive": true,
     "stock": 100,
@@ -259,7 +259,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier 64 pages (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier 64 pages, Cahiers, fourniture scolaire Sénégal, achat Cahier 64 pages Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -268,7 +268,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 175,
     "sellingPrice": 300,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier 96 pages grand format",
     "isActive": true,
     "stock": 200,
@@ -282,7 +282,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier 96 pages (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier 96 pages, Cahiers, fourniture scolaire Sénégal, achat Cahier 96 pages Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -314,7 +314,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 200,
     "sellingPrice": 350,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier 100 pages grand format",
     "isActive": true,
     "stock": 90,
@@ -328,7 +328,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier 100 pages Grand Format (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier 100 pages Grand Format, Cahiers, fourniture scolaire Sénégal, achat Cahier 100 pages Grand Format Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -360,7 +360,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 700,
     "sellingPrice": 1000,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier 300 pages grand format",
     "isActive": true,
     "stock": 60,
@@ -374,7 +374,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier 300 pages Grand Format (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier 300 pages Grand Format, Cahiers, fourniture scolaire Sénégal, achat Cahier 300 pages Grand Format Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -383,7 +383,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 150,
     "sellingPrice": 300,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier dessin grand modèle",
     "isActive": true,
     "stock": 70,
@@ -397,7 +397,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier dessin Grand Modèle (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier dessin Grand Modèle, Cahiers, fourniture scolaire Sénégal, achat Cahier dessin Grand Modèle Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -406,7 +406,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 250,
     "sellingPrice": 500,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier de musique et de chant avec portées",
     "isActive": true,
     "stock": 50,
@@ -420,7 +420,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier musique et chant (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier musique et chant, Cahiers, fourniture scolaire Sénégal, achat Cahier musique et chant Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -429,7 +429,7 @@ export const officialCatalog = [
     "category": "Cahiers",
     "costPrice": 300,
     "sellingPrice": 500,
-    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&h=600&q=80",
     "description": "Cahier travaux pratiques grand format",
     "isActive": true,
     "stock": 85,
@@ -443,7 +443,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Cahier TP Grand Format (Cahiers) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Cahier TP Grand Format, Cahiers, fourniture scolaire Sénégal, achat Cahier TP Grand Format Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&h=600&q=80"
     ]
   },
   {
@@ -452,7 +452,7 @@ export const officialCatalog = [
     "category": "Écriture",
     "costPrice": 50,
     "sellingPrice": 100,
-    "image": "https://images.unsplash.com/photo-1585336261026-8f57857a47ef?auto=format&fit=crop&w=600&h=600&q=80",
+    "image": "https://papex.sn/wp-content/uploads/2022/09/stylo-a-bille-schneider-tops-505-pointe-conique-m-bleu.jpg",
     "description": "Stylo bille encre bleue",
     "isActive": true,
     "stock": 500,
@@ -466,7 +466,7 @@ export const officialCatalog = [
     "metaDescription": "Achetez Stylo bleu (Écriture) au meilleur prix au Sénégal. Produit certifié pour l'école, livraison rapide à Dakar et dans toutes les régions.",
     "keywords": "Stylo bleu, Écriture, fourniture scolaire Sénégal, achat Stylo bleu Dakar, rentrée scolaire Sénégal, papeterie EduShop",
     "images": [
-      "https://images.unsplash.com/photo-1585336261026-8f57857a47ef?auto=format&fit=crop&w=600&h=600&q=80"
+      "https://papex.sn/wp-content/uploads/2022/09/stylo-a-bille-schneider-tops-505-pointe-conique-m-bleu.jpg"
     ]
   },
   {
@@ -1722,6 +1722,5 @@ export const officialCatalog = [
     "slug": "livre-lecture-cp"
   }
 ];
-
 
 export const senegaleseProducts = officialCatalog;
