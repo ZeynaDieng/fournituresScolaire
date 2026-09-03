@@ -437,6 +437,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useAirtableStore } from "~/stores/airtable";
 import { useProductsStore } from "~/stores/products";
 
 definePageMeta({
@@ -444,6 +445,7 @@ definePageMeta({
   middleware: "admin",
 });
 
+const airtableStore = useAirtableStore();
 const productsStore = useProductsStore();
 
 const searchQuery = ref("");
@@ -469,13 +471,23 @@ const productForm = ref({
   description: "",
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (productsStore.products.length === 0) {
     productsStore.initializeDemoData();
   }
+  await airtableStore.initialize();
+});
+
+const allAdminProducts = computed(() => {
+  return (airtableStore.products && airtableStore.products.length > 0)
+    ? airtableStore.products
+    : productsStore.products;
 });
 
 const availableCategories = computed(() => {
+  if (airtableStore.categories && airtableStore.categories.length > 0) {
+    return airtableStore.categories;
+  }
   return productsStore.categories;
 });
 
@@ -504,7 +516,7 @@ const isLowStock = (p: any) => {
 };
 
 const filteredProducts = computed(() => {
-  let prods = productsStore.products;
+  let prods = allAdminProducts.value;
 
   if (selectedCategory.value) {
     prods = prods.filter((p: any) => p.category === selectedCategory.value);
@@ -534,8 +546,8 @@ const filteredProducts = computed(() => {
 });
 
 const stats = computed(() => {
-  const activeProds = productsStore.products.filter((p: any) => p.isActive !== false);
-  const inactiveProds = productsStore.products.filter((p: any) => p.isActive === false);
+  const activeProds = allAdminProducts.value.filter((p: any) => p.isActive !== false);
+  const inactiveProds = allAdminProducts.value.filter((p: any) => p.isActive === false);
 
   const lowStockCount = activeProds.filter((p: any) => isLowStock(p)).length;
 
@@ -545,7 +557,7 @@ const stats = computed(() => {
   const averageMarginRate = totalCost > 0 ? (Math.round((totalMargin / totalCost) * 1000) / 10) : 0;
 
   return {
-    total: productsStore.products.length,
+    total: allAdminProducts.value.length,
     activeCount: activeProds.length,
     inactiveCount: inactiveProds.length,
     lowStockCount,
