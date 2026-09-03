@@ -1,7 +1,151 @@
 // data/products-senegal.js
-// Source officielle du catalogue EduShop
+// Catalogue officiel des fournitures scolaires au Sénégal
 
 export const officialCatalog = [
+  {
+    "id": "ardoise-bois-eponge-craie",
+    "name": "ARDOISE EN BOIS AVEC EPONGE ET CRAIE 23/30",
+    "category": "Fournitures",
+    "costPrice": 450,
+    "sellingPrice": 700,
+    "price": 700,
+    "image": "/images/products/ardoise-bois-eponge-craie.jpg",
+    "description": "Ardoise traditionnelle en bois double face avec éponge et bâtons de craie 23x30 cm",
+    "isActive": true,
+    "stock": 70,
+    "inStock": true,
+    "lowStockThreshold": 10,
+    "schoolLevel": "Maternelle",
+    "format": "Standard (23x30 cm)",
+    "unit": "Kit",
+    "slug": "ardoise-bois-eponge-craie",
+    "metaTitle": "ARDOISE EN BOIS AVEC EPONGE ET CRAIE 23/30 - EduShop Sénégal",
+    "metaDescription": "Ardoise traditionnelle en bois double face avec éponge et bâtons de craie 23x30 cm.",
+    "keywords": "ardoise bois, craie, eponge, ardoise traditionnelle",
+    "images": [
+      "/images/products/ardoise-bois-eponge-craie.jpg"
+    ]
+  },
+  {
+    "id": "ardoise-efacable-yplus",
+    "name": "ARDOISE EFACABLE Y-PLUS WB 180112",
+    "category": "Fournitures",
+    "costPrice": 1300,
+    "sellingPrice": 2000,
+    "price": 2000,
+    "image": "/images/products/ardoise-efacable-yplus.jpg",
+    "description": "Ardoise effaçable Y-Plus WB 180112 avec marqueur et brosse effaceur",
+    "isActive": true,
+    "stock": 50,
+    "inStock": true,
+    "lowStockThreshold": 10,
+    "schoolLevel": "Tous niveaux",
+    "format": "Standard",
+    "unit": "Unité",
+    "slug": "ardoise-efacable-yplus",
+    "metaTitle": "ARDOISE EFACABLE Y-PLUS WB 180112 - EduShop Sénégal",
+    "metaDescription": "Ardoise effaçable Y-Plus WB 180112 avec marqueur et brosse.",
+    "keywords": "ardoise yplus, y-plus, ardoise effacable",
+    "images": [
+      "/images/products/ardoise-efacable-yplus.jpg"
+    ]
+  },
+  {
+    "id": "ardoise-efacable-mm",
+    "name": "ARDOISE EFACABLE MM",
+    "category": "Fournitures",
+    "costPrice": 400,
+    "sellingPrice": 700,
+    "price": 700,
+    "image": "/images/products/ardoise-efacable-mm.jpg",
+    "description": "Ardoise effaçable Moyen Format quadrillée bordure bleue Majuscule",
+    "isActive": true,
+    "stock": 60,
+    "inStock": true,
+    "lowStockThreshold": 10,
+    "schoolLevel": "Primaire",
+    "format": "Moyen Format",
+    "unit": "Unité",
+    "slug": "ardoise-efacable-mm",
+    "metaTitle": "ARDOISE EFACABLE MM - EduShop Sénégal",
+    "metaDescription": "Ardoise effaçable Moyen Format quadrillée bordure bleue.",
+    "keywords": "ardoise effacable, ardoise mm",
+    "images": [
+      "/images/products/ardoise-efacable-mm.jpg"
+    ]
+  },
+  {
+    "id": "ardoise-blanc-pm-2030",
+    "name": "ARDOISE BLANC PM DOUBLE FACE AVEC MARQUEUR 20*30",
+    "category": "Fournitures",
+    "costPrice": 1300,
+    "sellingPrice": 2000,
+    "price": 2000,
+    "image": "/images/products/ardoise-blanc-pm-2030.jpg",
+    "description": "Ardoise blanche Petit Format double-face quadrillée avec marqueur BIC Velleda 20x30 cm",
+    "isActive": true,
+    "stock": 50,
+    "inStock": true,
+    "lowStockThreshold": 10,
+    "schoolLevel": "Primaire",
+    "format": "Standard (20x30 cm)",
+    "unit": "Unité",
+    "slug": "ardoise-blanc-pm-2030",
+    "metaTitle": "ARDOISE BLANC PM DOUBLE FACE 20*30 - EduShop Sénégal",
+    "metaDescription": "Ardoise blanche Petit Format double-face quadrillée avec marqueur 20x30 cm.",
+    "keywords": "ardoise double face, velleda, 20x30",
+    "images": [
+      "/images/products/ardoise-blanc-pm-2030.jpg"
+    ]
+  },
+  {
+    "id": "ardoise-blanc-pm-hs001",
+    "name": "ARDOISE BLANC PM AVEC MARQUEUR HS-001",
+    "category": "Fournitures",
+    "costPrice": 800,
+    "sellingPrice": 1300,
+    "price": 1300,
+    "image": "/images/products/ardoise-blanc-pm-hs001.jpg",
+    "description": "Ardoise blanche Petit Format avec marqueurs de couleurs attachés HS-001",
+    "isActive": true,
+    "stock": 50,
+    "inStock": true,
+    "lowStockThreshold": 10,
+    "schoolLevel": "Maternelle",
+    "format": "Petit Format (17x22 cm)",
+    "unit": "Unité",
+    "slug": "ardoise-blanc-pm-hs001",
+    "metaTitle": "ARDOISE BLANC PM AVEC MARQUEUR HS-001 - EduShop Sénégal",
+    "metaDescription": "Ardoise blanche Petit Format avec marqueurs de couleurs attachés HS-001.",
+    "keywords": "ardoise, marqueurs, ardoise blanc pm",
+    "images": [
+      "/images/products/ardoise-blanc-pm-hs001.jpg"
+    ]
+  },
+  {
+    "id": "ardoise-blanc-kit",
+    "name": "Ardoise Blanc Kit Velleda",
+    "category": "Fournitures",
+    "costPrice": 1300,
+    "sellingPrice": 2000,
+    "price": 2000,
+    "image": "/images/products/ardoise-blanc-kit.jpg",
+    "description": "Kit Ardoise blanc BIC Velleda effaçable à sec avec feutres et brosse effaceur",
+    "isActive": true,
+    "stock": 50,
+    "inStock": true,
+    "lowStockThreshold": 10,
+    "schoolLevel": "Primaire",
+    "format": "Standard",
+    "unit": "Kit",
+    "slug": "ardoise-blanc-kit",
+    "metaTitle": "Ardoise Blanc Kit Velleda - EduShop Sénégal",
+    "metaDescription": "Kit Ardoise blanc BIC Velleda effaçable à sec au meilleur prix au Sénégal.",
+    "keywords": "ardoise, velleda, bic, ardoise blanc kit",
+    "images": [
+      "/images/products/ardoise-blanc-kit.jpg"
+    ]
+  },
   {
     "id": "cahier-ecriture",
     "name": "Cahier d'écriture",
@@ -1578,5 +1722,6 @@ export const officialCatalog = [
     "slug": "livre-lecture-cp"
   }
 ];
+
 
 export const senegaleseProducts = officialCatalog;
