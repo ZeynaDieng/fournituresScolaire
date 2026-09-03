@@ -5,13 +5,14 @@ import { getAirtableBase } from "~/utils/airtable-base";
 async function syncProductToAirtable(product: any) {
   const base = getAirtableBase();
   const table = base("Products");
+
   const fields: any = {
     Name: product.name,
     Price: Number(product.sellingPrice || product.price) || 0,
     Category: product.category || "Fournitures",
     Description: product.description || "",
     "Image URL": product.image || "",
-    "In Stock": product.inStock !== false && (product.stock ?? 50) > 0,
+    "In Stock": product.isActive !== false && product.inStock !== false,
     "Local ID": product.id,
   };
 
@@ -24,6 +25,7 @@ async function syncProductToAirtable(product: any) {
     const records = await table.select().all();
     const match = records.find(
       (r: any) =>
+        r.id === product.id ||
         r.get("Local ID") === product.id ||
         (r.get("Name") || "").toLowerCase().trim() === (product.name || "").toLowerCase().trim()
     );
@@ -45,9 +47,17 @@ async function deleteProductFromAirtable(id: string) {
   const base = getAirtableBase();
   const table = base("Products");
   const records = await table.select().all();
-  const match = records.find((r: any) => r.id === id || r.get("Local ID") === id);
+  const match = records.find(
+    (r: any) =>
+      r.id === id ||
+      r.get("Local ID") === id ||
+      (r.get("Name") || "").toLowerCase().trim() === id.toLowerCase().trim()
+  );
   if (match) {
     await table.destroy(match.id);
+    console.log(`🗑️ Record ${match.id} (Local ID: ${id}) supprimé d'Airtable Cloud!`);
+  } else {
+    console.warn(`⚠️ Produit introuvable pour suppression dans Airtable Cloud (ID: ${id})`);
   }
 }
 

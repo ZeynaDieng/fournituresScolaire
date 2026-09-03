@@ -198,6 +198,9 @@
                 <button @click="toggleActive(product)" class="font-bold hover:underline cursor-pointer" :class="product.isActive !== false ? 'text-amber-600' : 'text-emerald-600'">
                   {{ product.isActive !== false ? 'Désactiver' : 'Réactiver' }}
                 </button>
+                <button @click="deleteProduct(product)" class="text-rose-600 font-bold hover:underline cursor-pointer">
+                  Supprimer
+                </button>
               </td>
 
             </tr>
@@ -719,8 +722,43 @@ const saveEditProduct = async () => {
   alert("Produit unitaire mis à jour et enregistré dans la base de données !");
 };
 
-const toggleActive = (product: any) => {
-  product.isActive = !(product.isActive !== false);
+const toggleActive = async (product: any) => {
+  const targetId = product.airtableRecordId || product.id;
+  const newStatus = !(product.isActive !== false);
+
+  try {
+    await $fetch(`/api/admin/products/${targetId}`, {
+      method: "PUT",
+      body: {
+        ...product,
+        isActive: newStatus,
+        inStock: newStatus,
+      },
+    });
+    await airtableStore.fetchProducts();
+  } catch (err) {
+    console.error("Erreur toggleActive product:", err);
+    alert("Impossible de modifier le statut du produit.");
+  }
+};
+
+const deleteProduct = async (product: any) => {
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement "${product.name}" de la base Cloud ?`)) {
+    return;
+  }
+
+  const targetId = product.airtableRecordId || product.id;
+
+  try {
+    await $fetch(`/api/admin/products/${targetId}`, {
+      method: "DELETE",
+    });
+    alert(`Produit "${product.name}" supprimé de la base Cloud avec succès !`);
+    await airtableStore.fetchProducts();
+  } catch (err) {
+    console.error("Erreur suppression produit:", err);
+    alert("Erreur lors de la suppression du produit.");
+  }
 };
 
 useHead({
