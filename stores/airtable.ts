@@ -196,7 +196,7 @@ export const useAirtableStore = defineStore("airtable", {
 
       const fetched = await this._smartFetch<Product>(
         "products",
-        "/api/airtable/products",
+        `/api/airtable/products?t=${Date.now()}`,
         productsStore.products as any
       );
 

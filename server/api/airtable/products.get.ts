@@ -66,6 +66,8 @@ export default defineEventHandler(async (event) => {
         ? product.Images.split(", ").filter(Boolean)
         : [product["Image URL"] || existing.image];
 
+      const safeInStock = product["In Stock"] !== false && product["In Stock"] !== "false";
+
       map.set(targetId, {
         ...existing,
         id: targetId,
@@ -79,14 +81,18 @@ export default defineEventHandler(async (event) => {
         image: String(product["Image URL"] || existing.image || ""),
         images: images,
         description: String(product.Description || existing.description || ""),
-        inStock: Boolean(product["In Stock"]),
+        inStock: safeInStock,
+        isActive: safeInStock,
+        stock: Number(product.Stock) || existing.stock || 50,
+        schoolLevel: String(product["School Level"] || existing.schoolLevel || "Tous niveaux"),
+        format: String(product.Format || existing.format || "Standard"),
+        unit: String(product.Unit || existing.unit || "Unité"),
         isPromotion: Boolean(product["Is Promotion"]),
         promotionEndDate: product["Promotion End Date"] ? new Date(product["Promotion End Date"]) : null,
         features: safeJsonParse(product.Features, existing.features || []),
         specs: safeJsonParse(product.Specs, existing.specs || []),
         reviews: safeJsonParse(product.Reviews, existing.reviews || []),
         bulkOptions: safeJsonParse(product["Bulk Options"], existing.bulkOptions || []),
-        isActive: product["In Stock"] !== false,
       });
     });
 
