@@ -483,20 +483,36 @@ const allProducts = computed(() => {
   });
 });
 
+function isSameCategory(pCat: string = "", filterCat: string = ""): boolean {
+  if (!filterCat || filterCat === "Toutes" || filterCat === "Packs") return true;
+  const p = (pCat || "").toLowerCase().trim();
+  const f = (filterCat || "").toLowerCase().trim();
+
+  if (p === f) return true;
+
+  if (f.includes("fourniture") && p.includes("fourniture")) return true;
+  if ((f.includes("écriture") || f.includes("stylo")) && (p.includes("écriture") || p.includes("stylo") || p.includes("crayon") || p.includes("feutre"))) return true;
+  if ((f.includes("manuel") || f.includes("livre")) && (p.includes("manuel") || p.includes("livre"))) return true;
+  if (f.includes("protège") && p.includes("protège")) return true;
+  if (f.includes("géométrie") && (p.includes("géométrie") || p.includes("règle") || p.includes("compas") || p.includes("équerre") || p.includes("rapporteur"))) return true;
+  if (f.includes("ardoise") && p.includes("ardoise")) return true;
+  if (f.includes("papier") && p.includes("papier")) return true;
+
+  return false;
+}
+
 const filteredProducts = computed(() => {
+  console.log(`📡 [Client Audit] total allProducts en mémoire: ${allProducts.value.length}`);
+
   let list = allProducts.value.filter((p) => {
     // Filtre catégorie
-    if (currentCategory.value !== "Toutes" && currentCategory.value !== "Packs" && p.category !== currentCategory.value) {
-      if (currentCategory.value === "Stylos" && (p.category === "Écriture" || p.category === "Stylos")) {
-        // match écriture/stylos
-      } else {
-        return false;
-      }
+    if (!isSameCategory(p.category, currentCategory.value)) {
+      return false;
     }
     // Filtre niveau
     if (currentLevel.value !== "Tous") {
       const targetLvl = currentLevel.value.toLowerCase();
-      const pLvl = p.schoolLevel.toLowerCase();
+      const pLvl = (p.schoolLevel || "tous niveaux").toLowerCase();
       if (pLvl !== "tous niveaux" && !pLvl.includes(targetLvl) && !targetLvl.includes(pLvl)) {
         return false;
       }
@@ -515,12 +531,13 @@ const filteredProducts = computed(() => {
     return true;
   });
 
+  console.log(`✅ [Client Audit] Produit(s) filtré(s) affiché(s) pour (${currentCategory.value} / ${currentLevel.value}): ${list.length}`);
+
   if (sortBy.value === "price-asc") {
     list.sort((a, b) => a.price - b.price);
   } else if (sortBy.value === "price-desc") {
     list.sort((a, b) => b.price - a.price);
   }
-
   return list;
 });
 

@@ -82,7 +82,7 @@ export default defineEventHandler(async (event) => {
         images: images,
         description: String(product.Description || existing.description || ""),
         inStock: safeInStock,
-        isActive: safeInStock,
+        isActive: product["Is Active"] !== false && product["Is Active"] !== "false",
         stock: Number(product.Stock) || existing.stock || 50,
         schoolLevel: String(product["School Level"] || existing.schoolLevel || "Tous niveaux"),
         format: String(product.Format || existing.format || "Standard"),
@@ -97,6 +97,7 @@ export default defineEventHandler(async (event) => {
     });
 
     const mergedProducts = Array.from(map.values());
+    console.log(`📡 [Server Audit] GET /api/airtable/products -> ${mergedProducts.length} produits fusionnés envoyés au client.`);
 
     return {
       success: true,

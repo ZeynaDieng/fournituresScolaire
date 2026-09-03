@@ -200,10 +200,12 @@ export const useAirtableStore = defineStore("airtable", {
         productsStore.products as any
       );
 
-      // Fusionner les produits modifiés/ajoutés du Backoffice (stockés dans productsStore)
+      // 1. Charger les produits de base
       const map = new Map<string, any>();
-      (fetched || []).forEach((p: any) => map.set(p.id, p));
-      (productsStore.products || []).forEach((p: any) => {
+      (productsStore.products || []).forEach((p: any) => map.set(p.id, p));
+
+      // 2. ÉCRASER AVEC AIRTABLE CLOUD (Priorité absolue aux données fraîches d'Airtable)
+      (fetched || []).forEach((p: any) => {
         map.set(p.id, { ...(map.get(p.id) || {}), ...p });
       });
 
