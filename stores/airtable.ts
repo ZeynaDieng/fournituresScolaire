@@ -298,10 +298,7 @@ export const useAirtableStore = defineStore("airtable", {
 
     // Initialiser le store (évite les ré-appels réseau inutiles)
     async initialize() {
-      if (this.products.length > 0 && this.packs.length > 0) {
-        return;
-      }
-      // Charger les données de base
+      // Charger les données en direct depuis Airtable Cloud API
       await Promise.all([
         this.fetchProducts(),
         this.fetchPacks(),

@@ -431,7 +431,7 @@ const sidebarCategories = [
   { key: "Géométrie", label: "Géométrie" },
 ];
 
-onMounted(() => {
+onMounted(async () => {
   if (process.client) {
     const savedMode = localStorage.getItem("edushop_catalog_view_mode");
     if (savedMode === "grid" || savedMode === "list") {
@@ -441,6 +441,7 @@ onMounted(() => {
   if (productsStore.products.length === 0) {
     productsStore.initializeDemoData();
   }
+  await airtableStore.initialize();
 });
 
 // Packs Scolaires en Vedette
