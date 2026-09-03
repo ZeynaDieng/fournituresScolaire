@@ -37,15 +37,14 @@ async function syncProductToAirtable(product: any) {
     if (product.id && product.id.startsWith("rec")) {
       existingRecordId = product.id;
     } else {
-      const records = await table
-        .select({
-          filterByFormula: `OR({Local ID} = '${product.id}', LOWER({Name}) = '${(product.name || '').toLowerCase().replace(/'/g, "\\'")}')`,
-          maxRecords: 1,
-        })
-        .all();
-
-      if (records.length > 0) {
-        existingRecordId = records[0].id;
+      const records = await table.select().all();
+      const match = records.find(
+        (r: any) =>
+          r.get("Local ID") === product.id ||
+          (r.get("Name") || "").toLowerCase().trim() === (product.name || "").toLowerCase().trim()
+      );
+      if (match) {
+        existingRecordId = match.id;
       }
     }
 
@@ -65,13 +64,10 @@ async function deleteProductFromAirtable(id: string) {
   try {
     const base = getAirtableBase();
     const table = base("Products");
-    if (id.startsWith("rec")) {
-      await table.destroy(id);
-    } else {
-      const records = await table.select({ filterByFormula: `{Local ID} = '${id}'`, maxRecords: 1 }).all();
-      if (records.length > 0) {
-        await table.destroy(records[0].id);
-      }
+    const records = await table.select().all();
+    const match = records.find((r: any) => r.id === id || r.get("Local ID") === id);
+    if (match) {
+      await table.destroy(match.id);
     }
   } catch (e: any) {
     console.warn("⚠️ Airtable delete warning:", e?.message);

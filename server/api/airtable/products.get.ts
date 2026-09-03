@@ -3,45 +3,53 @@ import { AirtableService } from "../../../utils/airtable";
 import { officialCatalog } from "../../../data/products-senegal";
 
 export default defineEventHandler(async (event) => {
-
   try {
-    let products: any[] = [];
+    let airtableRecords: any[] = [];
     try {
-      products = await AirtableService.getProducts();
-    } catch {
-      products = [];
+      airtableRecords = await AirtableService.getProducts();
+    } catch (e) {
+      console.warn("Airtable fetch failed, using local fallback:", e);
+      airtableRecords = [];
     }
 
-    if (!products || products.length === 0) {
-      // Fallback vers le catalogue officiel local
-      const formattedLocal = officialCatalog
-        .filter((p: any) => p.isActive !== false)
-        .map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          slug: p.slug,
-          metaTitle: p.metaTitle,
-          metaDescription: p.metaDescription,
-          keywords: p.keywords,
-          price: p.sellingPrice || p.price || 300,
-          category: p.category,
-          image: p.image,
-          images: [p.image],
-          description: p.description,
-          inStock: p.inStock !== false && (p.stock ?? 50) > 0,
-          schoolLevel: p.schoolLevel || "Tous niveaux",
-          format: p.format || "Standard",
-          unit: p.unit || "Unité",
-        }));
+    const localFormatted = officialCatalog
+      .filter((p: any) => p.isActive !== false)
+      .map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        metaTitle: p.metaTitle,
+        metaDescription: p.metaDescription,
+        keywords: p.keywords,
+        price: p.sellingPrice || p.price || 300,
+        costPrice: p.costPrice || Math.round((p.sellingPrice || p.price || 300) * 0.65),
+        sellingPrice: p.sellingPrice || p.price || 300,
+        category: p.category || "Fournitures",
+        image: p.image,
+        images: [p.image],
+        description: p.description || "",
+        inStock: p.inStock !== false && (p.stock ?? 50) > 0,
+        stock: p.stock ?? 50,
+        schoolLevel: p.schoolLevel || "Tous niveaux",
+        format: p.format || "Standard",
+        unit: p.unit || "Unité",
+        isActive: p.isActive !== false,
+      }));
 
-      memoryProductsCache = {
+    if (!airtableRecords || airtableRecords.length === 0) {
+      return {
         success: true,
-        data: formattedLocal,
+        data: localFormatted,
       };
-      return memoryProductsCache;
     }
 
-    const formattedProducts = (products || []).map((product: any) => {
+    const map = new Map<string, any>();
+    localFormatted.forEach((p: any) => map.set(p.id, p));
+
+    airtableRecords.forEach((product: any) => {
+      const targetId = product["Local ID"] || product.id;
+      const existing = map.get(targetId) || {};
+
       const safeJsonParse = (value: any, fallback: any = []) => {
         if (!value) return fallback;
         if (typeof value === "string") {
@@ -54,42 +62,40 @@ export default defineEventHandler(async (event) => {
         return value;
       };
 
-      const features = safeJsonParse(product.Features, []);
-      const specs = safeJsonParse(product.Specs, []);
-      const reviews = safeJsonParse(product.Reviews, []);
-      const bulkOptions = safeJsonParse(product["Bulk Options"], []);
-
       const images = product.Images
         ? product.Images.split(", ").filter(Boolean)
-        : [product["Image URL"]];
+        : [product["Image URL"] || existing.image];
 
-      return {
-        id: product.id,
-        name: String(product.Name || ""),
-        price: product.Price || 0,
-        originalPrice: product["Original Price"] || product.Price,
-        category: String(product.Category || ""),
-        image: String(product["Image URL"] || ""),
+      map.set(targetId, {
+        ...existing,
+        id: targetId,
+        airtableRecordId: product.id,
+        name: String(product.Name || existing.name || ""),
+        price: Number(product.Price) || existing.price || 300,
+        sellingPrice: Number(product.Price) || existing.sellingPrice || 300,
+        costPrice: Number(product["Cost Price"]) || existing.costPrice || 200,
+        originalPrice: Number(product["Original Price"]) || existing.originalPrice || null,
+        category: String(product.Category || existing.category || "Fournitures"),
+        image: String(product["Image URL"] || existing.image || ""),
         images: images,
-        description: String(product.Description || ""),
+        description: String(product.Description || existing.description || ""),
         inStock: Boolean(product["In Stock"]),
         isPromotion: Boolean(product["Is Promotion"]),
-        promotionEndDate: product["Promotion End Date"]
-          ? new Date(product["Promotion End Date"])
-          : null,
-        features: features,
-        specs: specs,
-        reviews: reviews,
-        bulkOptions: bulkOptions,
-      };
+        promotionEndDate: product["Promotion End Date"] ? new Date(product["Promotion End Date"]) : null,
+        features: safeJsonParse(product.Features, existing.features || []),
+        specs: safeJsonParse(product.Specs, existing.specs || []),
+        reviews: safeJsonParse(product.Reviews, existing.reviews || []),
+        bulkOptions: safeJsonParse(product["Bulk Options"], existing.bulkOptions || []),
+        isActive: product["In Stock"] !== false,
+      });
     });
 
-    memoryProductsCache = {
-      success: true,
-      data: formattedProducts,
-    };
+    const mergedProducts = Array.from(map.values());
 
-    return memoryProductsCache;
+    return {
+      success: true,
+      data: mergedProducts,
+    };
   } catch (error) {
     console.error("Erreur API Airtable Products:", error);
     return {

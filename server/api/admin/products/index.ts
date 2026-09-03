@@ -33,8 +33,20 @@ async function syncProductToAirtable(product: any) {
     if (product.costPrice) fields["Cost Price"] = Number(product.costPrice);
     if (product.originalPrice) fields["Original Price"] = Number(product.originalPrice);
 
-    const created = await table.create([{ fields }]);
-    console.log(`✅ Airtable Product ${created[0].id} créé dans le Cloud!`);
+    const records = await table.select().all();
+    const match = records.find(
+      (r: any) =>
+        r.get("Local ID") === product.id ||
+        (r.get("Name") || "").toLowerCase().trim() === (product.name || "").toLowerCase().trim()
+    );
+
+    if (match) {
+      await table.update(match.id, fields);
+      console.log(`✅ Airtable Product ${match.id} mis à jour dans le Cloud!`);
+    } else {
+      const created = await table.create([{ fields }]);
+      console.log(`✅ Airtable Product ${created[0].id} créé dans le Cloud!`);
+    }
   } catch (err: any) {
     console.warn("⚠️ Airtable Cloud sync warning:", err?.message || err);
   }
