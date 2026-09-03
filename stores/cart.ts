@@ -137,6 +137,7 @@ export const useCartStore = defineStore("cart", {
       }
 
       this.showToast(`${validatedItem.name} ajouté au panier`, "success");
+      this.isOpen = true;
       this.saveToStorage();
     },
 

@@ -4,13 +4,12 @@
 import { getAirtableBase } from "~/utils/airtable-base";
 import { officialPacks } from "~/data/packs-senegal";
 
-// Données de fallback au cas où Airtable ne fonctionne pas
 const fallbackPacksData: any[] = (officialPacks || []).map((p: any) => ({
   id: p.id,
   name: p.name || p.nom,
   level: p.schoolLevel || p.niveau,
   price: p.calculatedSellingPrice || p.prix_pack || p.price,
-  originalPrice: p.originalPrice || null,
+  originalPrice: p.targetPrice || p.originalPrice || null,
   image: p.coverImage || p.image || "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
   description: p.description || "",
   contents: (p.items || []).map((i: any) => `${i.quantity || i.quantite}x ${i.productName}`),
@@ -25,40 +24,33 @@ function transformAirtableToPublicFormat(
   recordId: string
 ) {
   return {
-    id: recordId, // Utiliser l'ID du record Airtable
-    name: airtableRecord.Name,
-    level: airtableRecord.Level,
+    id: recordId,
+    name: airtableRecord.Name || airtableRecord.Title || "",
+    level: airtableRecord.Level || airtableRecord["School Level"] || "Tous niveaux",
     price: Number(airtableRecord.Price) || 0,
     originalPrice: airtableRecord["Original Price"]
       ? Number(airtableRecord["Original Price"])
-      : undefined,
-    image: airtableRecord["Image URL"] || airtableRecord.Image || "",
+      : null,
+    image: airtableRecord["Image URL"] || airtableRecord.Image || "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
     description: airtableRecord.Description || "",
     contents: airtableRecord.Contents
-      ? typeof airtableRecord.Contents === "string"
+      ? (typeof airtableRecord.Contents === "string"
         ? airtableRecord.Contents.split(", ")
-        : airtableRecord.Contents
+        : airtableRecord.Contents)
       : [],
-    isPopular: airtableRecord["Is Popular"] || false,
+    isPopular: airtableRecord["Is Popular"] !== false,
     inStock: airtableRecord["In Stock"] !== false,
-    isPromotion: airtableRecord["Is Promotion"] || false,
+    isPromotion: Boolean(airtableRecord["Is Promotion"] || airtableRecord["Original Price"]),
     promotionEndDate: airtableRecord["Promotion End Date"]
       ? new Date(airtableRecord["Promotion End Date"])
       : null,
   };
 }
 
-let memoryPacksCache: any = null;
-
 export default defineEventHandler(async (event) => {
-  if (memoryPacksCache) {
-    return memoryPacksCache;
-  }
-
   try {
     const base = getAirtableBase();
     if (!base) {
-      console.warn("⚠️ Base Airtable non configurée, utilisation du fallback.");
       return { success: true, data: fallbackPacksData };
     }
 
@@ -68,13 +60,13 @@ export default defineEventHandler(async (event) => {
     );
 
     if (formattedData.length > 0) {
-      memoryPacksCache = { success: true, data: formattedData };
-      return memoryPacksCache;
+      console.log(`📡 GET /api/airtable/packs -> ${formattedData.length} packs envoyés.`);
+      return { success: true, data: formattedData };
     }
 
     return { success: true, data: fallbackPacksData };
   } catch (error: any) {
-    console.warn("⚠️ Erreur lors de la récupération Airtable, utilisation du fallback:", error.message);
+    console.warn("Erreur GET /api/airtable/packs:", error.message);
     return { success: true, data: fallbackPacksData };
   }
 });

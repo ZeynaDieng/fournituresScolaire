@@ -13,6 +13,9 @@
     <!-- Footer -->
     <AppFooter />
 
+    <!-- Floating Mobile Cart Bar -->
+    <MobileCartBar />
+
     <!-- Cart Sidebar -->
     <CartSidebar />
 
