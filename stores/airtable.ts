@@ -189,29 +189,15 @@ export const useAirtableStore = defineStore("airtable", {
       }
     },
 
-    // Récupérer tous les produits depuis Airtable
     async fetchProducts() {
-      const productsStore = useProductsStore();
-      productsStore.initializeDemoData();
+      try {
+        const response: any = await $fetch(`/api/airtable/products?t=${Date.now()}`);
+        this.products = (response && response.data) ? response.data : [];
+      } catch (err) {
+        console.error("Erreur fetch Airtable products:", err);
+        this.products = [];
+      }
 
-      const fetched = await this._smartFetch<Product>(
-        "products",
-        `/api/airtable/products?t=${Date.now()}`,
-        productsStore.products as any
-      );
-
-      // 1. Charger les produits de base
-      const map = new Map<string, any>();
-      (productsStore.products || []).forEach((p: any) => map.set(p.id, p));
-
-      // 2. ÉCRASER AVEC AIRTABLE CLOUD (Priorité absolue aux données fraîches d'Airtable)
-      (fetched || []).forEach((p: any) => {
-        map.set(p.id, { ...(map.get(p.id) || {}), ...p });
-      });
-
-      this.products = Array.from(map.values());
-
-      // Extraire les catégories uniques
       if (this.products.length > 0) {
         this.categories = [
           ...new Set(this.products.map((p: Product) => p.category)),

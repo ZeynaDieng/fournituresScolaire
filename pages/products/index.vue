@@ -438,32 +438,17 @@ onMounted(async () => {
       viewMode.value = savedMode;
     }
   }
-  if (productsStore.products.length === 0) {
-    productsStore.initializeDemoData();
-  }
   await airtableStore.initialize();
 });
 
 // Packs Scolaires en Vedette
 const featuredPacks = computed(() => {
-  const packs = (airtableStore.packs && airtableStore.packs.length > 0)
-    ? airtableStore.packs
-    : productsStore.packs;
-  return packs.slice(0, 3);
+  return (airtableStore.packs || []).slice(0, 3);
 });
 
-// Tous les produits (avec fusion dynamique des données du Backoffice)
+// Tous les produits (Données 100% directes Airtable Cloud)
 const allProducts = computed(() => {
-  const map = new Map<string, any>();
-  if (airtableStore.products && airtableStore.products.length > 0) {
-    airtableStore.products.forEach((p: any) => map.set(p.id, p));
-  }
-  if (productsStore.products && productsStore.products.length > 0) {
-    productsStore.products.forEach((p: any) => map.set(p.id, { ...(map.get(p.id) || {}), ...p }));
-  }
-
-  const combined = Array.from(map.values());
-  const activeProds = combined.filter((p: any) => p.isActive !== false);
+  const activeProds = (airtableStore.products || []).filter((p: any) => p.isActive !== false);
 
   return activeProds.map((p) => {
     const priceVal = p.sellingPrice ?? p.price ?? 300;

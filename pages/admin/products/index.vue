@@ -472,16 +472,11 @@ const productForm = ref({
 });
 
 onMounted(async () => {
-  if (productsStore.products.length === 0) {
-    productsStore.initializeDemoData();
-  }
   await airtableStore.initialize();
 });
 
 const allAdminProducts = computed(() => {
-  return (airtableStore.products && airtableStore.products.length > 0)
-    ? airtableStore.products
-    : productsStore.products;
+  return airtableStore.products || [];
 });
 
 const availableCategories = computed(() => {
