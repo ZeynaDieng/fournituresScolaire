@@ -47,7 +47,9 @@ export default defineEventHandler(async (event) => {
     localFormatted.forEach((p: any) => map.set(p.id, p));
 
     airtableRecords.forEach((product: any) => {
-      const targetId = product["Local ID"] || product.id;
+      const targetId = (product["Local ID"] && product["Local ID"] !== "undefined")
+        ? product["Local ID"]
+        : product.id;
       const existing = map.get(targetId) || {};
 
       const safeJsonParse = (value: any, fallback: any = []) => {
