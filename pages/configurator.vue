@@ -199,7 +199,7 @@
           <button
             v-for="lv in levelOptions"
             :key="lv.key"
-            @click="selectedLevel = lv.key"
+            @click="selectLevel(lv.key)"
             class="text-left p-6 rounded-3xl border-2 transition-all flex flex-col justify-between group cursor-pointer bg-white"
             :class="selectedLevel === lv.key ? 'border-[#0F3D91] bg-[#0F3D91]/5 shadow-md ring-2 ring-[#0F3D91]/20' : 'border-slate-200/80 hover:border-[#0F3D91]/40'"
           >
@@ -219,6 +219,63 @@
               </span>
             </div>
           </button>
+        </div>
+
+        <!-- Liste Réelle des Packs Disponibles pour ce Niveau -->
+        <div v-if="selectedLevel && availablePacksForSelectedLevel.length > 0" class="pt-8 space-y-4 border-t border-slate-200 animate-fade-in">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="font-display text-lg sm:text-xl font-extrabold text-[#0F3D91] flex items-center gap-2">
+                <span>📦</span>
+                <span>Packs disponibles pour le niveau {{ selectedLevelObj?.title }}</span>
+                <span class="bg-[#0F3D91]/10 text-[#0F3D91] text-xs px-2.5 py-0.5 rounded-full font-bold">
+                  {{ availablePacksForSelectedLevel.length }} pack{{ availablePacksForSelectedLevel.length > 1 ? 's' : '' }}
+                </span>
+              </h2>
+              <p class="text-xs text-slate-500 font-semibold mt-0.5">
+                Sélectionnez le pack idéal pour votre enfant ou continuez pour configurer un équipement complet.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div
+              v-for="pack in availablePacksForSelectedLevel"
+              :key="pack.id"
+              @click="selectedPack = pack"
+              class="p-5 rounded-2xl border-2 transition-all flex flex-col justify-between cursor-pointer bg-white relative group"
+              :class="selectedPack?.id === pack.id ? 'border-[#0F3D91] bg-[#0F3D91]/5 ring-2 ring-[#0F3D91]/20 shadow-md' : 'border-slate-200/80 hover:border-[#0F3D91]/40'"
+            >
+              <div class="flex items-start gap-3.5">
+                <img
+                  :src="pack.image || 'https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg'"
+                  :alt="pack.name"
+                  class="w-16 h-16 object-cover rounded-xl shrink-0 bg-slate-50 border border-slate-100"
+                />
+                <div class="space-y-1 flex-1 min-w-0">
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#0F3D91] bg-blue-50 px-2 py-0.5 rounded-md inline-block">
+                    {{ pack.level || selectedLevelObj?.title }}
+                  </span>
+                  <h3 class="font-display text-sm font-bold text-slate-900 leading-snug truncate group-hover:text-[#0F3D91]">
+                    {{ pack.name }}
+                  </h3>
+                  <p class="font-black text-sm text-[#0F3D91]">
+                    {{ useFormatter().formatPrice(pack.price) }}
+                  </p>
+                </div>
+                <span
+                  v-if="selectedPack?.id === pack.id"
+                  class="w-6 h-6 rounded-full bg-[#0F3D91] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs"
+                >
+                  ✓
+                </span>
+              </div>
+
+              <div v-if="pack.contents && pack.contents.length > 0" class="mt-3 pt-3 border-t border-slate-100/80 text-[11px] text-slate-600 line-clamp-2">
+                <span class="font-extrabold text-slate-800">Inclus :</span> {{ Array.isArray(pack.contents) ? pack.contents.join(', ') : pack.contents }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -665,6 +722,7 @@ const steps = ["Niveau", "Enfant", "École", "Sac", "Couleurs", "Extras", "Résu
 
 const currentStep = ref(0);
 const selectedLevel = ref<string | null>((route.query.level as string) || "primaire");
+const selectedPack = ref<any | null>(null);
 const selectedGender = ref<string | null>("boy");
 const schoolName = ref("");
 const wantsBag = ref<boolean | null>(true);
@@ -701,6 +759,71 @@ const levelOptions = [
     image: "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg",
   },
 ];
+
+const selectedLevelObj = computed(() => {
+  return levelOptions.find((l) => l.key === selectedLevel.value);
+});
+
+const availablePacksForSelectedLevel = computed(() => {
+  const allPacks = airtableStore.packs.length > 0 ? airtableStore.packs : productsStore.packs;
+  if (!selectedLevel.value) return [];
+
+  const target = selectedLevel.value.toLowerCase().trim();
+
+  return allPacks.filter((pack) => {
+    if (!pack.level && !pack.name) return true;
+    const l = ((pack.level || "") + " " + (pack.name || "")).toLowerCase();
+
+    if (target === "prescolaire" || target === "préscolaire") {
+      return (
+        l.includes("préscolaire") ||
+        l.includes("prescolaire") ||
+        l.includes("maternelle") ||
+        l.includes("tps") ||
+        l.includes("ps") ||
+        l.includes("ms") ||
+        l.includes("gs")
+      );
+    }
+    if (target === "primaire") {
+      return (
+        l.includes("primaire") ||
+        l.includes("cp") ||
+        l.includes("ce1") ||
+        l.includes("ce2") ||
+        l.includes("cm1") ||
+        l.includes("cm2") ||
+        l.includes("ci")
+      );
+    }
+    if (target === "college" || target === "collège") {
+      return (
+        l.includes("collège") ||
+        l.includes("college") ||
+        l.includes("6ème") ||
+        l.includes("5ème") ||
+        l.includes("4ème") ||
+        l.includes("3ème")
+      );
+    }
+    if (target === "lycee" || target === "lycée") {
+      return (
+        l.includes("lycée") ||
+        l.includes("lycee") ||
+        l.includes("2nde") ||
+        l.includes("1ère") ||
+        l.includes("terminale")
+      );
+    }
+    return l.includes(target);
+  });
+});
+
+function selectLevel(key: string) {
+  selectedLevel.value = key;
+  const packs = availablePacksForSelectedLevel.value;
+  selectedPack.value = packs.length > 0 ? packs[0] : null;
+}
 
 const genderOptions = [
   { key: "boy", emoji: "👦", label: "Un garçon" },
@@ -783,6 +906,9 @@ const extraOptions = computed(() => {
 const selectedColorObj = computed(() => colorOptions.find((c) => c.key === selectedColor.value));
 
 const basePackPrice = computed(() => {
+  if (selectedPack.value && selectedPack.value.price) {
+    return Number(selectedPack.value.price);
+  }
   switch (selectedLevel.value) {
     case "prescolaire": return 16500;
     case "primaire": return 21000;
