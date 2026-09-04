@@ -233,8 +233,6 @@ const packLevels = [
   "Tous",
   "Préscolaire",
   "Primaire",
-  "CP",
-  "CE1-CE2",
   "Collège",
   "Lycée",
 ];
@@ -263,13 +261,20 @@ onMounted(async () => {
   if (urlLevel) {
     const levelMap: Record<string, string> = {
       prescolaire: "Préscolaire",
+      maternelle: "Préscolaire",
       primaire: "Primaire",
+      cp: "Primaire",
+      ce1: "Primaire",
+      ce2: "Primaire",
+      cm1: "Primaire",
+      cm2: "Primaire",
+      ci: "Primaire",
       college: "Collège",
       lycee: "Lycée",
-      cp: "CP",
     };
-    if (levelMap[urlLevel.toLowerCase()]) {
-      selectedLevel.value = levelMap[urlLevel.toLowerCase()];
+    const key = urlLevel.toLowerCase().trim();
+    if (levelMap[key]) {
+      selectedLevel.value = levelMap[key];
     } else {
       selectedLevel.value = urlLevel;
     }
@@ -281,10 +286,53 @@ const filteredPacks = computed(() => {
   if (selectedLevel.value === "Tous") {
     return packs.value;
   }
-  const target = selectedLevel.value.toLowerCase();
+  const target = selectedLevel.value.toLowerCase().trim();
   return packs.value.filter((pack) => {
-    if (!pack.level) return true;
-    const l = pack.level.toLowerCase();
+    if (!pack.level && !pack.name) return true;
+    const l = ((pack.level || "") + " " + (pack.name || "")).toLowerCase();
+
+    if (target === "préscolaire" || target === "prescolaire") {
+      return (
+        l.includes("préscolaire") ||
+        l.includes("prescolaire") ||
+        l.includes("maternelle") ||
+        l.includes("tps") ||
+        l.includes("ps") ||
+        l.includes("ms") ||
+        l.includes("gs")
+      );
+    }
+    if (target === "primaire") {
+      return (
+        l.includes("primaire") ||
+        l.includes("cp") ||
+        l.includes("ce1") ||
+        l.includes("ce2") ||
+        l.includes("cm1") ||
+        l.includes("cm2") ||
+        l.includes("ci")
+      );
+    }
+    if (target === "collège" || target === "college") {
+      return (
+        l.includes("collège") ||
+        l.includes("college") ||
+        l.includes("6ème") ||
+        l.includes("5ème") ||
+        l.includes("4ème") ||
+        l.includes("3ème")
+      );
+    }
+    if (target === "lycée" || target === "lycee") {
+      return (
+        l.includes("lycée") ||
+        l.includes("lycee") ||
+        l.includes("2nde") ||
+        l.includes("1ère") ||
+        l.includes("terminale")
+      );
+    }
+
     return l.includes(target) || target.includes(l);
   });
 });
