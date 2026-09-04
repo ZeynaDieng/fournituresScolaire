@@ -193,9 +193,9 @@
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Pour quel <span class="text-[#F4C542]">niveau</span> préparez-vous la rentrée ?
         </h1>
-        <p class="text-slate-600 text-sm md:text-base">Choisissez la classe de votre enfant.</p>
+        <p class="text-slate-600 text-sm md:text-base">Sélectionnez le niveau d'études de votre enfant.</p>
 
-        <div class="grid gap-6 sm:grid-cols-2 pt-4">
+        <div class="grid gap-4 sm:grid-cols-2 pt-2">
           <button
             v-for="lv in levelOptions"
             :key="lv.key"
@@ -220,67 +220,72 @@
             </div>
           </button>
         </div>
+      </div>
 
-        <!-- Liste Réelle des Packs Disponibles pour ce Niveau -->
-        <div v-if="selectedLevel && availablePacksForSelectedLevel.length > 0" class="pt-8 space-y-4 border-t border-slate-200 animate-fade-in">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="font-display text-lg sm:text-xl font-extrabold text-[#0F3D91] flex items-center gap-2">
-                <span>📦</span>
-                <span>Packs disponibles pour le niveau {{ selectedLevelObj?.title }}</span>
-                <span class="bg-[#0F3D91]/10 text-[#0F3D91] text-xs px-2.5 py-0.5 rounded-full font-bold">
-                  {{ availablePacksForSelectedLevel.length }} pack{{ availablePacksForSelectedLevel.length > 1 ? 's' : '' }}
+      <!-- Étape 1 : Choisir le Pack Spécifique du Niveau -->
+      <div v-if="currentStep === 1" class="space-y-6 animate-fade-in">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#0F3D91] bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            NIVEAU {{ selectedLevelObj?.title.toUpperCase() }}
+          </span>
+          <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight mt-2">
+            Quel <span class="text-[#F4C542]">pack scolaire</span> souhaitez-vous ?
+          </h1>
+          <p class="text-slate-600 text-sm md:text-base mt-1">
+            Chaque pack réunit les fournitures 100% conformes recommandées pour la classe de votre enfant.
+          </p>
+        </div>
+
+        <div v-if="availablePacksForSelectedLevel.length > 0" class="grid gap-4 sm:grid-cols-2 pt-2">
+          <div
+            v-for="pack in availablePacksForSelectedLevel"
+            :key="pack.id"
+            @click="selectPack(pack)"
+            class="p-5 rounded-3xl border-2 transition-all flex flex-col justify-between cursor-pointer bg-white relative group"
+            :class="selectedPack?.id === pack.id ? 'border-[#0F3D91] bg-[#0F3D91]/5 ring-2 ring-[#0F3D91]/20 shadow-md' : 'border-slate-200/80 hover:border-[#0F3D91]/40'"
+          >
+            <div class="flex items-start gap-4">
+              <img
+                :src="pack.image || 'https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg'"
+                :alt="pack.name"
+                class="w-16 h-16 object-cover rounded-2xl shrink-0 bg-slate-50 border border-slate-100"
+              />
+              <div class="space-y-1 flex-1 min-w-0">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#0F3D91] bg-blue-50 px-2 py-0.5 rounded-md inline-block">
+                  {{ pack.level || selectedLevelObj?.title }}
                 </span>
-              </h2>
-              <p class="text-xs text-slate-500 font-semibold mt-0.5">
-                Sélectionnez le pack idéal pour votre enfant ou continuez pour configurer un équipement complet.
+                <h3 class="font-display text-base font-bold text-slate-900 leading-snug group-hover:text-[#0F3D91]">
+                  {{ pack.name }}
+                </h3>
+                <p class="font-black text-base text-[#0F3D91]">
+                  {{ useFormatter().formatPrice(pack.price) }}
+                </p>
+              </div>
+              <span
+                v-if="selectedPack?.id === pack.id"
+                class="w-7 h-7 rounded-full bg-[#0F3D91] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs"
+              >
+                ✓
+              </span>
+            </div>
+
+            <div v-if="pack.contents && pack.contents.length > 0" class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-1">
+              <p class="font-extrabold text-slate-800">Contenu inclus :</p>
+              <p class="line-clamp-3 text-slate-600 leading-relaxed">
+                {{ Array.isArray(pack.contents) ? pack.contents.join(' · ') : pack.contents }}
               </p>
             </div>
           </div>
+        </div>
 
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div
-              v-for="pack in availablePacksForSelectedLevel"
-              :key="pack.id"
-              @click="selectedPack = pack"
-              class="p-5 rounded-2xl border-2 transition-all flex flex-col justify-between cursor-pointer bg-white relative group"
-              :class="selectedPack?.id === pack.id ? 'border-[#0F3D91] bg-[#0F3D91]/5 ring-2 ring-[#0F3D91]/20 shadow-md' : 'border-slate-200/80 hover:border-[#0F3D91]/40'"
-            >
-              <div class="flex items-start gap-3.5">
-                <img
-                  :src="pack.image || 'https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg'"
-                  :alt="pack.name"
-                  class="w-16 h-16 object-cover rounded-xl shrink-0 bg-slate-50 border border-slate-100"
-                />
-                <div class="space-y-1 flex-1 min-w-0">
-                  <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#0F3D91] bg-blue-50 px-2 py-0.5 rounded-md inline-block">
-                    {{ pack.level || selectedLevelObj?.title }}
-                  </span>
-                  <h3 class="font-display text-sm font-bold text-slate-900 leading-snug truncate group-hover:text-[#0F3D91]">
-                    {{ pack.name }}
-                  </h3>
-                  <p class="font-black text-sm text-[#0F3D91]">
-                    {{ useFormatter().formatPrice(pack.price) }}
-                  </p>
-                </div>
-                <span
-                  v-if="selectedPack?.id === pack.id"
-                  class="w-6 h-6 rounded-full bg-[#0F3D91] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs"
-                >
-                  ✓
-                </span>
-              </div>
-
-              <div v-if="pack.contents && pack.contents.length > 0" class="mt-3 pt-3 border-t border-slate-100/80 text-[11px] text-slate-600 line-clamp-2">
-                <span class="font-extrabold text-slate-800">Inclus :</span> {{ Array.isArray(pack.contents) ? pack.contents.join(', ') : pack.contents }}
-              </div>
-            </div>
-          </div>
+        <div v-else class="text-center py-10 bg-white rounded-3xl border border-slate-200 p-6 space-y-2">
+          <p class="font-bold text-slate-900">Pack sur-mesure pour {{ selectedLevelObj?.title }}</p>
+          <p class="text-xs text-slate-500">Un équipement complet au tarif de {{ selectedLevelObj?.priceFormatted }}.</p>
         </div>
       </div>
 
-      <!-- Étape 1 : Enfant -->
-      <div v-if="currentStep === 1" class="space-y-6 animate-fade-in">
+      <!-- Étape 2 : Enfant -->
+      <div v-if="currentStep === 2" class="space-y-6 animate-fade-in">
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Votre enfant est ?
         </h1>
@@ -291,7 +296,7 @@
             v-for="g in genderOptions"
             :key="g.key"
             @click="selectedGender = g.key"
-            class="p-6 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all"
+            class="p-6 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all cursor-pointer"
             :class="selectedGender === g.key ? 'border-[#0F3D91] bg-[#0F3D91]/5 shadow-lift' : 'border-slate-200/80 bg-white hover:border-[#0F3D91]/40'"
           >
             <span class="text-3xl">{{ g.emoji }}</span>
@@ -300,8 +305,8 @@
         </div>
       </div>
 
-      <!-- Étape 2 : École -->
-      <div v-if="currentStep === 2" class="space-y-6 animate-fade-in">
+      <!-- Étape 3 : École -->
+      <div v-if="currentStep === 3" class="space-y-6 animate-fade-in">
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Dans quelle <span class="text-[#F4C542]">école</span> ?
         </h1>
@@ -319,7 +324,7 @@
               v-for="s in ['École publique', 'École privée', 'Enseignant indépendant']"
               :key="s"
               @click="schoolName = s"
-              class="px-4 py-2 rounded-full border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:border-[#0F3D91]"
+              class="px-4 py-2 rounded-full border border-slate-200 text-xs font-semibold text-slate-700 bg-white hover:border-[#0F3D91] cursor-pointer"
             >
               {{ s }}
             </button>
@@ -327,8 +332,8 @@
         </div>
       </div>
 
-      <!-- Étape 3 : Sac -->
-      <div v-if="currentStep === 3" class="space-y-6 animate-fade-in">
+      <!-- Étape 4 : Sac -->
+      <div v-if="currentStep === 4" class="space-y-6 animate-fade-in">
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Faut-il un <span class="text-[#F4C542]">sac à dos</span> ?
         </h1>
@@ -337,7 +342,7 @@
         <div class="grid gap-4 sm:grid-cols-2 pt-4">
           <button
             @click="wantsBag = true"
-            class="p-6 rounded-3xl border-2 text-left transition-all"
+            class="p-6 rounded-3xl border-2 text-left transition-all cursor-pointer"
             :class="wantsBag === true ? 'border-[#0F3D91] bg-[#0F3D91]/5 shadow-lift' : 'border-slate-200/80 bg-white hover:border-[#0F3D91]/40'"
           >
             <span class="text-3xl">🎒</span>
@@ -347,7 +352,7 @@
 
           <button
             @click="wantsBag = false"
-            class="p-6 rounded-3xl border-2 text-left transition-all"
+            class="p-6 rounded-3xl border-2 text-left transition-all cursor-pointer"
             :class="wantsBag === false ? 'border-[#0F3D91] bg-[#0F3D91]/5 shadow-lift' : 'border-slate-200/80 bg-white hover:border-[#0F3D91]/40'"
           >
             <span class="text-3xl">✖️</span>
@@ -357,9 +362,9 @@
         </div>
       </div>
 
-      <!-- Étape 4 : Couleurs -->
-      <div v-if="currentStep === 4" class="space-y-6 animate-fade-in">
-        <h1 class="font-display text-4xl md:text-5xl font-extrabold text-[#0F3D91] leading-tight">
+      <!-- Étape 5 : Couleurs -->
+      <div v-if="currentStep === 5" class="space-y-6 animate-fade-in">
+        <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Quelle <span class="text-[#F4C542]">couleur</span> préfère-t-il / elle ?
         </h1>
         <p class="text-slate-600 text-sm md:text-base">Pour harmoniser le sac et les fournitures.</p>
@@ -388,8 +393,8 @@
         </p>
       </div>
 
-      <!-- Étape 5 : Extras -->
-      <div v-if="currentStep === 5" class="space-y-6 animate-fade-in">
+      <!-- Étape 6 : Extras -->
+      <div v-if="currentStep === 6" class="space-y-6 animate-fade-in">
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Un <span class="text-[#F4C542]">petit plus</span> ?
         </h1>
@@ -445,8 +450,8 @@
         </div>
       </div>
 
-      <!-- Étape 6 : Résumé -->
-      <div v-if="currentStep === 6" class="space-y-6 animate-fade-in">
+      <!-- Étape 7 : Résumé -->
+      <div v-if="currentStep === 7" class="space-y-6 animate-fade-in">
         <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F3D91] leading-tight">
           Votre pack est <span class="text-[#F4C542]">prêt</span>.
         </h1>
@@ -460,12 +465,12 @@
             </div>
 
             <h3 class="font-display text-2xl font-extrabold text-[#0F3D91]">
-              Pack Scolaire Personnalisé EduShop
+              {{ selectedPack ? selectedPack.name : `Pack Scolaire Personnalisé (${selectedLevelObj?.title})` }}
             </h3>
 
             <ul class="divide-y divide-slate-100 border-y border-slate-100 py-2">
               <li class="py-3 flex justify-between text-sm font-semibold">
-                <span>Pack de fournitures scolaires de base</span>
+                <span>{{ selectedPack ? selectedPack.name : 'Pack de fournitures scolaires' }}</span>
                 <span class="font-bold text-[#0F3D91]">{{ useFormatter().formatPrice(basePackPrice) }}</span>
               </li>
               <li v-if="wantsBag" class="py-3 flex justify-between text-sm font-semibold">
@@ -718,7 +723,7 @@ onMounted(async () => {
   }
 });
 
-const steps = ["Niveau", "Enfant", "École", "Sac", "Couleurs", "Extras", "Résumé"];
+const steps = ["Niveau", "Pack", "Enfant", "École", "Sac", "Couleurs", "Extras", "Résumé"];
 
 const currentStep = ref(0);
 const selectedLevel = ref<string | null>((route.query.level as string) || "primaire");
@@ -823,6 +828,12 @@ function selectLevel(key: string) {
   selectedLevel.value = key;
   const packs = availablePacksForSelectedLevel.value;
   selectedPack.value = packs.length > 0 ? packs[0] : null;
+  currentStep.value = 1;
+}
+
+function selectPack(pack: any) {
+  selectedPack.value = pack;
+  currentStep.value = 2;
 }
 
 const genderOptions = [
@@ -885,15 +896,7 @@ const extraOptions = computed(() => {
       image: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&q=80&w=500",
     },
     {
-      key: "cahier-120p",
-      label: "Cahier 200 pages grand format",
-      brand: "CLAIREFONTAINE",
-      category: "Cahiers",
-      price: 600,
-      image: "https://i.pinimg.com/736x/fd/f9/0b/fdf90bf685ccedf53d0297c5133f3678.jpg",
-    },
-    {
-      key: "stylo-bille-bleu",
+      key: "stylo-bille-bleu-4",
       label: "Stylo Bille Bleu (Lot de 4)",
       brand: "BIC",
       category: "Stylos",
@@ -931,10 +934,12 @@ const totalPrice = computed(() => {
 const canAdvance = computed(() => {
   switch (currentStep.value) {
     case 0: return !!selectedLevel.value;
-    case 1: return !!selectedGender.value;
-    case 2: return true;
-    case 3: return wantsBag.value !== null;
-    case 4: return !!selectedColor.value;
+    case 1: return !!selectedPack.value || availablePacksForSelectedLevel.value.length === 0;
+    case 2: return !!selectedGender.value;
+    case 3: return true;
+    case 4: return wantsBag.value !== null;
+    case 5: return !!selectedColor.value;
+    case 6: return true;
     default: return true;
   }
 });
