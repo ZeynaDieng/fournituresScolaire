@@ -328,18 +328,23 @@ async function submitOrder() {
         }
       }
 
-      // 3. Envoi automatique par mail de chaque commande en détail à zeynash1@gmail.com
-      try {
-        await $fetch("/api/admin/send-order-email", {
-          method: "POST",
-          body: {
-            targetEmail: "zeynash1@gmail.com",
-            order: orderPayload,
-          },
-        });
-        console.log("✅ Email de notification envoyé à zeynash1@gmail.com");
-      } catch (emailErr) {
-        console.error("Erreur envoi email automatique commande:", emailErr);
+      // 3. Envoi automatique par mail pour paiement à la livraison uniquement (pour les paiements en ligne PayTech, l'e-mail sera envoyé après validation)
+      if (selectedPayment.value === "cash") {
+        try {
+          await $fetch("/api/admin/send-order-email", {
+            method: "POST",
+            body: {
+              targetEmail: "zeynash1@gmail.com",
+              order: {
+                ...orderPayload,
+                paymentStatus: "EN ATTENTE (Paiement à la livraison)",
+              },
+            },
+          });
+          console.log("✅ Email de notification (Paiement à la livraison) envoyé à zeynash1@gmail.com");
+        } catch (emailErr) {
+          console.error("Erreur envoi email automatique commande:", emailErr);
+        }
       }
 
       // 3. Création automatique du compte client s'il n'existe pas encore

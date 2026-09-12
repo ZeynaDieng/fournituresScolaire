@@ -682,16 +682,41 @@ onMounted(() => {
   fetchOrders();
 });
 
-function fetchOrders() {
+async function fetchOrders() {
   if (process.client) {
+    let loadedOrders: any[] = [];
+
+    // 1. Charger depuis l'API serveur Airtable (/api/orders)
+    try {
+      const res: any = await $fetch("/api/orders");
+      if (res && res.success && Array.isArray(res.orders) && res.orders.length > 0) {
+        loadedOrders = res.orders.map((o: any, idx: number) => ({
+          id: o.id || `airtable-${idx}`,
+          ref: o.orderRef || o.ref || `REF-${idx}`,
+          customerName: o.customerName || "Client EduShop",
+          phone: o.customerPhone || o.phone || "+221 77 000 00 00",
+          email: o.customerEmail || o.email || "",
+          city: o.city || "Dakar",
+          address: o.address || o.shippingAddress || "Dakar",
+          total: Number(o.amount || o.total || 0),
+          status: o.status === "Paid" ? "delivered" : (o.status === "pending" || o.status === "Pending" ? "pending" : (o.status || "confirmed")),
+          paymentMethod: o.paymentMethod || "PayTech / En ligne",
+          createdAt: o.createdAt ? (typeof o.createdAt === "string" && o.createdAt.includes("T") ? new Date(o.createdAt).toLocaleDateString("fr-FR") : o.createdAt) : new Date().toLocaleDateString("fr-FR"),
+          items: typeof o.items === "string" ? [{ name: o.items, quantity: 1, price: o.amount || 0 }] : (o.items || []),
+        }));
+      }
+    } catch (e) {
+      console.warn("Notice chargement API commandes:", e);
+    }
+
+    // 2. Charger les commandes locales du localStorage
     const savedUserOrders = localStorage.getItem("user_orders");
     if (savedUserOrders) {
       try {
         const parsed = JSON.parse(savedUserOrders);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Fusionner les vraies commandes en haut du tableau
-          const realOrders = parsed.map((o: any, idx: number) => ({
-            id: `real-${idx}`,
+          const localOrders = parsed.map((o: any, idx: number) => ({
+            id: `local-${idx}`,
             ref: o.orderRef || o.ref || `REF-${idx}`,
             customerName: o.customerName || o.name || "Client EduShop",
             phone: o.phone || o.customerPhone || "+221 77 000 00 00",
@@ -709,14 +734,21 @@ function fetchOrders() {
             sourcingItems: o.sourcingItems || [],
           }));
 
-          // Conserver également les démos si nécessaire mais mettre les vraies commandes en premier
-          const existingRefs = new Set(realOrders.map((r: any) => r.ref));
-          const nonDuplicateDemos = orders.value.filter((d: any) => !existingRefs.has(d.ref));
-          orders.value = [...realOrders, ...nonDuplicateDemos];
+          const existingRefs = new Set(loadedOrders.map((r: any) => r.ref));
+          localOrders.forEach((l: any) => {
+            if (!existingRefs.has(l.ref)) {
+              loadedOrders.unshift(l);
+            }
+          });
         }
       } catch (e) {
-        console.error("Erreur chargement commandes admin:", e);
+        console.error("Erreur chargement commandes locales:", e);
       }
+    }
+
+    // Remplacer les démos par les vraies commandes si trouvées
+    if (loadedOrders.length > 0) {
+      orders.value = loadedOrders;
     }
   }
 }

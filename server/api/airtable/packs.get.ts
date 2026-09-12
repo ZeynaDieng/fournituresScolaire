@@ -4,6 +4,10 @@
 import { getAirtableBase } from "~/utils/airtable-base";
 import { officialPacks } from "~/data/packs-senegal";
 
+let cachedPacksResponse: any = null;
+let lastFetchTime = 0;
+const CACHE_TTL_MS = 15 * 60 * 1000;
+
 const fallbackPacksData: any[] = (officialPacks || []).map((p: any) => ({
   id: p.id,
   name: p.name || p.nom,
@@ -48,10 +52,18 @@ function transformAirtableToPublicFormat(
 }
 
 export default defineEventHandler(async (event) => {
+  const query = getQuery(event);
+  const forceRefresh = query.refresh === "true";
+  const now = Date.now();
+
+  if (!forceRefresh && cachedPacksResponse && (now - lastFetchTime < CACHE_TTL_MS)) {
+    return cachedPacksResponse;
+  }
+
   try {
     const base = getAirtableBase();
     if (!base) {
-      return { success: true, data: fallbackPacksData };
+      return cachedPacksResponse || { success: true, data: fallbackPacksData };
     }
 
     const records = await base("Packs").select().all();
@@ -61,12 +73,16 @@ export default defineEventHandler(async (event) => {
 
     if (formattedData.length > 0) {
       console.log(`📡 GET /api/airtable/packs -> ${formattedData.length} packs envoyés.`);
-      return { success: true, data: formattedData };
+      const response = { success: true, data: formattedData };
+      cachedPacksResponse = response;
+      lastFetchTime = now;
+      return response;
     }
 
-    return { success: true, data: fallbackPacksData };
+    return cachedPacksResponse || { success: true, data: fallbackPacksData };
   } catch (error: any) {
     console.warn("Erreur GET /api/airtable/packs:", error.message);
-    return { success: true, data: fallbackPacksData };
+    return cachedPacksResponse || { success: true, data: fallbackPacksData };
   }
 });
+

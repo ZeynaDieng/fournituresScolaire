@@ -2,16 +2,41 @@
 import { AirtableService } from "../../../utils/airtable";
 import { officialCatalog } from "../../../data/products-senegal";
 
+// Cache serveur en mémoire pour économiser le quota d'API Airtable (1000 requêtes/mois max sur offre gratuite)
+let cachedProductsResponse: any = null;
+let lastFetchTime = 0;
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
 export default defineEventHandler(async (event) => {
-  let airtableRecords: any[] = [];
-  try {
-    airtableRecords = await AirtableService.getProducts();
-  } catch (e) {
-    console.warn("Airtable API fetch error, fallback to catalog:", e);
-    airtableRecords = [];
+  const query = getQuery(event);
+  const forceRefresh = query.refresh === "true";
+  const now = Date.now();
+
+  // Si on a des données en cache valides et pas de rafraîchissement forcé, on renvoie immédiatement le cache
+  if (!forceRefresh && cachedProductsResponse && (now - lastFetchTime < CACHE_TTL_MS)) {
+    return cachedProductsResponse;
   }
 
-  const sourceList = (airtableRecords && airtableRecords.length > 0)
+  let airtableRecords: any[] = [];
+  let airtableFailed = false;
+
+  try {
+    airtableRecords = await AirtableService.getProducts();
+    if (!airtableRecords || airtableRecords.length === 0) {
+      airtableFailed = true;
+    }
+  } catch (e) {
+    console.warn("⚠️ Airtable API fetch error (quota ou token) :", e);
+    airtableFailed = true;
+  }
+
+  // Si Airtable échoue (ex: Quota API atteint) et qu'on a déjà du cache en mémoire, on garde le cache !
+  if (airtableFailed && cachedProductsResponse) {
+    console.warn("⚡ Quota Airtable atteint ou indisponible : Renvoi des produits précédemment mis en cache.");
+    return cachedProductsResponse;
+  }
+
+  const sourceList = (!airtableFailed && airtableRecords && airtableRecords.length > 0)
     ? airtableRecords
     : officialCatalog.map(p => ({
         id: p.id,
@@ -82,8 +107,17 @@ export default defineEventHandler(async (event) => {
   const products = Array.from(map.values());
   console.log(`📡 GET /api/airtable/products -> ${products.length} produits envoyés.`);
 
-  return {
+  const result = {
     success: true,
     data: products,
   };
+
+  // Mettre à jour le cache uniquement si la réponse est valide
+  if (products.length > 0) {
+    cachedProductsResponse = result;
+    lastFetchTime = now;
+  }
+
+  return result;
 });
+

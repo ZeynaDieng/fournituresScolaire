@@ -249,19 +249,57 @@ onMounted(() => {
   fetchRealStats();
 });
 
-function fetchRealStats() {
+async function fetchRealStats() {
   isLoading.value = true;
 
   if (process.client) {
+    let allOrders: any[] = [];
+
+    // 1. Récupérer depuis l'API serveur Airtable
+    try {
+      const res: any = await $fetch("/api/orders");
+      if (res && res.success && Array.isArray(res.orders) && res.orders.length > 0) {
+        allOrders = res.orders.map((o: any) => ({
+          orderRef: o.orderRef || o.ref,
+          customerName: o.customerName,
+          phone: o.customerPhone,
+          amount: Number(o.amount || o.total || 0),
+          paymentMethod: o.paymentMethod || "PayTech",
+          city: o.city || "Dakar",
+          status: o.status === "Paid" ? "delivered" : (o.status === "pending" ? "En attente" : "Confirmée"),
+        }));
+      }
+    } catch (e) {
+      console.warn("Notice dashboard stats fetch:", e);
+    }
+
+    // 2. Fusionner avec localStorage
     const savedUserOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
     const savedAllUsers = JSON.parse(localStorage.getItem("all_users") || "[]");
 
     if (Array.isArray(savedUserOrders) && savedUserOrders.length > 0) {
-      // 1. Calcul en temps réel du chiffre d'affaires cumulé
-      const revenue = savedUserOrders.reduce((sum: number, o: any) => sum + (Number(o.total || o.amount || 0)), 0);
-      const count = savedUserOrders.length;
+      const existingRefs = new Set(allOrders.map((a: any) => a.orderRef));
+      savedUserOrders.forEach((so: any) => {
+        const ref = so.orderRef || so.ref;
+        if (!existingRefs.has(ref)) {
+          allOrders.unshift({
+            orderRef: ref,
+            customerName: so.customerName || so.name,
+            phone: so.phone || so.customerPhone,
+            amount: Number(so.total || so.amount || 0),
+            paymentMethod: so.paymentMethod || "Wave / Orange Money",
+            city: so.city || "Dakar",
+            status: so.status || "Confirmée",
+          });
+        }
+      });
+    }
+
+    if (allOrders.length > 0) {
+      const revenue = allOrders.reduce((sum: number, o: any) => sum + Number(o.amount || 0), 0);
+      const count = allOrders.length;
       const avg = count > 0 ? Math.round(revenue / count) : 0;
-      const usersCount = savedAllUsers.length > 0 ? savedAllUsers.length : count;
+      const usersCount = Math.max(savedAllUsers.length, count);
 
       kpis.value = {
         totalRevenue: revenue,
@@ -270,60 +308,37 @@ function fetchRealStats() {
         totalCustomers: usersCount,
       };
 
-      // 2. Répartition réelle des moyens de paiement
       const payCounts: Record<string, number> = {};
-      savedUserOrders.forEach((o: any) => {
-        const pm = (o.paymentMethod || "Wave / Orange Money").toUpperCase();
+      allOrders.forEach((o: any) => {
+        const pm = (o.paymentMethod || "Wave").toUpperCase();
         const label = pm.includes("WAVE") ? "Wave Sénégal" : (pm.includes("ORANGE") || pm.includes("OM") ? "Orange Money" : (pm.includes("CASH") ? "Paiement à la livraison" : "PayTech / Carte"));
         payCounts[label] = (payCounts[label] || 0) + 1;
       });
       paymentMethods.value = Object.entries(payCounts).map(([method, c]) => ({ method, count: c }));
 
-      // 3. Répartition réelle des villes / modes de livraison
       const locCounts: Record<string, number> = {};
-      savedUserOrders.forEach((o: any) => {
-        const loc = (o.deliveryType === "store" || o.address?.toLowerCase().includes("retrait")) ? "Retrait Magasin (Ouakam)" : (o.city || "Dakar");
+      allOrders.forEach((o: any) => {
+        const loc = o.city || "Dakar";
         locCounts[loc] = (locCounts[loc] || 0) + 1;
       });
       locations.value = Object.entries(locCounts).map(([location, c]) => ({ location, count: c }));
 
-      // 4. Dernières commandes réelles
-      recentOrders.value = savedUserOrders.slice(0, 5).map((o: any) => ({
-        ref: o.orderRef || o.ref || "REF-001",
+      recentOrders.value = allOrders.slice(0, 5).map((o: any) => ({
+        ref: o.orderRef || "REF-001",
         customer: o.customerName || o.phone || "Client EduShop",
-        amount: Number(o.total || o.amount || 0),
-        status: o.status === "shipped" ? "En livraison" : (o.status === "delivered" ? "Livrée" : "Confirmée"),
+        amount: Number(o.amount || 0),
+        status: o.status || "Confirmée",
       }));
     } else {
-      // Fallback démo par défaut si aucune commande enregistrée
       kpis.value = {
-        totalRevenue: 4285000,
-        totalOrders: 148,
-        averageOrderValue: 28950,
-        totalCustomers: 342,
+        totalRevenue: 0,
+        totalOrders: 0,
+        averageOrderValue: 0,
+        totalCustomers: 0,
       };
-
-      paymentMethods.value = [
-        { method: "Wave Sénégal", count: 48 },
-        { method: "Orange Money", count: 52 },
-        { method: "PayTech", count: 32 },
-        { method: "Paiement à la livraison", count: 16 },
-      ];
-
-      locations.value = [
-        { location: "Dakar", count: 88 },
-        { location: "Thiès", count: 24 },
-        { location: "Kaolack", count: 18 },
-        { location: "Saint-Louis", count: 12 },
-        { location: "Ziguinchor", count: 6 },
-      ];
-
-      recentOrders.value = [
-        { ref: "ES-2026-8241", customer: "Modou Ndiaye", amount: 42200, status: "En livraison" },
-        { ref: "ES-2026-7130", customer: "Aïssatou Diop", amount: 14500, status: "Livrée" },
-        { ref: "ES-2026-6014", customer: "Cheikh Seck", amount: 28900, status: "Livrée" },
-        { ref: "ES-2026-5509", customer: "Fatou Sow", amount: 35000, status: "En livraison" },
-      ];
+      paymentMethods.value = [];
+      locations.value = [];
+      recentOrders.value = [];
     }
   }
 

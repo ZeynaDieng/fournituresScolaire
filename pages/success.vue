@@ -173,11 +173,15 @@ onMounted(() => {
         const emailSentKey = `email_sent_${orderData.value.ref}`;
         if (!sessionStorage.getItem(emailSentKey)) {
           sessionStorage.setItem(emailSentKey, "true");
+          const isCash = pmLabel.toLowerCase().includes("espèces") || pmLabel.toLowerCase().includes("livraison");
           $fetch("/api/admin/send-order-email", {
             method: "POST",
             body: {
               targetEmail: "zeynash1@gmail.com",
-              order: parsed,
+              order: {
+                ...parsed,
+                paymentStatus: isCash ? "EN ATTENTE (Paiement à la livraison)" : "ACQUITTÉ",
+              },
             },
           }).catch((err) => console.error("Erreur envoi secours email success.vue:", err));
         }

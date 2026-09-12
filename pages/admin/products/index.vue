@@ -16,12 +16,22 @@
         <p class="text-xs text-slate-500 font-medium">Prix d'achat, Prix de vente, Marges, Alerte Stock Faible, Niveau Scolaire & Formats</p>
       </div>
 
-      <button
-        @click="openAddModal"
-        class="px-6 py-3 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2 shrink-0"
-      >
-        <span>+ Ajouter un produit</span>
-      </button>
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          @click="exportCatalogueData"
+          class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
+          title="Télécharger une copie JSON de tous les produits et images"
+        >
+          <span>📥 Exporter le catalogue JSON</span>
+        </button>
+
+        <button
+          @click="openAddModal"
+          class="px-6 py-3 bg-[#F4C542] hover:bg-[#f5cb54] text-slate-950 font-extrabold text-xs rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
+        >
+          <span>+ Ajouter un produit</span>
+        </button>
+      </div>
     </div>
 
     <!-- Executive KPI Summary Cards -->
@@ -759,6 +769,37 @@ const deleteProduct = async (product: any) => {
     console.error("Erreur suppression produit:", err);
     alert("Erreur lors de la suppression du produit.");
   }
+};
+
+const exportCatalogueData = () => {
+  let customProds: any[] = [];
+  if (process.client) {
+    try {
+      const saved = localStorage.getItem("edushop_custom_products");
+      if (saved) customProds = JSON.parse(saved);
+    } catch (e) {
+      console.error("Erreur lecture localStorage pour export:", e);
+    }
+  }
+
+  const exportPayload = {
+    exportDate: new Date().toISOString(),
+    totalProducts: allAdminProducts.value.length,
+    customProductsFromLocalStorage: customProds,
+    allProductsInAdmin: allAdminProducts.value,
+  };
+
+  const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `edushop-catalogue-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  alert(`✅ Export réussi ! Fichier téléchargé avec ${allAdminProducts.value.length} produit(s).`);
 };
 
 useHead({

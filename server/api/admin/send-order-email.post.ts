@@ -35,7 +35,23 @@ export default defineEventHandler(async (event) => {
     const phone = order.customerPhone || order.phone || "+221 77 000 00 00";
     const address = order.address || "Dakar";
     const delivery = (order.deliveryType === "store" || address.toLowerCase().includes("retrait")) ? "🏬 Retrait en Magasin (Ouakam, Dakar) — GRATUIT" : `🚚 Livraison à Domicile : ${address}`;
-    const total = Number(order.total || order.amount || 0);
+    const paymentMethodRaw = (order.paymentMethod || "").toLowerCase();
+    const isCashOrDelivery = paymentMethodRaw.includes("cash") || paymentMethodRaw.includes("livraison") || paymentMethodRaw.includes("espèces") || paymentMethodRaw.includes("espece");
+    
+    let statusHTML = `<span style="color: #16a34a; font-weight: bold;">ACQUITTÉ</span>`;
+    let bannerTitle = `🛍️ Nouvelle commande validée sur EduShop !`;
+    
+    if (order.paymentStatus) {
+      if (order.paymentStatus.includes("EN ATTENTE") || order.paymentStatus.includes("PENDING")) {
+        statusHTML = `<span style="color: #d97706; font-weight: bold;">${order.paymentStatus}</span>`;
+        bannerTitle = `🛍️ Nouvelle commande (Paiement à la livraison) enregistrée !`;
+      } else {
+        statusHTML = `<span style="color: #16a34a; font-weight: bold;">${order.paymentStatus}</span>`;
+      }
+    } else if (isCashOrDelivery) {
+      statusHTML = `<span style="color: #d97706; font-weight: bold;">EN ATTENTE (Paiement à la livraison)</span>`;
+      bannerTitle = `🛍️ Nouvelle commande avec paiement à la livraison enregistrée !`;
+    }
 
     const itemsTableRows = items.map((i: any) => `
       <tr style="border-bottom: 1px solid #e2e8f0;">
@@ -68,7 +84,7 @@ export default defineEventHandler(async (event) => {
 
         <!-- Alerte Admin -->
         <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 14px; margin-bottom: 20px;">
-          <h3 style="color: #0284c7; margin: 0 0 6px 0; font-size: 14px;">🛍️ Nouvelle commande validée sur EduShop !</h3>
+          <h3 style="color: #0284c7; margin: 0 0 6px 0; font-size: 14px;">${bannerTitle}</h3>
           <p style="margin: 0; font-size: 12px; color: #0369a1;">
             Une nouvelle commande a été effectuée et doit être préparée par l'équipe logistique.
           </p>
@@ -87,7 +103,7 @@ export default defineEventHandler(async (event) => {
               <strong style="color: #0F3D91; font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 6px;">LIVRAISON & PAIEMENT</strong>
               <strong>Mode :</strong> ${delivery}<br/>
               <strong>Moyen Règlement :</strong> ${order.paymentMethod || 'Wave / Orange Money'}<br/>
-              <strong>Statut :</strong> <span style="color: #16a34a; font-weight: bold;">ACQUITTÉ</span>
+              <strong>Statut :</strong> ${statusHTML}
             </td>
           </tr>
         </table>
