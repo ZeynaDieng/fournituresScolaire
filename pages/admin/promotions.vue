@@ -113,13 +113,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useAirtableStore } from "~/stores/airtable";
 
 definePageMeta({
   layout: "admin",
   middleware: "admin",
 });
 
+const airtableStore = useAirtableStore();
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const editPromoForm = ref<any>(null);
@@ -131,12 +133,23 @@ const newPromo = ref({
   active: true,
 });
 
-const promoList = ref([
+const staticPromoList = ref([
   { code: "RENTREE2026", type: "Pourcentage", discount: "-15% sur la commande", active: true },
   { code: "FREESHIP", type: "Livraison Offerte", discount: "Frais de port gratuits à Dakar", active: true },
   { code: "PACKBONUS", type: "Montant Fixe", discount: "-5 000 F CFA sur les Packs", active: true },
   { code: "BIENVENUE", type: "Pourcentage", discount: "-10% Premier Achat", active: false },
 ]);
+
+onMounted(async () => {
+  await airtableStore.initialize();
+});
+
+const promoList = computed(() => {
+  if (airtableStore.promotions && airtableStore.promotions.length > 0) {
+    return airtableStore.promotions;
+  }
+  return staticPromoList.value;
+});
 
 // CREATE
 const addNewPromo = () => {

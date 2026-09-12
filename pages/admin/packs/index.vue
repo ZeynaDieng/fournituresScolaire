@@ -232,6 +232,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useAirtableStore } from "~/stores/airtable";
 import { useProductsStore } from "~/stores/products";
 
 definePageMeta({
@@ -239,6 +240,7 @@ definePageMeta({
   middleware: "admin",
 });
 
+const airtableStore = useAirtableStore();
 const productsStore = useProductsStore();
 const showAddModal = ref(false);
 const showEditModal = ref(false);
@@ -261,13 +263,17 @@ const assistantDefaultPacks = ref([
   { id: "pack-lycee", name: "Pack Lycée (2nde à Terminale)", level: "Lycée (2nde-Terminale)", badge: "Recommandé BAC", price: 38500, originalPrice: 45000, description: "Calculatrice graphique, cahiers grands carreaux, trieur.", contents: ["1 Calculatrice Casio Graphique", "8 Cahiers 200p", "1 Trieur 12 positions", "1 Lot de surligneurs"], image: "https://i.pinimg.com/736x/4c/27/58/4c275881308b4ae3956c80856018a375.jpg" },
 ]);
 
-onMounted(() => {
+onMounted(async () => {
+  await airtableStore.initialize();
   if (productsStore.packs.length === 0) {
     productsStore.initializeDemoData();
   }
 });
 
 const assistantPacks = computed(() => {
+  if (airtableStore.packs && airtableStore.packs.length > 0) {
+    return airtableStore.packs;
+  }
   if (productsStore.packs && productsStore.packs.length > 0) {
     return productsStore.packs;
   }
