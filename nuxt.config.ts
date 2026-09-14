@@ -50,7 +50,7 @@ export default defineNuxtConfig({
         {
           name: "keywords",
           content:
-            "fournitures scolaires Sénégal, packs scolaires Dakar, vente cahiers stylos Sénégal",
+            "edushop.sn, edushop, e-du.shop, edu shop, edushop senegal, fournitures scolaires Sénégal, packs scolaires Dakar, achat fournitures scolaires Dakar, livre scolaire Sénégal",
         },
       ],
       script: [

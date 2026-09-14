@@ -176,6 +176,33 @@ useHead({
   bodyAttrs: {
     class: "antialiased text-slate-900 bg-[#FBFBFA]",
   },
+  script: [
+    {
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://edushop.sn/#website",
+            "url": "https://edushop.sn/",
+            "name": "EduShop Sénégal",
+            "alternateName": ["edushop.sn", "e-du.shop", "edu shop", "EduShop", "EduShop SN"],
+            "description": "Plateforme n°1 de fournitures et packs scolaires au Sénégal."
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://edushop.sn/#organization",
+            "name": "EduShop Sénégal",
+            "url": "https://edushop.sn/",
+            "logo": "https://edushop.sn/logo.png",
+            "email": "contact@edushop.sn",
+            "telephone": "+221771133926"
+          }
+        ]
+      })
+    }
+  ]
 });
 </script>
 
