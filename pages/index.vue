@@ -427,6 +427,29 @@ import { useProductsStore } from "~/stores/products";
 import packPrimaireImg from "~/assets/images/pack-primaire.jpg";
 import AppHeroSection from "~/components/AppHeroSection.vue";
 
+useHead({
+  title: "EduShop Sénégal - Fournitures Scolaires, Cahiers, Stylos BIC, Calculatrices & Packs",
+  link: [
+    { rel: "canonical", href: "https://edushop.sn" },
+  ],
+  meta: [
+    {
+      name: "description",
+      content:
+        "Achetez vos fournitures scolaires au Sénégal sur EduShop : Cahiers Clairefontaine, stylos BIC, calculatrices Casio, sacs à dos, trousses, ardoises Velleda. Packs complets Maternelle, Élémentaire, Collège et Lycée. Livraison rapide à Dakar & Régions.",
+    },
+    {
+      name: "keywords",
+      content:
+        "edushop.sn, edushop, e-du.shop, edu shop, cahiers, stylos BIC, BIC 4 couleurs, calculatrice Casio FX-92, ardoise Velleda, sac à dos scolaire, trousse garnie, ramette papier A4, Clairefontaine, Oxford, Maped, Faber-Castell, UHU, Pritt, Pilot Frixion, fournitures scolaires Sénégal, fournitures scolaires Dakar, packs scolaires complets, liste scolaire Sénégal, papeterie en ligne Dakar",
+    },
+    { property: "og:title", content: "EduShop Sénégal - Fournitures Scolaires & Packs en Ligne" },
+    { property: "og:description", content: "Vos fournitures scolaires livrées chez vous au Sénégal. Cahiers, stylos, calculatrices, trousses, sacs à dos." },
+    { property: "og:url", content: "https://edushop.sn" },
+    { property: "og:image", content: "https://edushop.sn/og-image.jpg" },
+  ],
+});
+
 const airtableStore = useAirtableStore();
 const productsStore = useProductsStore();
 

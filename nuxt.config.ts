@@ -40,7 +40,7 @@ export default defineNuxtConfig({
         {
           name: "description",
           content:
-            "Votre fournisseur de fournitures scolaires au Sénégal. Packs scolaires complets pour tous les niveaux. Livraison partout au Sénégal.",
+            "EduShop Sénégal : Votre papeterie & fournitures scolaires en ligne n°1 au Sénégal. Cahiers Clairefontaine, stylos BIC, calculatrices Casio, sacs à dos, trousses, colle, ardoises Velleda et packs scolaires complets pour Maternelle, Primaire, Collège & Lycée. Livraison rapide à Dakar et partout au Sénégal.",
         },
         { name: "format-detection", content: "telephone=yes" },
         { name: "theme-color", content: "#0F3D91" },
@@ -50,7 +50,7 @@ export default defineNuxtConfig({
         {
           name: "keywords",
           content:
-            "edushop.sn, edushop, e-du.shop, edu shop, edushop senegal, fournitures scolaires Sénégal, packs scolaires Dakar, achat fournitures scolaires Dakar, livre scolaire Sénégal",
+            "edushop.sn, edushop, e-du.shop, edu shop, edushop senegal, cahiers, stylos BIC, BIC 4 couleurs, calculatrice Casio FX-92, ardoise Velleda, sac à dos scolaire, trousse garnie, ramette papier A4, Clairefontaine, Oxford, Maped, Faber-Castell, UHU, Pritt, Pilot Frixion, fournitures scolaires Sénégal, fournitures scolaires Dakar, packs scolaires complets, liste scolaire Sénégal, papeterie en ligne Dakar, cahier 200p 24x32, cahier 100p, règle géométrie 30cm, compas Maped, colle bâton, crayons de couleur, feutres lavables, protège cahier, dictionnaire scolaire, achat fournitures Dakar",
         },
       ],
       script: [
