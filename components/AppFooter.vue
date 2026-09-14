@@ -111,9 +111,20 @@
         </div>
       </div>
 
+      <!-- SEO Keyword Footer Block for Google Search Engines -->
+      <div class="mt-12 pt-8 border-t border-slate-200/60 text-[11px] text-slate-500 space-y-3">
+        <h4 class="font-bold uppercase tracking-wider text-slate-700 text-[11px]">EduShop Sénégal — Papeterie & Fournitures Scolaires en Ligne</h4>
+        <p class="leading-relaxed font-medium">
+          Achetez vos fournitures scolaires au meilleur prix au Sénégal. Grand choix de cahiers (Clairefontaine, Oxford, 48p, 100p, 200p 24x32), stylos BIC (4 couleurs, gel, bille), calculatrices Casio (FX-92 Collège, Graphique), ardoises Velleda, trousses garnies, cartables et sacs à dos scolaires ergonomiques, matériel de géométrie Maped, ramettes de papier A4 et packs scolaires sur-mesure.
+        </p>
+        <p class="font-semibold text-slate-600">
+          📍 Zone de livraison rapide : Dakar (Sacré-Cœur, Mermoz, Ouakam, Almadies, Plateau, Yoff, Maristes, Pikine, Guédiawaye, Rufisque), Thiès, Mbour, Saly, Saint-Louis, Kaolack, Ziguinchor et Touba.
+        </p>
+      </div>
+
       <!-- Bottom Legal Bar (Matching exact screenshot) -->
-      <div class="mt-12 pt-8 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 font-medium space-y-4 sm:space-y-0">
-        <p>© 2026 EduShop Sénégal. Tous droits réservés.</p>
+      <div class="mt-8 pt-6 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 font-medium space-y-4 sm:space-y-0">
+        <p>© 2026 EduShop Sénégal. Tous droits réservés. Papeterie en ligne n°1 au Sénégal.</p>
         
         <div class="flex items-center space-x-6">
           <NuxtLink to="/confidentialite" class="hover:text-[#0F3D91] transition-colors">

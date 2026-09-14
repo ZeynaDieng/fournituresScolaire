@@ -495,10 +495,42 @@ function toggleFaq(index: number) {
   faqs.value[index].isOpen = !faqs.value[index].isOpen;
 }
 
-// Fonction de test simple pour WhatsApp
-function testWhatsApp() {
-  const testUrl = `https://wa.me/221771133926?text=Test depuis EduShop`;
-  console.log("Test WhatsApp URL:", testUrl);
-  window.open(testUrl, "_blank");
-}
+useHead({
+  title: "Contact & Adresse — EduShop Sénégal Papeterie Dakar",
+  link: [
+    { rel: "canonical", href: "https://edushop.sn/contact" },
+  ],
+  meta: [
+    { name: "description", content: "Contactez EduShop Sénégal pour vos commandes de fournitures scolaires, demandes de packs sur-mesure et service client WhatsApp. Ouakam, Dakar." },
+    { name: "keywords", content: "contact edushop, papeterie dakar, adresse edushop, fournitures scolaires ouakam dakar, whatsapp edushop" },
+    { property: "og:title", content: "Contactez EduShop Sénégal - Fournitures Scolaires Dakar" },
+    { property: "og:description", content: "Assistance client, suivi de commandes et vente de fournitures scolaires à Dakar." },
+    { property: "og:url", content: "https://edushop.sn/contact" },
+  ],
+  script: [
+    {
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "EduShop Sénégal",
+        "url": "https://edushop.sn",
+        "telephone": "+221771133926",
+        "priceRange": "FCFA",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Ouakam",
+          "addressLocality": "Dakar",
+          "addressCountry": "SN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "14.7167",
+          "longitude": "-17.4677"
+        },
+        "openingHours": "Mo-Sa 08:00-20:00"
+      })
+    }
+  ]
+});
 </script>
