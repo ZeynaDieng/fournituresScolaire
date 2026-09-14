@@ -41,8 +41,8 @@ PAYTECH_SECRET_KEY=VOTRE_CLE_SECRETE_PRODUCTION_PAYTECH
 WHATSAPP_BUSINESS_NUMBER=221777780456
 
 # Configuration Site
-BASE_URL=https://www.e-du.shop
-NUXT_PUBLIC_SITE_URL=https://www.e-du.shop
+BASE_URL=https://edushop.sn
+NUXT_PUBLIC_SITE_URL=https://edushop.sn
 `;
 
 // Chemin du fichier .env

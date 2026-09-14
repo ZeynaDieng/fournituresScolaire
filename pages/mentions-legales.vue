@@ -19,7 +19,7 @@
                 <p class="font-bold text-[#0F3D91]">MATKAM (Société Mère)</p>
                 <p class="font-semibold text-slate-700">Service commercial : EduShop Sénégal</p>
                 <p>Ouakam, Dakar, Sénégal</p>
-                <p>Email : contact@e-du.shop</p>
+                <p>Email : contact@edushop.sn</p>
                 <p>Téléphone / WhatsApp : +221 77 113 39 26</p>
                 <p class="mt-2">RCCM : SN-DKR-2023-B-12345</p>
                 <p>NINEA : 0043212345</p>

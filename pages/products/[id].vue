@@ -921,12 +921,16 @@ onMounted(async () => {
 
 useHead({
   title: computed(() => product.value?.metaTitle || (product.value ? `${product.value.name} - Fourniture Scolaire Sénégal | EduShop` : 'Produit - EduShop')),
+  link: [
+    { rel: 'canonical', href: computed(() => `https://edushop.sn/products/${route.params.id}`) },
+  ],
   meta: [
     { name: 'description', content: computed(() => product.value?.metaDescription || product.value?.description || 'Fournitures scolaires de qualité au Sénégal.') },
     { name: 'keywords', content: computed(() => product.value?.keywords || 'fourniture scolaire, Sénégal, EduShop, Dakar') },
     { property: 'og:title', content: computed(() => product.value?.metaTitle || (product.value ? `${product.value.name} | EduShop Sénégal` : 'EduShop')) },
     { property: 'og:description', content: computed(() => product.value?.metaDescription || product.value?.description || 'Achetez vos fournitures scolaires au meilleur prix au Sénégal.') },
-    { property: 'og:image', content: computed(() => product.value?.image || 'https://www.e-du.shop/og-image.jpg') },
+    { property: 'og:image', content: computed(() => product.value?.image || 'https://edushop.sn/og-image.jpg') },
+    { property: 'og:url', content: computed(() => `https://edushop.sn/products/${route.params.id}`) },
     { property: 'og:type', content: 'product' },
   ],
 });

@@ -388,9 +388,9 @@
                 <p>
                   Email :
                   <a
-                    href="mailto:contact@e-du.shop"
+                    href="mailto:contact@edushop.sn"
                     class="text-primary-600 hover:underline"
-                    >contact@e-du.shop</a
+                    >contact@edushop.sn</a
                   >
                 </p>
                 <p>Téléphone / WhatsApp : +221 77 113 39 26</p>

@@ -65,6 +65,7 @@ export default defineNuxtConfig({
         },
       ],
       link: [
+        { rel: "canonical", href: "https://edushop.sn" },
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         { rel: "shortcut icon", type: "image/png", href: "/favicon.png" },
         { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
@@ -118,8 +119,8 @@ export default defineNuxtConfig({
       sandbox: process.env.PAYTECH_SANDBOX === "true",
     },
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "http://localhost:3000",
-      baseUrl: process.env.BASE_URL || process.env.NUXT_PUBLIC_SITE_URL || "http://localhost:3000",
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://edushop.sn",
+      baseUrl: process.env.BASE_URL || process.env.NUXT_PUBLIC_SITE_URL || "https://edushop.sn",
     },
   },
 });

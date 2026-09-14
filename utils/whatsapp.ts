@@ -77,7 +77,7 @@ export function generateWhatsAppInvoiceMessage(invoiceData: InvoiceData): string
 
   message += `📞 *Contact:*\n`;
   message += `WhatsApp: ${WHATSAPP_CONFIG.businessNumber}\n`;
-  message += `Email: contact@e-du.shop\n\n`;
+  message += `Email: contact@edushop.sn\n\n`;
 
   message += `Merci pour votre confiance ! 🙏\n`;
   message += `*Fournitures Scolaires*`;
