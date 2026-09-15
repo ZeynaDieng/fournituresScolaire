@@ -3,6 +3,7 @@
 
 import { getAirtableBase } from "~/utils/airtable-base";
 import { officialPacks } from "~/data/packs-senegal";
+import { prisma } from "~/utils/prisma";
 
 let cachedPacksResponse: any = null;
 let lastFetchTime = 0;
@@ -55,6 +56,34 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const forceRefresh = query.refresh === "true";
   const now = Date.now();
+
+  try {
+    const dbPacks = await prisma.pack.findMany({
+      where: { isActive: true },
+      orderBy: { id: "asc" },
+    });
+
+    if (dbPacks && dbPacks.length > 0) {
+      const formattedPacks = dbPacks.map((p) => ({
+        id: String(p.id),
+        name: p.name,
+        level: p.schoolLevel,
+        price: p.calculatedSellingPrice || p.targetPrice || 20000,
+        originalPrice: p.targetPrice ? p.targetPrice * 1.1 : null,
+        image: p.coverImage || "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
+        description: p.description || "",
+        contents: [],
+        isPopular: true,
+        inStock: true,
+        isPromotion: false,
+        promotionEndDate: new Date("2026-12-31"),
+      }));
+
+      return { success: true, data: formattedPacks, source: "postgresql" };
+    }
+  } catch (err) {
+    console.warn("⚠️ Erreur PostgreSQL packs, fallback Airtable:", err);
+  }
 
   if (!forceRefresh && cachedPacksResponse && (now - lastFetchTime < CACHE_TTL_MS)) {
     return cachedPacksResponse;
