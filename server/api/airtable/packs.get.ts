@@ -3,7 +3,7 @@
 
 import { getAirtableBase } from "~/utils/airtable-base";
 import { officialPacks } from "~/data/packs-senegal";
-import { prisma } from "~/utils/prisma";
+import { prisma } from "../../utils/prisma";
 
 let cachedPacksResponse: any = null;
 let lastFetchTime = 0;

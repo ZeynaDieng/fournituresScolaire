@@ -1,19 +1,49 @@
 /**
- * Redirection vers l'endpoint Airtable pour les commandes
- * GET /api/orders -> /api/airtable/orders
+ * Endpoint de récupération des commandes - PostgreSQL en priorité avec fallback Airtable
+ * GET /api/orders
  */
 
 import { defineEventHandler } from "h3";
+import { prisma } from "../utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
-    // Rediriger vers l'endpoint airtable existant
+    const dbOrders = await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (dbOrders && dbOrders.length > 0) {
+      const formattedOrders = dbOrders.map((o) => ({
+        id: String(o.id),
+        orderRef: o.ref,
+        customerName: o.source || "Client",
+        customerEmail: "",
+        customerPhone: "",
+        amount: o.total,
+        status: o.status,
+        paymentMethod: o.paymentStatus || "COD",
+        created: o.createdAt.toISOString(),
+        items: o.items,
+      }));
+
+      return {
+        success: true,
+        orders: formattedOrders,
+        source: "postgresql",
+      };
+    }
+  } catch (err) {
+    console.warn("⚠️ Erreur Prisma PostgreSQL orders, fallback Airtable:", err);
+  }
+
+  // Fallback Airtable si aucune commande dans PostgreSQL
+  try {
     const airtableApiKey = process.env.AIRTABLE_API_KEY;
     const airtableBaseId = process.env.AIRTABLE_BASE_ID;
-    const ordersTableId = process.env.AIRTABLE_ORDERS_TABLE;
+    const ordersTableId = process.env.AIRTABLE_ORDERS_TABLE || "tblWx8YvNm2KqR5Ht";
 
-    if (!airtableApiKey || !airtableBaseId || !ordersTableId) {
-      throw new Error("Configuration Airtable manquante");
+    if (!airtableApiKey || !airtableBaseId) {
+      return { success: true, orders: [] };
     }
 
     const response = await fetch(
@@ -26,12 +56,12 @@ export default defineEventHandler(async (event) => {
     );
 
     if (!response.ok) {
-      throw new Error(`Airtable API error: ${response.status}`);
+      return { success: true, orders: [] };
     }
 
     const data = await response.json();
 
-    const formattedOrders = data.records.map((record: any) => ({
+    const formattedOrders = (data.records || []).map((record: any) => ({
       id: record.id,
       orderRef: record.fields["Order Ref"] || "",
       customerName: record.fields["Customer Name"] || "",
