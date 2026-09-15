@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: edushop_db
+    restart: always
+    environment:
+      POSTGRES_USER: edushop_user
+      POSTGRES_PASSWORD: edushop_password_2026_secure
+      POSTGRES_DB: edushop_db
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edushop_user -d edushop_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  edushop:
+    build: .
+    container_name: edushop
+    restart: always
+    ports:
+      - "3050:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://edushop_user:edushop_password_2026_secure@postgres:5432/edushop_db?schema=public
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

@@ -1,24 +1,25 @@
 #!/bin/bash
 # ==============================================================================
-# Script de Déploiement Automatique pour EduShop (VPS Ubuntu + Docker)
+# Script de Déploiement Automatique EduShop avec Docker Compose (PostgreSQL)
 # ==============================================================================
 
 set -e
 
-echo "🚀 [1/4] Récupération du dernier code depuis GitHub..."
+echo "🚀 [1/4] Récupération des mises à jour depuis GitHub..."
 git pull origin main
 
-echo "📦 [2/4] Construction de la nouvelle image Docker..."
-docker build -t edushop .
+echo "📦 [2/4] Build & Démarrage des conteneurs (PostgreSQL + EduShop)..."
+docker compose up -d --build
 
-echo "🛑 [3/4] Arrêt du conteneur précédent..."
-docker rm -f edushop || true
+echo "⏳ [3/4] Attente du démarrage de PostgreSQL..."
+sleep 5
 
-echo "⚡ [4/4] Lancement du nouveau conteneur EduShop (Port 3050)..."
-docker run -d --name edushop -p 3050:3000 --restart always edushop
+echo "🌱 [4/4] Migration du schéma Prisma & Seeding des produits..."
+docker compose exec -T edushop npx prisma db push --accept-data-loss || true
+docker compose exec -T edushop node scripts/seed-postgresql.js || true
 
 echo ""
 echo "=============================================================================="
-echo "✅ DÉPLOIEMENT TERMINÉ AVEC SUCCÈS !"
-echo "🌐 Votre application est à jour sur https://www.edushop.sn"
+echo "✅ DÉPLOIEMENT POSTGRESQL TERMINÉ AVEC SUCCÈS !"
+echo "🌐 Votre site fonctionne sur PostgreSQL auto-hébergé sur https://www.edushop.sn"
 echo "=============================================================================="
