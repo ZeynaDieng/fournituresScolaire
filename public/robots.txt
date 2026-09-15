@@ -1,5 +1,5 @@
 User-Agent: *
 Allow: /
 
-Sitemap: https://edushop.sn/sitemap.xml
-Host: https://edushop.sn
+Sitemap: https://www.edushop.sn/sitemap.xml
+Host: https://www.edushop.sn

@@ -1,37 +1,3 @@
 {
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "e-du.shop"
-        }
-      ],
-      "destination": "https://edushop.sn/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.e-du.shop"
-        }
-      ],
-      "destination": "https://edushop.sn/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.edushop.sn"
-        }
-      ],
-      "destination": "https://edushop.sn/:path*",
-      "permanent": true
-    }
-  ]
+  "redirects": []
 }
