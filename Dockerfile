@@ -14,6 +14,7 @@ RUN npm ci
 COPY . .
 
 # Build de l'application Nuxt
+ENV NITRO_PRESET=node-server
 RUN npm run build
 
 # Étape d'exécution (Production)

@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   nitro: {
     compressPublicAssets: true,
     minify: false,
-    preset: "vercel",
+    preset: process.env.NITRO_PRESET,
     routeRules: {
       "/**": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
       "/api/airtable/**": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
