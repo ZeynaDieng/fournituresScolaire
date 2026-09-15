@@ -23,8 +23,9 @@ export default defineNuxtConfig({
     minify: false,
     preset: process.env.NITRO_PRESET,
     routeRules: {
-      "/**": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
-      "/api/airtable/**": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
+      "/_nuxt/**": { headers: { "cache-control": "public, max-age=31536000, immutable" } },
+      "/images/**": { headers: { "cache-control": "public, max-age=86400, s-maxage=604800" } },
+      "/api/**": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
     },
   },
 

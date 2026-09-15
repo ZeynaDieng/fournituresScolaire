@@ -25,7 +25,7 @@
         >
           <!-- Top Card Image Container (Full-bleed edge-to-edge) -->
           <div class="relative h-48 w-full mb-6 rounded-2xl bg-[#F8F6F0] overflow-hidden">
-            <img :src="lv.image" :alt="lv.title" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" />
+            <img :src="lv.image" :alt="lv.title" loading="lazy" decoding="async" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300" />
           </div>
 
           <div>
@@ -195,6 +195,8 @@
             <img
               :src="product.image"
               :alt="product.name"
+              loading="lazy"
+              decoding="async"
               class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
             />
           </div>
