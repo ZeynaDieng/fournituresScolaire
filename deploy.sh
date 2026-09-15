@@ -8,7 +8,8 @@ set -e
 echo "🚀 [1/4] Récupération des mises à jour depuis GitHub..."
 git pull origin main
 
-echo "📦 [2/4] Build & Démarrage des conteneurs (PostgreSQL + EduShop)..."
+echo "📦 [2/4] Nettoyage & Build des conteneurs (PostgreSQL + EduShop)..."
+docker rm -f edushop || true
 docker compose up -d --build
 
 echo "⏳ [3/4] Attente du démarrage de PostgreSQL..."
