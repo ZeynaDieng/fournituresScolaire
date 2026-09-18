@@ -374,16 +374,17 @@ const sharePack = async () => {
 };
 
 useHead({
-  title: computed(() => (pack.value ? `${pack.value.name} - EduShop` : "Pack Éducatif - EduShop")),
+  title: computed(() => (pack.value ? `${pack.value.name} - Pack Scolaire Sénégal | EduShop` : "Pack Éducatif - EduShop")),
   link: [
-    { rel: "canonical", href: computed(() => `https://edushop.sn/packs/${route.params.id}`) },
+    { rel: "canonical", href: computed(() => `https://www.edushop.sn/packs/${route.params.id}`) },
   ],
   meta: [
     { name: "description", content: computed(() => pack.value?.description || "Pack scolaire complet au meilleur prix au Sénégal.") },
+    { name: "robots", content: "index, follow, max-image-preview:large" },
     { property: "og:title", content: computed(() => (pack.value ? `${pack.value.name} | EduShop Sénégal` : "Pack Éducatif EduShop")) },
     { property: "og:description", content: computed(() => pack.value?.description || "Découvrez nos packs scolaires complets pour une rentrée réussie.") },
-    { property: "og:image", content: computed(() => pack.value?.image || "https://edushop.sn/og-image.jpg") },
-    { property: "og:url", content: computed(() => `https://edushop.sn/packs/${route.params.id}`) },
+    { property: "og:image", content: computed(() => pack.value?.image || "https://www.edushop.sn/og-image.jpg") },
+    { property: "og:url", content: computed(() => `https://www.edushop.sn/packs/${route.params.id}`) },
     { property: "og:type", content: "product" },
   ],
 });

@@ -544,12 +544,20 @@ function resetFilters() {
 }
 
 useHead({
-  title: "Catalogue Mobil-Optimisé Fournitures Scolaires - EduShop",
+  title: "Tous les produits et fournitures scolaires au Sénégal - EduShop",
+  link: [
+    { rel: "canonical", href: "https://www.edushop.sn/products" },
+  ],
   meta: [
     {
       name: "description",
-      content: "Achetez facilement vos fournitures scolaires sur mobile au Sénégal sur EduShop.",
+      content: "Achetez facilement vos fournitures scolaires au Sénégal sur EduShop : cahiers, stylos, calculatrices, matériel de géométrie. Livraison rapide à Dakar.",
     },
+    { name: "robots", content: "index, follow, max-image-preview:large" },
+    { property: "og:title", content: "Catalogue Fournitures Scolaires | EduShop Sénégal" },
+    { property: "og:description", content: "Achetez vos fournitures scolaires au meilleur prix au Sénégal avec livraison à domicile." },
+    { property: "og:url", content: "https://www.edushop.sn/products" },
+    { property: "og:type", content: "website" },
   ],
 });
 </script>

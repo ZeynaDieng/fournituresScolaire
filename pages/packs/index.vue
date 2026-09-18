@@ -367,13 +367,21 @@ function countItem(items: string[], keyword: string): number {
 
 // Configuration du head
 useHead({
-  title: "Packs Scolaires Premium - EduShop",
+  title: "Packs Scolaires Complets au Sénégal - EduShop",
+  link: [
+    { rel: "canonical", href: "https://www.edushop.sn/packs" },
+  ],
   meta: [
     {
       name: "description",
       content:
-        "Découvrez notre sélection premium de packs scolaires pour tous les niveaux. Solutions complètes pour une rentrée réussie.",
+        "Découvrez nos packs scolaires complets pour Maternelle, Primaire, Collège & Lycée au Sénégal. Conformité aux programmes et économies garanties.",
     },
+    { name: "robots", content: "index, follow, max-image-preview:large" },
+    { property: "og:title", content: "Packs Scolaires Complets | EduShop Sénégal" },
+    { property: "og:description", content: "Packs complets pour la rentrée scolaire au Sénégal avec livraison rapide." },
+    { property: "og:url", content: "https://www.edushop.sn/packs" },
+    { property: "og:type", content: "website" },
   ],
 });
 </script>

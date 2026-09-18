@@ -77,4 +77,10 @@ const toggleSidebar = () => {
 const closeSidebar = () => {
   sidebarOpen.value = false;
 };
+
+useHead({
+  meta: [
+    { name: "robots", content: "noindex, nofollow" }
+  ]
+});
 </script>

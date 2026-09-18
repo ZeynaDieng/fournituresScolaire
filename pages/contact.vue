@@ -498,14 +498,14 @@ function toggleFaq(index: number) {
 useHead({
   title: "Contact & Adresse — EduShop Sénégal Papeterie Dakar",
   link: [
-    { rel: "canonical", href: "https://edushop.sn/contact" },
+    { rel: "canonical", href: "https://www.edushop.sn/contact" },
   ],
   meta: [
     { name: "description", content: "Contactez EduShop Sénégal pour vos commandes de fournitures scolaires, demandes de packs sur-mesure et service client WhatsApp. Ouakam, Dakar." },
     { name: "keywords", content: "contact edushop, papeterie dakar, adresse edushop, fournitures scolaires ouakam dakar, whatsapp edushop" },
     { property: "og:title", content: "Contactez EduShop Sénégal - Fournitures Scolaires Dakar" },
     { property: "og:description", content: "Assistance client, suivi de commandes et vente de fournitures scolaires à Dakar." },
-    { property: "og:url", content: "https://edushop.sn/contact" },
+    { property: "og:url", content: "https://www.edushop.sn/contact" },
   ],
   script: [
     {
@@ -514,7 +514,7 @@ useHead({
         "@context": "https://schema.org",
         "@type": "Store",
         "name": "EduShop Sénégal",
-        "url": "https://edushop.sn",
+        "url": "https://www.edushop.sn",
         "telephone": "+221771133926",
         "priceRange": "FCFA",
         "address": {

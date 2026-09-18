@@ -51,7 +51,7 @@ export default defineNuxtConfig({
         {
           name: "keywords",
           content:
-            "edushop.sn, edushop, e-du.shop, edu shop, edushop senegal, cahiers, stylos BIC, BIC 4 couleurs, calculatrice Casio FX-92, ardoise Velleda, sac à dos scolaire, trousse garnie, ramette papier A4, Clairefontaine, Oxford, Maped, Faber-Castell, UHU, Pritt, Pilot Frixion, fournitures scolaires Sénégal, fournitures scolaires Dakar, packs scolaires complets, liste scolaire Sénégal, papeterie en ligne Dakar, cahier 200p 24x32, cahier 100p, règle géométrie 30cm, compas Maped, colle bâton, crayons de couleur, feutres lavables, protège cahier, dictionnaire scolaire, achat fournitures Dakar",
+            "edushop.sn, edushop, edu shop, edushop senegal, cahiers, stylos BIC, BIC 4 couleurs, calculatrice Casio FX-92, ardoise Velleda, sac à dos scolaire, trousse garnie, ramette papier A4, Clairefontaine, Oxford, Maped, Faber-Castell, UHU, Pritt, Pilot Frixion, fournitures scolaires Sénégal, fournitures scolaires Dakar, packs scolaires complets, liste scolaire Sénégal, papeterie en ligne Dakar, cahier 200p 24x32, cahier 100p, règle géométrie 30cm, compas Maped, colle bâton, crayons de couleur, feutres lavables, protège cahier, dictionnaire scolaire, achat fournitures Dakar",
         },
       ],
       script: [

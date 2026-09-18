@@ -184,18 +184,18 @@ useHead({
         "@graph": [
           {
             "@type": "WebSite",
-            "@id": "https://edushop.sn/#website",
-            "url": "https://edushop.sn/",
+            "@id": "https://www.edushop.sn/#website",
+            "url": "https://www.edushop.sn/",
             "name": "EduShop Sénégal",
-            "alternateName": ["edushop.sn", "e-du.shop", "edu shop", "EduShop", "EduShop SN"],
+            "alternateName": ["edushop.sn", "EduShop", "EduShop SN"],
             "description": "Plateforme n°1 de fournitures et packs scolaires au Sénégal."
           },
           {
             "@type": "Organization",
-            "@id": "https://edushop.sn/#organization",
+            "@id": "https://www.edushop.sn/#organization",
             "name": "EduShop Sénégal",
-            "url": "https://edushop.sn/",
-            "logo": "https://edushop.sn/logo.png",
+            "url": "https://www.edushop.sn/",
+            "logo": "https://www.edushop.sn/logo.png",
             "email": "contact@edushop.sn",
             "telephone": "+221771133926"
           }
