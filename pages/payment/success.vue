@@ -240,6 +240,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { printOfficialInvoice } from "~/utils/invoice-generator";
 
 // Types
 interface OrderData {
@@ -288,14 +290,109 @@ const orderData = ref<OrderData | null>(null);
 const error = ref<string | null>(null);
 
 // Récupération des paramètres URL (fallback)
-const orderRef = ref((route.query.ref as string) || "N/A");
+const orderRef = ref((route.query.ref as string) || (route.query.ref_command as string) || "N/A");
 const orderAmount = ref(parseInt(route.query.amount as string) || 0);
 const paymentMethod = ref((route.query.method as string) || "PayTech");
 
+// Fallback depuis localStorage si besoin
+const loadLocalOrder = () => {
+  if (!process.client) return;
+  const refKey = orderRef.value && orderRef.value !== "N/A" ? orderRef.value : "";
+  let saved = refKey ? localStorage.getItem(`order_${refKey}`) : null;
+  if (!saved) saved = localStorage.getItem("last_order");
+
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed) {
+        if (!orderRef.value || orderRef.value === "N/A") {
+          orderRef.value = parsed.orderRef || parsed.ref || `REF-${Date.now().toString().slice(-6)}`;
+        }
+
+        const calculatedItems = parsed.items && parsed.items.length > 0 ? parsed.items.map((i: any) => ({
+          name: i.name || i.title || "Article EduShop",
+          quantity: Number(i.quantity || 1),
+          price: Number(i.price || i.unitPrice || 0),
+        })) : [];
+
+        const itemsSum = calculatedItems.reduce((sum: number, it: any) => sum + (it.price * it.quantity), 0);
+        const shippingFee = Number(parsed.shippingFee || 0);
+        const totalVal = Number(parsed.total || parsed.amount || (itemsSum + shippingFee));
+
+        if (totalVal > 0) {
+          orderAmount.value = totalVal;
+        }
+
+        orderData.value = {
+          id: parsed.id || orderRef.value,
+          orderRef: orderRef.value,
+          amount: totalVal,
+          paymentMethod: parsed.paymentMethod || paymentMethod.value || "PayTech",
+          status: "confirmed",
+          customerName: parsed.customerName || "Client EduShop",
+          customerEmail: parsed.customerEmail || parsed.email || "",
+          createdAt: parsed.createdAt || parsed.date || new Date().toLocaleDateString("fr-FR"),
+          items: calculatedItems,
+        };
+
+        // Marquer la commande comme payée/confirmée dans le localStorage
+        parsed.status = "confirmed";
+        localStorage.setItem(`order_${orderRef.value}`, JSON.stringify(parsed));
+        localStorage.setItem("last_order", JSON.stringify(parsed));
+
+        // Mettre à jour l'historique utilisateur dans local_storage
+        const existingUserOrders = JSON.parse(localStorage.getItem("user_orders") || "[]");
+        if (Array.isArray(existingUserOrders)) {
+          const matchingIdx = existingUserOrders.findIndex((o: any) => (o.ref === orderRef.value || o.orderRef === orderRef.value));
+          if (matchingIdx !== -1) {
+            existingUserOrders[matchingIdx].status = "confirmed";
+          } else {
+            existingUserOrders.unshift({
+              ref: orderRef.value,
+              orderRef: orderRef.value,
+              customerName: parsed.customerName || "Client EduShop",
+              phone: parsed.customerPhone || parsed.phone || "",
+              email: parsed.customerEmail || parsed.email || "",
+              total: totalVal,
+              amount: totalVal,
+              status: "confirmed",
+              items: calculatedItems,
+              paymentMethod: parsed.paymentMethod || "PayTech",
+              date: new Date().toLocaleDateString("fr-FR"),
+            });
+          }
+          localStorage.setItem("user_orders", JSON.stringify(existingUserOrders));
+        }
+
+        // Mettre à jour la base des utilisateurs
+        const allUsers = JSON.parse(localStorage.getItem("all_users") || "[]");
+        const clientPhone = parsed.customerPhone || parsed.phone;
+        const clientEmail = parsed.customerEmail || parsed.email;
+        if (clientPhone || clientEmail) {
+          if (!allUsers.some((u: any) => (clientPhone && u.phone === clientPhone) || (clientEmail && u.email === clientEmail))) {
+            allUsers.unshift({
+              name: parsed.customerName || "Client EduShop",
+              phone: clientPhone || "+221770000000",
+              email: clientEmail || "client@edushop.sn",
+              city: parsed.city || parsed.address || "Dakar",
+              role: "Parent / Client",
+              active: true,
+            });
+            localStorage.setItem("all_users", JSON.stringify(allUsers));
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Notice lecture fallback local:", e);
+    }
+  }
+};
+
 // Fonction pour récupérer les données de la commande depuis Airtable
 const fetchOrderData = async () => {
+  loadLocalOrder();
+
   if (!orderRef.value || orderRef.value === "N/A") {
-    error.value = "Référence de commande manquante";
     isLoading.value = false;
     return;
   }
@@ -305,26 +402,32 @@ const fetchOrderData = async () => {
       method: "GET",
     });
 
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
-    }
-
-    const data: ApiResponse = await response.json();
-
-    if (data.success && data.order) {
-      orderData.value = data.order;
-      // Mettre à jour les données avec les vraies valeurs
-      orderAmount.value = data.order.amount;
-      paymentMethod.value = data.order.paymentMethod || "PayTech";
-    } else {
-      throw new Error("Commande non trouvée");
+    if (response.ok) {
+      const data: ApiResponse = await response.json();
+      if (data.success && data.order && data.order.amount > 0) {
+        orderData.value = data.order;
+        orderAmount.value = data.order.amount;
+        paymentMethod.value = data.order.paymentMethod || "PayTech";
+      }
     }
   } catch (err: any) {
-    console.error("Erreur récupération commande:", err);
-    error.value =
-      err.message || "Impossible de récupérer les données de la commande";
+    console.warn("Notice API Airtable order fetch:", err);
   } finally {
+    // Si amount est toujours 0, ré-essayer le fallback local
+    if (orderAmount.value === 0 || !orderData.value || orderData.value.amount === 0) {
+      loadLocalOrder();
+    }
     isLoading.value = false;
+  }
+
+  // Tenter de notifier le serveur pour changer le statut de la commande en confirmed
+  if (orderRef.value && orderRef.value !== "N/A") {
+    try {
+      $fetch(`/api/airtable/orders/${orderRef.value}/status`, {
+        method: "PATCH",
+        body: { status: "confirmed" },
+      }).catch((e) => console.warn("Notice update status PATCH non-bloquant:", e));
+    } catch (e) {}
   }
 };
 
@@ -334,7 +437,7 @@ const formatAmount = (amount: number): string => {
     style: "currency",
     currency: "XOF",
     minimumFractionDigits: 0,
-  }).format(amount);
+  }).format(amount || 0);
 };
 
 const formatDate = (date: string | Date): string => {
@@ -350,106 +453,37 @@ const formatDate = (date: string | Date): string => {
 
 const getStatusLabel = (status: string): string => {
   const statusMap: Record<string, string> = {
-    paid: "Payé",
+    paid: "Payé & Confirmé",
+    confirmed: "Payé & Confirmé",
     pending: "En attente",
     cancelled: "Annulé",
     processing: "En traitement",
     completed: "Terminé",
   };
-  return statusMap[status] || status;
+  return statusMap[status] || "Payé & Confirmé";
 };
 
-const downloadInvoice = async () => {
-  if (!orderRef.value || orderRef.value === "N/A") {
-    return;
-  }
+const downloadInvoicePDF = () => {
+  loadLocalOrder();
 
-  isDownloading.value = true;
+  const orderToPrint = {
+    ref: orderRef.value && orderRef.value !== "N/A" ? orderRef.value : `REF-${Date.now().toString().slice(-6)}`,
+    customerName: orderData.value?.customerName || "Client EduShop",
+    phone: "",
+    email: orderData.value?.customerEmail || "",
+    city: "Dakar",
+    address: "Dakar",
+    total: orderAmount.value || orderData.value?.amount || 0,
+    paymentMethod: paymentMethod.value || "PayTech",
+    createdAt: orderData.value?.createdAt || new Date().toLocaleDateString("fr-FR"),
+    items: orderData.value?.items || [],
+  };
 
-  try {
-    // Ouvrir la facture dans une nouvelle fenêtre pour impression/téléchargement
-    const invoiceUrl = `/api/airtable/orders/${orderRef.value}/invoice`;
-    const newWindow = window.open(invoiceUrl, "_blank");
-
-    if (newWindow) {
-      // La facture s'ouvrira dans une nouvelle fenêtre avec un bouton d'impression
-      console.log(`Facture ouverte pour la commande ${orderRef.value}`);
-    } else {
-      // Si les popups sont bloquées, naviguer directement
-      window.location.href = invoiceUrl;
-    }
-  } catch (error: any) {
-    console.error("Erreur lors de l'ouverture de la facture:", error);
-    // Essayer la navigation directe en cas d'erreur
-    window.location.href = `/api/airtable/orders/${orderRef.value}/invoice`;
-  } finally {
-    isDownloading.value = false;
-  }
-};
-
-const downloadInvoicePDF = async () => {
-  if (!orderRef.value || orderRef.value === "N/A") {
-    return;
-  }
-
-  isDownloadingPDF.value = true;
-
-  try {
-    // Télécharger directement le PDF
-    const pdfUrl = `/api/airtable/orders/${orderRef.value}/invoice-pdf`;
-
-    // Créer un lien de téléchargement temporaire
-    const link = document.createElement("a");
-    link.href = pdfUrl;
-    link.download = `facture-${orderRef.value}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    console.log(`PDF téléchargé pour la commande ${orderRef.value}`);
-  } catch (error: any) {
-    console.error("Erreur lors du téléchargement du PDF:", error);
-    // Essayer la navigation directe en cas d'erreur
-    window.location.href = `/api/airtable/orders/${orderRef.value}/invoice-pdf`;
-  } finally {
-    isDownloadingPDF.value = false;
-  }
+  printOfficialInvoice(orderToPrint);
 };
 
 // Charger les données au montage
 onMounted(async () => {
   await fetchOrderData();
-
-  // Vérification optionnelle du statut de paiement
-  if (orderRef.value && orderRef.value !== "N/A") {
-    try {
-      console.log(
-        `✅ Confirmation du paiement pour la commande ${orderRef.value}`
-      );
-    } catch (error) {
-      console.error("Erreur lors de la vérification du statut:", error);
-    }
-  }
 });
-
-// Utiliser useFetch pour charger les données côté serveur
-const {
-  data: orderResponse,
-  error: fetchError,
-  pending,
-} = await useFetch<ApiResponse>(`/api/airtable/orders/${orderRef.value}`, {
-  server: true,
-  default: () => ({ success: false, order: null }),
-});
-
-// Mettre à jour les données si disponibles
-if (orderResponse.value?.success && orderResponse.value?.order) {
-  orderData.value = orderResponse.value.order;
-  orderAmount.value = orderResponse.value.order.amount;
-  paymentMethod.value = orderResponse.value.order.paymentMethod || "PayTech";
-  isLoading.value = false;
-} else if (fetchError.value) {
-  error.value = "Impossible de récupérer les données de la commande";
-  isLoading.value = false;
-}
 </script>

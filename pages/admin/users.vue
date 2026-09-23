@@ -158,29 +158,97 @@ const newUser = ref({
   city: "Dakar",
 });
 
-const userList = ref([
+const userList = ref<any[]>([
   { id: "usr-1", name: "Modou Ndiaye", phone: "+221 77 123 45 67", email: "modou.ndiaye@gmail.com", city: "Dakar (Sacré-Cœur)", role: "Parent / Client", active: true },
   { id: "usr-2", name: "Aïssatou Diop", phone: "+221 78 987 65 43", email: "aissatou.diop@yahoo.fr", city: "Dakar (Plateau)", role: "Parent / Client", active: true },
   { id: "usr-3", name: "Ousmane Fall", phone: "+221 70 456 78 90", email: "ousmane.fall@outlook.sn", city: "Thiès", role: "Parent / Client", active: true },
   { id: "usr-4", name: "Fatou Sow", phone: "+221 77 888 99 00", email: "fatou.sow@gmail.com", city: "Saint-Louis", role: "Parent / Client", active: true },
 ]);
 
-onMounted(() => {
+onMounted(async () => {
   if (process.client) {
-    const savedUsers = JSON.parse(localStorage.getItem("all_users") || "[]");
-    savedUsers.forEach((su: any) => {
-      if (!userList.value.some((u: any) => u.phone === su.phone || u.email === su.email)) {
-        userList.value.unshift({
-          id: `usr-auto-${Date.now()}`,
-          name: su.name || `${su.firstName} ${su.lastName}`,
-          phone: su.phone,
-          email: su.email,
-          city: su.city || "Dakar",
+    const realUsers: any[] = [];
+
+    // Helper pour ajouter proprement un utilisateur réel
+    const addRealUser = (name: string, phone: string, email: string, city: string) => {
+      if (!name && !phone && !email) return;
+      const cleanName = (name || "Client EduShop").trim();
+      const cleanPhone = (phone || "").trim();
+      const cleanEmail = (email || "").trim();
+      const cleanCity = (city || "Dakar").trim();
+
+      const exists = realUsers.some(u => (cleanPhone && u.phone === cleanPhone) || (cleanEmail && u.email === cleanEmail) || (cleanName && u.name === cleanName));
+      if (!exists) {
+        realUsers.push({
+          id: `usr-real-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          name: cleanName,
+          phone: cleanPhone || "+221 77 000 00 00",
+          email: cleanEmail || "client@edushop.sn",
+          city: cleanCity,
           role: "Parent / Client",
           active: true,
         });
       }
-    });
+    };
+
+    // 1. Découvrir les clients depuis la session locale "user"
+    try {
+      const uStr = localStorage.getItem("user");
+      if (uStr) {
+        const u = JSON.parse(uStr);
+        addRealUser(u.name || `${u.firstName || ''} ${u.lastName || ''}`, u.phone, u.email, u.city || u.address);
+      }
+    } catch (e) {}
+
+    // 2. Découvrir les clients depuis "last_order"
+    try {
+      const loStr = localStorage.getItem("last_order");
+      if (loStr) {
+        const lo = JSON.parse(loStr);
+        addRealUser(lo.customerName, lo.customerPhone || lo.phone, lo.customerEmail || lo.email, lo.city || lo.address);
+      }
+    } catch (e) {}
+
+    // 3. Découvrir les clients depuis "user_orders"
+    try {
+      const uoStr = localStorage.getItem("user_orders");
+      if (uoStr) {
+        const uoList = JSON.parse(uoStr);
+        if (Array.isArray(uoList)) {
+          uoList.forEach((uo: any) => {
+            addRealUser(uo.customerName || uo.name, uo.phone || uo.customerPhone, uo.email || uo.customerEmail, uo.city || uo.address);
+          });
+        }
+      }
+    } catch (e) {}
+
+    // 4. Découvrir les clients depuis "all_users"
+    try {
+      const auStr = localStorage.getItem("all_users");
+      if (auStr) {
+        const auList = JSON.parse(auStr);
+        if (Array.isArray(auList)) {
+          auList.forEach((au: any) => {
+            addRealUser(au.name || `${au.firstName || ''} ${au.lastName || ''}`, au.phone, au.email, au.city);
+          });
+        }
+      }
+    } catch (e) {}
+
+    // 5. Charger les clients issus des commandes API (/api/orders)
+    try {
+      const apiRes: any = await $fetch("/api/orders");
+      if (apiRes && apiRes.success && Array.isArray(apiRes.orders)) {
+        apiRes.orders.forEach((o: any) => {
+          addRealUser(o.customerName, o.customerPhone || o.phone, o.customerEmail || o.email, o.city || o.address);
+        });
+      }
+    } catch (e) {}
+
+    // Si des vrais utilisateurs sont découverts, les placer en tête
+    if (realUsers.length > 0) {
+      userList.value = [...realUsers, ...userList.value];
+    }
   }
 });
 

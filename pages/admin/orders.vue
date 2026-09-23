@@ -686,24 +686,61 @@ async function fetchOrders() {
   if (process.client) {
     let loadedOrders: any[] = [];
 
+    // Helper de parsing pour les items
+    const parseOrderItems = (rawItems: any, fallbackAmount: number) => {
+      if (!rawItems) return [];
+      if (typeof rawItems === "string") {
+        try {
+          const parsed = JSON.parse(rawItems);
+          if (Array.isArray(parsed)) {
+            return parsed.map((it: any) => ({
+              name: it.name || it.title || "Article EduShop",
+              quantity: Number(it.quantity || 1),
+              price: Number(it.price || it.unitPrice || 0),
+            }));
+          } else if (parsed && typeof parsed === "object") {
+            return [{
+              name: parsed.name || parsed.title || "Article EduShop",
+              quantity: Number(parsed.quantity || 1),
+              price: Number(parsed.price || fallbackAmount || 0),
+            }];
+          }
+        } catch (e) {
+          return [{ name: rawItems, quantity: 1, price: fallbackAmount || 0 }];
+        }
+      }
+      if (Array.isArray(rawItems)) {
+        return rawItems.map((it: any) => ({
+          name: it.name || it.title || "Article EduShop",
+          quantity: Number(it.quantity || 1),
+          price: Number(it.price || it.unitPrice || 0),
+        }));
+      }
+      return [];
+    };
+
     // 1. Charger depuis l'API serveur Airtable (/api/orders)
     try {
       const res: any = await $fetch("/api/orders");
       if (res && res.success && Array.isArray(res.orders) && res.orders.length > 0) {
-        loadedOrders = res.orders.map((o: any, idx: number) => ({
-          id: o.id || `airtable-${idx}`,
-          ref: o.orderRef || o.ref || `REF-${idx}`,
-          customerName: o.customerName || "Client EduShop",
-          phone: o.customerPhone || o.phone || "+221 77 000 00 00",
-          email: o.customerEmail || o.email || "",
-          city: o.city || "Dakar",
-          address: o.address || o.shippingAddress || "Dakar",
-          total: Number(o.amount || o.total || 0),
-          status: o.status === "Paid" ? "delivered" : (o.status === "pending" || o.status === "Pending" ? "pending" : (o.status || "confirmed")),
-          paymentMethod: o.paymentMethod || "PayTech / En ligne",
-          createdAt: o.createdAt ? (typeof o.createdAt === "string" && o.createdAt.includes("T") ? new Date(o.createdAt).toLocaleDateString("fr-FR") : o.createdAt) : new Date().toLocaleDateString("fr-FR"),
-          items: typeof o.items === "string" ? [{ name: o.items, quantity: 1, price: o.amount || 0 }] : (o.items || []),
-        }));
+        loadedOrders = res.orders.map((o: any, idx: number) => {
+          const rawStatus = (o.status || "").toLowerCase();
+          const mappedStatus = (rawStatus === "paid" || rawStatus === "confirmed" || rawStatus === "acquitté") ? "confirmed" : (rawStatus === "pending" ? "pending" : "confirmed");
+          return {
+            id: o.id || `airtable-${idx}`,
+            ref: o.orderRef || o.ref || `REF-${idx}`,
+            customerName: o.customerName || "Client EduShop",
+            phone: o.customerPhone || o.phone || "+221 77 000 00 00",
+            email: o.customerEmail || o.email || "",
+            city: o.city || "Dakar",
+            address: o.address || o.shippingAddress || "Dakar",
+            total: Number(o.amount || o.total || 0),
+            status: mappedStatus,
+            paymentMethod: o.paymentMethod || "PayTech / En ligne",
+            createdAt: o.createdAt ? (typeof o.createdAt === "string" && o.createdAt.includes("T") ? new Date(o.createdAt).toLocaleDateString("fr-FR") : o.createdAt) : new Date().toLocaleDateString("fr-FR"),
+            items: parseOrderItems(o.items, o.amount || 0),
+          };
+        });
       }
     } catch (e) {
       console.warn("Notice chargement API commandes:", e);
@@ -725,12 +762,12 @@ async function fetchOrders() {
             address: o.address || "Dakar",
             deliveryType: o.deliveryType || "home",
             total: Number(o.total || o.amount || 0),
-            status: o.status || "confirmed",
-            paymentMethod: o.paymentMethod || "Wave / Orange Money",
+            status: (o.status === "pending" || o.status === "Pending") ? "pending" : "confirmed",
+            paymentMethod: o.paymentMethod || "PayTech / En ligne",
             createdAt: o.createdAt || o.date || new Date().toLocaleDateString("fr-FR"),
             configuratorChoice: o.configuratorChoice || undefined,
             schoolListRef: o.schoolListRef || undefined,
-            items: o.items || [],
+            items: parseOrderItems(o.items, o.total || o.amount || 0),
             sourcingItems: o.sourcingItems || [],
           }));
 
@@ -738,12 +775,44 @@ async function fetchOrders() {
           localOrders.forEach((l: any) => {
             if (!existingRefs.has(l.ref)) {
               loadedOrders.unshift(l);
+            } else {
+              // Mettre à jour le statut localement s'il a été confirmé
+              const target = loadedOrders.find((r: any) => r.ref === l.ref);
+              if (target && l.status === "confirmed") {
+                target.status = "confirmed";
+              }
             }
           });
         }
       } catch (e) {
         console.error("Erreur chargement commandes locales:", e);
       }
+    }
+
+    // 3. Charger également 'last_order' si présent
+    const lastOrderStr = localStorage.getItem("last_order");
+    if (lastOrderStr) {
+      try {
+        const lo = JSON.parse(lastOrderStr);
+        const refStr = lo.orderRef || lo.ref;
+        if (refStr && !loadedOrders.some((r: any) => r.ref === refStr)) {
+          loadedOrders.unshift({
+            id: `last-order-${Date.now()}`,
+            ref: refStr,
+            customerName: lo.customerName || "Client EduShop",
+            phone: lo.customerPhone || lo.phone || "+221 77 000 00 00",
+            email: lo.customerEmail || lo.email || "client@edushop.sn",
+            city: lo.city || "Dakar",
+            address: lo.address || "Dakar",
+            deliveryType: lo.deliveryType || "home",
+            total: Number(lo.total || lo.amount || 0),
+            status: (lo.status === "pending" || lo.status === "Pending") ? "pending" : "confirmed",
+            paymentMethod: lo.paymentMethod || "PayTech / En ligne",
+            createdAt: lo.createdAt || lo.date || new Date().toLocaleDateString("fr-FR"),
+            items: parseOrderItems(lo.items, lo.total || lo.amount || 0),
+          });
+        }
+      } catch (e) {}
     }
 
     // Remplacer les démos par les vraies commandes si trouvées
