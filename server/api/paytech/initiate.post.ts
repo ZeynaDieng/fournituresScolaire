@@ -9,17 +9,20 @@ export default defineEventHandler(async (event) => {
   console.log("PayTech Request Body:", body);
 
   try {
-    // Vérification des clés API avec fallbacks
+    // Vérification des clés API avec priorité aux variables d'environnement du runtime
     const apiKey =
-      config.paytech?.apiKey ||
       process.env.PAYTECH_API_KEY ||
       process.env.NUXT_PAYTECH_API_KEY ||
-      "0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b";
+      config.paytech?.apiKey;
     const secretKey =
-      config.paytech?.secretKey ||
       process.env.PAYTECH_SECRET_KEY ||
       process.env.NUXT_PAYTECH_SECRET_KEY ||
-      "566126b0d75afe81e81bf9b78231c79843a6c4034d14cdb21835b38c91e479ee";
+      config.paytech?.secretKey;
+
+    const isSandbox =
+      process.env.PAYTECH_SANDBOX !== undefined
+        ? process.env.PAYTECH_SANDBOX === "true"
+        : config.paytech?.sandbox !== false;
 
     if (!apiKey || !secretKey) {
       throw createError({
@@ -62,7 +65,7 @@ export default defineEventHandler(async (event) => {
       currency: body.currency || "XOF",
       ref_command: ref,
       command_name: commandName,
-      env: config.paytech.sandbox ? "test" : "prod",
+      env: isSandbox ? "test" : "prod",
       custom_field: JSON.stringify({
         order_id: ref,
         customer_id: customer.id || null,
