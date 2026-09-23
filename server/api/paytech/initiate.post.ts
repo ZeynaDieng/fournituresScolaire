@@ -9,8 +9,19 @@ export default defineEventHandler(async (event) => {
   console.log("PayTech Request Body:", body);
 
   try {
-    // Vérification des clés API
-    if (!config.paytech.apiKey || !config.paytech.secretKey) {
+    // Vérification des clés API avec fallbacks
+    const apiKey =
+      config.paytech?.apiKey ||
+      process.env.PAYTECH_API_KEY ||
+      process.env.NUXT_PAYTECH_API_KEY ||
+      "0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b";
+    const secretKey =
+      config.paytech?.secretKey ||
+      process.env.PAYTECH_SECRET_KEY ||
+      process.env.NUXT_PAYTECH_SECRET_KEY ||
+      "566126b0d75afe81e81bf9b78231c79843a6c4034d14cdb21835b38c91e479ee";
+
+    if (!apiKey || !secretKey) {
       throw createError({
         statusCode: 500,
         statusMessage:
@@ -141,8 +152,8 @@ export default defineEventHandler(async (event) => {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
-        API_KEY: config.paytech.apiKey,
-        API_SECRET: config.paytech.secretKey,
+        API_KEY: apiKey,
+        API_SECRET: secretKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(paytechData),

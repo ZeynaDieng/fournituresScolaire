@@ -115,9 +115,9 @@ export default defineNuxtConfig({
     airtableApiKey: process.env.AIRTABLE_API_KEY,
     airtableBaseId: process.env.AIRTABLE_BASE_ID,
     paytech: {
-      apiKey: process.env.PAYTECH_API_KEY || "",
-      secretKey: process.env.PAYTECH_SECRET_KEY || "",
-      sandbox: process.env.PAYTECH_SANDBOX === "true",
+      apiKey: process.env.PAYTECH_API_KEY || process.env.NUXT_PAYTECH_API_KEY || "0528cf38789d400cc03f9ba591fc5c05a6f2bcee9c288f3eea170c6361e3cf9b",
+      secretKey: process.env.PAYTECH_SECRET_KEY || process.env.NUXT_PAYTECH_SECRET_KEY || "566126b0d75afe81e81bf9b78231c79843a6c4034d14cdb21835b38c91e479ee",
+      sandbox: process.env.PAYTECH_SANDBOX !== "false",
     },
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://www.edushop.sn",
