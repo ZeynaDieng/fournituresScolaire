@@ -33,10 +33,12 @@ export default defineEventHandler(async (event) => {
     );
 
     if (!response.ok) {
-      throw createError({
-        statusCode: response.status,
-        statusMessage: `Erreur Airtable: ${response.status}`,
-      });
+      console.warn(`Notice Airtable API non-OK (${response.status}) pour orderRef ${orderRef}`);
+      return {
+        success: false,
+        message: `Erreur Airtable: ${response.status}`,
+        order: null,
+      };
     }
 
     const data = await response.json();
