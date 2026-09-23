@@ -420,12 +420,12 @@ const fetchOrderData = async () => {
     isLoading.value = false;
   }
 
-  // Tenter de notifier le serveur pour changer le statut de la commande en confirmed
+  // Tenter de notifier le serveur pour changer le statut de la commande en Paid
   if (orderRef.value && orderRef.value !== "N/A") {
     try {
       $fetch(`/api/airtable/orders/${orderRef.value}/status`, {
         method: "PATCH",
-        body: { status: "confirmed" },
+        body: { status: "Paid" },
       }).catch((e) => console.warn("Notice update status PATCH non-bloquant:", e));
     } catch (e) {}
   }
@@ -440,15 +440,22 @@ const formatAmount = (amount: number): string => {
   }).format(amount || 0);
 };
 
-const formatDate = (date: string | Date): string => {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("fr-FR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(dateObj);
+const formatDate = (date: any): string => {
+  if (!date) return new Intl.DateTimeFormat("fr-FR", { year: "numeric", month: "long", day: "numeric" }).format(new Date());
+  if (date instanceof Date) {
+    if (!isNaN(date.getTime())) {
+      return new Intl.DateTimeFormat("fr-FR", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(date);
+    }
+    return new Intl.DateTimeFormat("fr-FR", { year: "numeric", month: "long", day: "numeric" }).format(new Date());
+  }
+  if (typeof date === "string") {
+    const parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+      return new Intl.DateTimeFormat("fr-FR", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(parsedDate);
+    }
+    return date; // Déjà formaté sous forme de texte (ex: "23 septembre 2026 à 13:34")
+  }
+  return String(date);
 };
 
 const getStatusLabel = (status: string): string => {

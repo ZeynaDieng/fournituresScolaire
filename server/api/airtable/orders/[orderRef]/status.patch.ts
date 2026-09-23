@@ -21,9 +21,21 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Valider les statuts autorisés
+    // Normaliser les statuts (ex: confirmed/paid -> Paid)
+    let targetStatus = body.status;
+    const lower = String(targetStatus).toLowerCase();
+    if (lower === "confirmed" || lower === "paid" || lower === "acquitté") {
+      targetStatus = "Paid";
+    } else if (lower === "pending") {
+      targetStatus = "Pending";
+    } else if (lower === "shipped") {
+      targetStatus = "Shipped";
+    } else if (lower === "delivered") {
+      targetStatus = "Delivered";
+    }
+
     const validStatuses = ["Pending", "Paid", "Shipped", "Delivered"];
-    if (!validStatuses.includes(body.status)) {
+    if (!validStatuses.includes(targetStatus)) {
       throw createError({
         statusCode: 400,
         statusMessage: `Invalid status. Must be one of: ${validStatuses.join(
@@ -32,7 +44,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const result = await updateOrderStatusInAirtable(orderRef, body.status);
+    const result = await updateOrderStatusInAirtable(orderRef, targetStatus);
 
     return {
       success: true,

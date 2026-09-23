@@ -77,14 +77,30 @@
 
 <script setup lang="ts">
 import { useFormatter } from "~/composables/useFormatter";
+import { useCartStore } from "~/stores/cart";
 import type { Pack } from "~/stores/products";
 import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon.vue";
 
 const props = defineProps<{ pack: Pack }>();
 const emit = defineEmits<{ "add-to-cart": [pack: Pack] }>();
 const { formatPrice } = useFormatter();
+const cartStore = useCartStore();
 
-function addToCart() {
+function addToCart(e?: Event) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  cartStore.addItem(
+    {
+      id: props.pack.id,
+      name: props.pack.name,
+      price: props.pack.price,
+      image: props.pack.image,
+      type: "pack",
+    },
+    1
+  );
   emit("add-to-cart", props.pack);
 }
 </script>
