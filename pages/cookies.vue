@@ -388,9 +388,9 @@
                 <p>
                   Email :
                   <a
-                    href="mailto:contact@fournitures-scolaire.sn"
+                    href="mailto:contact@boursefi.sn"
                     class="text-primary-600 hover:underline"
-                    >contact@fournitures-scolaire.sn</a
+                    >contact@boursefi.sn</a
                   >
                 </p>
                 <p>Téléphone / WhatsApp : +221 77 113 39 26</p>

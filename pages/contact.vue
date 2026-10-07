@@ -262,7 +262,7 @@
                   </div>
                   <div>
                     <h4 class="font-semibold text-gray-900">Email</h4>
-                    <p class="text-gray-600">contact@fournitures-scolaire.sn</p>
+                    <p class="text-gray-600">contact@boursefi.sn</p>
                     <p class="text-sm text-gray-500">Réponse sous 24h</p>
                   </div>
                 </div>

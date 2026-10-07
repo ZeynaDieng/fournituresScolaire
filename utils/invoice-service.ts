@@ -169,7 +169,7 @@ export function generateInvoiceHTML(invoiceData: InvoiceData): string {
       <div style="text-align: center; color: #666; font-size: 14px; padding: 20px;">
         <p>Merci pour votre confiance !</p>
         <p><strong>Fournitures Scolaires</strong> - Ouakam Cité Avion, Dakar, Sénégal</p>
-        <p>Email : contact@fournitures-scolaire.sn | Tél : +221 78 291 18 44</p>
+        <p>Email : contact@boursefi.sn | Tél : +221 78 291 18 44</p>
         <p style="margin-top: 20px; font-size: 12px; color: #999;">
           Cette facture a été générée automatiquement le ${new Date().toLocaleString(
             "fr-FR"
