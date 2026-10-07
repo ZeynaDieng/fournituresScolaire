@@ -196,7 +196,7 @@ useHead({
             "name": "EduShop Sénégal",
             "url": "https://www.edushop.sn/",
             "logo": "https://www.edushop.sn/logo.png",
-            "email": "contact@edushop.sn",
+            "email": "contact@fournitures-scolaire.sn",
             "telephone": "+221771133926"
           }
         ]

@@ -260,7 +260,7 @@ export function printOfficialInvoice(order: OrderInvoiceData) {
           <strong>Adresse :</strong> Ouakam, Dakar — Sénégal<br/>
           <strong>NINEA :</strong> 013125324 | <strong>RCCM :</strong> SN.DKR.2026.A.21376<br/>
           <strong>Tél :</strong> +221 77 113 39 26<br/>
-          <strong>Email :</strong> contact@edushop.sn | <strong>Site :</strong> www.edushop.sn
+          <strong>Email :</strong> contact@fournitures-scolaire.sn | <strong>Site :</strong> www.edushop.sn
         </div>
       </div>
 

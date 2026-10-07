@@ -388,9 +388,9 @@
                 <p>
                   Email :
                   <a
-                    href="mailto:contact@edushop.sn"
+                    href="mailto:contact@fournitures-scolaire.sn"
                     class="text-primary-600 hover:underline"
-                    >contact@edushop.sn</a
+                    >contact@fournitures-scolaire.sn</a
                   >
                 </p>
                 <p>Téléphone / WhatsApp : +221 77 113 39 26</p>

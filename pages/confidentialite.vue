@@ -173,9 +173,9 @@
                 protection de vos données, vous pouvez nous contacter à
                 l'adresse suivante :
                 <a
-                  href="mailto:donnees-personnelles@edushop.sn"
+                  href="mailto:contact@fournitures-scolaire.sn"
                   class="text-primary-600 hover:underline"
-                  >donnees-personnelles@edushop.sn</a
+                  >contact@fournitures-scolaire.sn</a
                 >
               </p>
               <p class="text-gray-700 mt-2">
@@ -239,9 +239,9 @@
                 <p>
                   Email :
                   <a
-                    href="mailto:contact@edushop.sn"
+                    href="mailto:contact@fournitures-scolaire.sn"
                     class="text-primary-600 hover:underline"
-                    >contact@edushop.sn</a
+                    >contact@fournitures-scolaire.sn</a
                   >
                 </p>
                 <p>Téléphone / WhatsApp : +221 77 113 39 26</p>
