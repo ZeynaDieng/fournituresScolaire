@@ -4,28 +4,56 @@
 import { getAirtableBase } from "~/utils/airtable-base";
 import { defineEventHandler, getRouterParam, createError } from "h3";
 
+function parsePackContents(raw: any): string[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    return raw
+      .map((item: any) => {
+        if (typeof item === "string") return item.trim();
+        if (item && (item.productName || item.name)) {
+          return `${item.quantity || 1}x ${item.productName || item.name}`;
+        }
+        return String(item).trim();
+      })
+      .filter(Boolean);
+  }
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsePackContents(parsed);
+      } catch {}
+    }
+    return trimmed
+      .split(/\s*,\s*|\n+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 function transformAirtableToPublicFormat(
   airtableRecord: any,
   recordId: string
 ) {
+  const localId = airtableRecord["Local ID"] || airtableRecord.Slug || "";
   return {
     id: recordId,
-    name: airtableRecord.Name,
-    level: airtableRecord.Level,
+    localId,
+    slug: localId || recordId,
+    name: airtableRecord.Name || airtableRecord.Title || "",
+    level: airtableRecord.Level || airtableRecord["School Level"] || "Tous niveaux",
     price: Number(airtableRecord.Price) || 0,
     originalPrice: airtableRecord["Original Price"]
       ? Number(airtableRecord["Original Price"])
-      : undefined,
-    image: airtableRecord["Image URL"] || airtableRecord.Image || "",
+      : null,
+    image: airtableRecord["Image URL"] || airtableRecord.Image || "https://i.pinimg.com/736x/06/af/19/06af192e5165b1694ed1d901ccbe991e.jpg",
     description: airtableRecord.Description || "",
-    contents: airtableRecord.Contents
-      ? typeof airtableRecord.Contents === "string"
-        ? airtableRecord.Contents.split(", ")
-        : airtableRecord.Contents
-      : [],
-    isPopular: airtableRecord["Is Popular"] || false,
+    contents: parsePackContents(airtableRecord.Contents),
+    isPopular: airtableRecord["Is Popular"] !== false,
     inStock: airtableRecord["In Stock"] !== false,
-    isPromotion: airtableRecord["Is Promotion"] || false,
+    isPromotion: Boolean(airtableRecord["Is Promotion"] || airtableRecord["Original Price"]),
     promotionEndDate: airtableRecord["Promotion End Date"]
       ? new Date(airtableRecord["Promotion End Date"])
       : null,
@@ -45,38 +73,62 @@ export default defineEventHandler(async (event) => {
 
     console.log(`📦 API publique pack détail - ID: ${packId}`);
 
-    // Essayer d'abord de récupérer depuis Airtable
+    // 1. Essayer d'abord de récupérer depuis Airtable
     try {
       const base = getAirtableBase();
+      const tableName = process.env.AIRTABLE_PACKS_TABLE || "Packs";
 
-      // Récupérer le pack spécifique par ID
-      const record = await base(process.env.AIRTABLE_PACKS_TABLE!).find(packId);
+      if (base) {
+        let record: any = null;
 
-      console.log(`✅ Pack ${packId} récupéré depuis Airtable`);
+        if (packId.startsWith("rec")) {
+          // ID officiel Airtable
+          record = await base(tableName).find(packId);
+        } else {
+          // Local ID ou nom (ex: pack-ce1, pack-cp)
+          const records = await base(tableName)
+            .select({
+              filterByFormula: `OR({Local ID} = '${packId}', RECORD_ID() = '${packId}')`,
+              maxRecords: 1,
+            })
+            .firstPage();
 
-      const transformedPack = transformAirtableToPublicFormat(
-        record.fields,
-        record.id
-      );
+          if (records && records.length > 0) {
+            record = records[0];
+          }
+        }
 
-      return {
-        success: true,
-        data: transformedPack,
-        source: "airtable",
-      };
+        if (record) {
+          console.log(`✅ Pack ${packId} récupéré depuis Airtable (${record.fields.Name})`);
+          const transformedPack = transformAirtableToPublicFormat(
+            record.fields,
+            record.id
+          );
+          return {
+            success: true,
+            data: transformedPack,
+            source: "airtable",
+          };
+        }
+      }
     } catch (airtableError: any) {
       console.warn(
         `⚠️ Erreur Airtable pour pack ${packId}, recherche dans fallback:`,
         airtableError.message
       );
+    }
 
-      // En cas d'erreur Airtable, essayer de trouver dans les données de fallback
-      // Importer les données de fallback depuis l'API des packs
-      const fallbackResponse = await $fetch("/api/airtable/packs");
+    // 2. Recherche dans le cache global ou les packs de fallback
+    try {
+      const fallbackResponse: any = await $fetch("/api/airtable/packs");
 
-      if (fallbackResponse.success && fallbackResponse.data) {
+      if (fallbackResponse && fallbackResponse.data && Array.isArray(fallbackResponse.data)) {
         const fallbackPack = fallbackResponse.data.find(
-          (pack: any) => pack.id === packId
+          (pack: any) =>
+            pack.id === packId ||
+            pack.localId === packId ||
+            pack.slug === packId ||
+            pack.name?.toLowerCase() === packId.toLowerCase()
         );
 
         if (fallbackPack) {
@@ -84,25 +136,21 @@ export default defineEventHandler(async (event) => {
             success: true,
             data: fallbackPack,
             source: "fallback",
-            warning: "Données de fallback utilisées - Airtable indisponible",
           };
         }
       }
-
-      // Si pas trouvé dans le fallback non plus
-      throw createError({
-        statusCode: 404,
-        statusMessage: `Pack avec l'ID ${packId} non trouvé`,
-      });
+    } catch (fallbackError: any) {
+      console.warn("⚠️ Échec fallback packs:", fallbackError.message);
     }
-  } catch (error: any) {
-    console.error(
-      `❌ Erreur générale API pack ${getRouterParam(event, "id")}:`,
-      error
-    );
 
+    // Si pas trouvé dans le fallback non plus
+    throw createError({
+      statusCode: 404,
+      statusMessage: `Pack avec l'ID ${packId} non trouvé`,
+    });
+  } catch (error: any) {
     if (error.statusCode) {
-      throw error; // Re-lancer les erreurs HTTP
+      throw error;
     }
 
     throw createError({

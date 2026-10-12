@@ -257,16 +257,45 @@ export const useAirtableStore = defineStore("airtable", {
       }
     },
 
-    // Récupérer un pack par ID
+    // Récupérer un pack par ID (support ID Airtable, Local ID, Slug, etc.)
     async fetchPackById(id: string) {
-      let pack = this.packs.find((p) => p.id === id);
+      if (!id) return null;
+
+      // 1. Chercher dans les packs déjà chargés en mémoire
+      let pack = this.packs.find(
+        (p: any) => p.id === id || p.localId === id || p.slug === id
+      );
       if (pack) return pack;
 
+      // 2. Si les packs ne sont pas encore chargés, déclencher le chargement
+      if (this.packs.length === 0) {
+        await this.fetchPacks();
+        pack = this.packs.find(
+          (p: any) => p.id === id || p.localId === id || p.slug === id
+        );
+        if (pack) return pack;
+      }
+
+      // 3. Appel ciblé de l'API pack détail
+      try {
+        const response = (await $fetch(`/api/airtable/packs/${id}`)) as any;
+        if (response && response.data) {
+          return response.data;
+        }
+      } catch {
+        // Ignorer et passer au fallback
+      }
+
+      // 4. Fallback sur le store local
       const productsStore = useProductsStore();
       if (productsStore.packs.length === 0) {
         productsStore.initializeDemoData();
       }
-      return productsStore.getPackById(id) || null;
+      return (
+        productsStore.packs.find(
+          (p: any) => p.id === id || p.localId === id || p.slug === id
+        ) || null
+      );
     },
 
     // Créer une commande

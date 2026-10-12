@@ -22,12 +22,33 @@
               clip-rule="evenodd"
             />
           </svg>
-          <span class="text-slate-900 font-medium">{{ pack?.name }}</span>
+          <span class="text-slate-900 font-medium">{{ pack?.name || 'Détails du pack' }}</span>
         </nav>
       </div>
 
+      <!-- État Chargement -->
+      <div v-if="loading" class="py-24 text-center max-w-md mx-auto">
+        <div class="w-14 h-14 border-4 border-[#0F3D91] border-t-transparent rounded-full animate-spin mx-auto mb-5"></div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">Chargement du pack scolaire...</h3>
+        <p class="text-sm text-slate-500 font-medium">Récupération des fournitures et détails en cours</p>
+      </div>
+
+      <!-- État Pack introuvable -->
+      <div v-else-if="!pack" class="py-24 text-center max-w-md mx-auto bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xs">
+        <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-900 mb-2">Pack introuvable</h3>
+        <p class="text-slate-600 text-sm mb-6 font-medium">Ce pack scolaire n'a pas pu être trouvé ou n'est plus disponible.</p>
+        <NuxtLink to="/packs" class="inline-flex items-center gap-2 px-6 py-3 bg-[#0F3D91] text-white font-bold rounded-full text-sm hover:bg-[#0b2f70] transition-colors shadow-md">
+          <span>← Voir tous nos packs</span>
+        </NuxtLink>
+      </div>
+
       <!-- Contenu principal -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
         <!-- Galerie d'images -->
         <div class="lg:col-span-7">
           <div class="relative">
@@ -232,17 +253,22 @@
 
             <!-- Contenu du pack -->
             <div class="mb-8">
-              <h3
-                class="font-display text-xl sm:text-2xl font-extrabold text-[#0F3D91] mb-6"
-              >
-                Contenu du pack
-              </h3>
+              <div class="flex items-center justify-between mb-6">
+                <h3
+                  class="font-display text-xl sm:text-2xl font-extrabold text-[#0F3D91]"
+                >
+                  Contenu du pack
+                </h3>
+                <span v-if="packContents.length > 0" class="text-xs font-bold px-3 py-1 bg-blue-50 text-[#0F3D91] rounded-full border border-blue-200">
+                  {{ packContents.length }} fournitures incluses
+                </span>
+              </div>
 
-              <div class="space-y-4">
+              <div class="space-y-3">
                 <div
-                  v-for="(item, index) in pack?.contents"
+                  v-for="(item, index) in packContents"
                   :key="index"
-                  class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-100 hover:border-[#0F3D91]/30 bg-white transition-all duration-300"
+                  class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-100 hover:border-[#0F3D91]/30 bg-white transition-all duration-300 shadow-xs"
                 >
                   <div
                     class="flex-shrink-0 w-6 h-6 bg-[#0F3D91] text-white rounded-full flex items-center justify-center mt-0.5 font-bold text-xs shadow-xs"
@@ -250,10 +276,15 @@
                     ✓
                   </div>
                   <span
-                    class="text-slate-700 font-medium group-hover:text-[#0F3D91] transition-colors"
+                    class="text-slate-700 font-medium group-hover:text-[#0F3D91] transition-colors text-sm"
                   >
                     {{ item }}
                   </span>
+                </div>
+
+                <div v-if="packContents.length === 0" class="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-sm">
+                  <div class="font-bold mb-1">Colis complet de fournitures scolaires</div>
+                  <p class="text-xs text-amber-800">Toutes les fournitures essentielles conformes aux programmes officiels du Ministère de l'Éducation Nationale.</p>
                 </div>
               </div>
             </div>
@@ -312,28 +343,60 @@ const handleImageError = (event: Event) => {
   // Optionnel : remplacer par une image par défaut
 };
 
-// État pour stocker le pack
+// État de chargement et données
+const loading = ref(true);
 const pack = ref<any>(null);
 
-// Charger les données au montage du composant
+// Extraction garantie du contenu du pack (support tableau, chaîne découpée ou articles structurés)
+const packContents = computed(() => {
+  if (!pack.value) return [];
+  const c = pack.value.contents;
+  if (Array.isArray(c) && c.length > 0) {
+    return c
+      .map((item: any) => {
+        if (typeof item === "string") return item.trim();
+        if (item && (item.productName || item.name)) {
+          return `${item.quantity || 1}x ${item.productName || item.name}`;
+        }
+        return String(item).trim();
+      })
+      .filter(Boolean);
+  }
+  if (typeof c === "string" && c.trim()) {
+    return c
+      .split(/\s*,\s*|\n+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  if (Array.isArray(pack.value.items) && pack.value.items.length > 0) {
+    return pack.value.items
+      .map((i: any) => `${i.quantity || 1}x ${i.productName || i.name}`)
+      .filter(Boolean);
+  }
+  return [];
+});
 
+// Charger les données au montage du composant
 onMounted(async () => {
+  loading.value = true;
   try {
     const packId = route.params.id as string;
-    console.log("🔄 Chargement du pack via Smart Cache:", packId);
+    console.log("🔄 Chargement du pack:", packId);
 
     const foundPack = await airtableStore.fetchPackById(packId);
 
     if (foundPack) {
       pack.value = foundPack;
-      console.log(`✅ Pack récupéré:`, pack.value.name);
+      console.log(`✅ Pack récupéré avec succès:`, pack.value.name, `(${packContents.value.length} articles)`);
     } else {
-      console.error("❌ Pack introuvable");
+      console.error("❌ Pack introuvable:", packId);
       pack.value = null;
     }
   } catch (error) {
     console.error("❌ Erreur lors du chargement du pack:", error);
     pack.value = null;
+  } finally {
+    loading.value = false;
   }
 });
 

@@ -38,16 +38,16 @@
         </div>
 
         <!-- Contents tags -->
-        <div v-if="pack.contents && pack.contents.length > 0" class="flex flex-wrap gap-1.5 pt-1">
+        <div v-if="packContents.length > 0" class="flex flex-wrap gap-1.5 pt-1">
           <span
-            v-for="(item, index) in pack.contents.slice(0, 2)"
+            v-for="(item, index) in packContents.slice(0, 2)"
             :key="index"
             class="px-2.5 py-1 rounded-lg text-[11px] bg-slate-100 text-slate-700 font-semibold"
           >
-            {{ item.substring(0, 20) }}
+            {{ item.substring(0, 24) }}
           </span>
-          <span v-if="pack.contents.length > 2" class="px-2 py-1 rounded-lg text-[11px] bg-slate-200 text-slate-800 font-bold">
-            +{{ pack.contents.length - 2 }}
+          <span v-if="packContents.length > 2" class="px-2 py-1 rounded-lg text-[11px] bg-slate-200 text-slate-800 font-bold">
+            +{{ packContents.length - 2 }}
           </span>
         </div>
 
@@ -76,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useFormatter } from "~/composables/useFormatter";
 import { useCartStore } from "~/stores/cart";
 import type { Pack } from "~/stores/products";
@@ -83,6 +84,33 @@ import ShoppingCartIcon from "~/components/icons/ShoppingCartIcon.vue";
 
 const props = defineProps<{ pack: Pack }>();
 const emit = defineEmits<{ "add-to-cart": [pack: Pack] }>();
+
+const packContents = computed(() => {
+  const c = props.pack.contents;
+  if (Array.isArray(c) && c.length > 0) {
+    return c
+      .map((item: any) => {
+        if (typeof item === "string") return item.trim();
+        if (item && (item.productName || item.name)) {
+          return `${item.quantity || 1}x ${item.productName || item.name}`;
+        }
+        return String(item).trim();
+      })
+      .filter(Boolean);
+  }
+  if (typeof c === "string" && c.trim()) {
+    return c
+      .split(/\s*,\s*|\n+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  if (Array.isArray((props.pack as any).items) && (props.pack as any).items.length > 0) {
+    return (props.pack as any).items
+      .map((i: any) => `${i.quantity || 1}x ${i.productName || i.name}`)
+      .filter(Boolean);
+  }
+  return [];
+});
 const { formatPrice } = useFormatter();
 const cartStore = useCartStore();
 
